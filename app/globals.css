@@ -1,27 +1,50 @@
 @import "tailwindcss";
 
-/* Dark, sporty theme: always dark (no light mode in V1). */
+/* Dark sports-data theme. Always dark. */
 :root {
-  --background: #0b0f17;
-  --surface: #141a26;
-  --border: #232b3a;
-  --foreground: #e8ecf3;
-  --muted: #8a94a7;
-  --accent: #ff6b1a; /* basketball orange */
+  --background: #28282e;
+  --surface: #18181b;
+  --surface-2: #1f1f23;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --foreground: #e4e4e7;
+  --muted: #a1a1aa;
+  --accent: #ff7a1a; /* Trade Score orange */
+
+  /* Score scale, worst -> best */
+  --score-1: #ef4444;
+  --score-2: #f97316;
+  --score-3: #eab308;
+  --score-4: #84cc16;
+  --score-5: #22c55e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-score-1: var(--score-1);
+  --color-score-2: var(--score-2);
+  --color-score-3: var(--score-3);
+  --color-score-4: var(--score-4);
+  --color-score-5: var(--score-5);
+  --font-sans: var(--font-roboto);
+  --font-display: var(--font-oswald);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* Condensed uppercase headings, used everywhere for titles, names and labels. */
+.display {
+  font-family: var(--font-oswald);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }

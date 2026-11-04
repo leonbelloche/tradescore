@@ -223,7 +223,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
     <div className="space-y-6 pb-28">
       {/* 1. Team pickers */}
       <section className="space-y-2">
-        <h2 className="text-sm font-bold uppercase text-muted">Teams</h2>
+        <h2 className="display text-sm font-bold tracking-[0.06em] text-muted">Teams</h2>
         <div className="grid gap-2 sm:grid-cols-3">
           {slots.map((teamId, slot) => (
             <div key={slot} className="flex gap-2">
@@ -295,7 +295,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
                     <div className="flex items-center gap-4">
                       <ScoreBadge score={t.score} size="lg" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-bold">{team.name}</p>
+                        <p className="truncate display text-lg font-bold leading-tight">{team.name}</p>
                         <p className={`text-lg font-black uppercase leading-tight ${tone.text}`}>{t.tier}</p>
                         <p className="text-xs text-muted">{MODE_LABEL[t.mode]}</p>
                       </div>
@@ -330,8 +330,8 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
               <div key={team.id} className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
                   <div>
-                    <p className="text-xs font-black text-accent">{team.abbreviation}</p>
-                    <p className="font-bold">{team.name}</p>
+                    <p className="display text-xs font-bold text-accent">{team.abbreviation}</p>
+                    <p className="display text-lg font-bold leading-tight">{team.name}</p>
                   </div>
                   <p className="text-right text-xs text-muted">
                     Payroll
@@ -357,7 +357,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
                   </select>
                 </label>
 
-                <p className="px-4 pt-3 text-[11px] uppercase text-muted">Tap to send</p>
+                <p className="px-4 pt-3 display text-[11px] font-semibold tracking-[0.06em] text-muted">Tap to send</p>
                 <ul className="divide-y divide-border">
                   {team.players.map((p) => {
                     const to = moves[p.id];
@@ -381,7 +381,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
                             {to ? "✓" : ""}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate font-semibold">{p.name}</span>
+                            <span className="display block truncate text-[15px] font-semibold">{p.name}</span>
                             <span className="text-xs text-muted">
                               {p.position} · {p.age} · {p.yearsLeft} yr{p.yearsLeft > 1 ? "s" : ""}
                             </span>
@@ -412,7 +412,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
 
                 {/* Draft picks this team sends */}
                 <div className="space-y-2 border-t border-border px-4 py-3">
-                  <p className="text-[11px] uppercase text-muted">Draft picks sent</p>
+                  <p className="display text-[11px] font-semibold tracking-[0.06em] text-muted">Draft picks sent</p>
                   {picks
                     .filter((p) => p.from === team.id)
                     .map((p) => (
@@ -482,7 +482,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
 
                 {(incoming.length > 0 || picks.some((p) => p.to === team.id)) && (
                   <div className="border-t border-border px-4 py-3 text-sm">
-                    <p className="text-[11px] uppercase text-muted">Receives</p>
+                    <p className="display text-[11px] font-semibold tracking-[0.06em] text-muted">Receives</p>
                     {incoming.map((p) => (
                       <p key={p.id} className="flex justify-between">
                         <span>
@@ -516,9 +516,9 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
             {!validation || !hasMoves ? (
               <span className="text-muted">No players moved yet.</span>
             ) : validation.valid ? (
-              <span className="font-semibold text-emerald-400">✓ Valid trade</span>
+              <span className="font-semibold text-score-5">✓ Valid trade</span>
             ) : (
-              <span className="font-semibold text-red-400">
+              <span className="font-semibold text-score-1">
                 ✕ Trade not allowed — {validation.errors.length} problem{validation.errors.length > 1 ? "s" : ""}
               </span>
             )}
@@ -531,7 +531,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
           <button
             disabled={!validation?.valid}
             onClick={analyze}
-            className="rounded-full bg-accent px-6 py-3 font-bold text-black transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            className="display rounded-lg bg-accent px-6 py-3 text-lg font-bold text-black transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Analyze
           </button>
@@ -540,9 +540,9 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
 
       {/* Full list of problems, so the user knows exactly what to fix */}
       {validation && hasMoves && !validation.valid && (
-        <section className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm" role="alert">
-          <p className="mb-2 font-bold text-red-300">Why this trade is not allowed</p>
-          <ul className="list-disc space-y-1 pl-5 text-red-200">
+        <section className="rounded-xl border border-score-1/40 bg-score-1/10 p-4 text-sm" role="alert">
+          <p className="mb-2 font-bold text-score-1">Why this trade is not allowed</p>
+          <ul className="list-disc space-y-1 pl-5 text-foreground">
             {validation.errors.map((e) => (
               <li key={e}>{e}</li>
             ))}
@@ -556,17 +556,17 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
 function SalaryCheck({ check, salaryCap, active }: { check?: TeamCheck; salaryCap: number; active: boolean }) {
   if (!check || !active) return null;
   return (
-    <div className={`border-t px-4 py-3 text-sm ${check.ok ? "border-border" : "border-red-500/40 bg-red-500/10"}`}>
+    <div className={`border-t px-4 py-3 text-sm ${check.ok ? "border-border" : "border-score-1/40 bg-score-1/10"}`}>
       <div className="grid grid-cols-3 gap-2 text-center">
         <Figure label="Sends" value={formatMoney(check.outgoing)} />
         <Figure label="Receives" value={formatMoney(check.incoming)} />
         <Figure
           label="Payroll after"
           value={formatMoney(check.payrollAfter)}
-          tone={check.payrollAfter > salaryCap ? "text-red-400" : "text-emerald-400"}
+          tone={check.payrollAfter > salaryCap ? "text-score-1" : "text-score-5"}
         />
       </div>
-      <p className={`mt-2 text-xs ${check.ok ? "text-emerald-400" : "text-red-300"}`}>
+      <p className={`mt-2 text-xs ${check.ok ? "text-score-5" : "text-score-1"}`}>
         {check.ok ? "✓ " : "✕ "}
         {check.message}
       </p>
@@ -577,7 +577,7 @@ function SalaryCheck({ check, salaryCap, active }: { check?: TeamCheck; salaryCa
 function Figure({ label, value, tone = "" }: { label: string; value: string; tone?: string }) {
   return (
     <div>
-      <p className="text-[10px] uppercase text-muted">{label}</p>
+      <p className="display text-[10px] font-semibold text-muted">{label}</p>
       <p className={`font-bold tabular-nums ${tone}`}>{value}</p>
     </div>
   );

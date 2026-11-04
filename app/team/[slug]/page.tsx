@@ -24,11 +24,11 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
     <div className="space-y-8">
       {/* Header */}
       <header className="flex items-center gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-accent text-lg font-black text-black">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-accent text-lg font-bold text-black display">
           {team.abbreviation}
         </div>
         <div>
-          <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{team.name}</h1>
+          <h1 className="display text-3xl font-bold leading-tight sm:text-4xl">{team.name}</h1>
           <p className="text-sm text-muted">
             {team.wins}-{team.losses} · {team.league.current_season} season
           </p>
@@ -48,10 +48,10 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
 
       {/* Roster */}
       <section className="space-y-3">
-        <h2 className="text-xl font-bold">Roster</h2>
+        <h2 className="display text-2xl font-bold tracking-[0.06em]">Roster</h2>
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full text-sm">
-            <thead className="bg-surface text-left text-xs uppercase text-muted">
+            <thead className="display bg-surface text-left text-xs font-semibold tracking-[0.06em] text-muted">
               <tr>
                 <th className="px-3 py-2">Player</th>
                 <th className="px-3 py-2 text-right">Age</th>
@@ -63,7 +63,7 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
               {team.roster.map((p) => (
                 <tr key={p.id}>
                   <td className="px-3 py-2">
-                    <Link href={`/player/${p.slug}`} className="font-semibold hover:text-accent">
+                    <Link href={`/player/${p.slug}`} className="display text-[15px] font-semibold hover:text-accent">
                       {p.name}
                     </Link>
                     <span className="ml-2 text-xs text-muted">{p.position}</span>
@@ -90,11 +90,11 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
 }
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: "good" | "bad" }) {
-  const color = tone === "good" ? "text-emerald-400" : tone === "bad" ? "text-red-400" : "";
+  const color = tone === "good" ? "text-score-5" : tone === "bad" ? "text-score-1" : "";
   return (
-    <div className="rounded-xl border border-border bg-surface p-3 sm:p-4">
-      <p className="text-[11px] uppercase text-muted sm:text-xs">{label}</p>
-      <p className={`text-lg font-black tabular-nums sm:text-2xl ${color}`}>{value}</p>
+    <div className="rounded-[14px] border border-border bg-surface p-3 sm:p-4">
+      <p className="display text-xs font-semibold tracking-[0.06em] text-muted">{label}</p>
+      <p className={`display text-xl font-bold tabular-nums sm:text-3xl ${color}`}>{value}</p>
     </div>
   );
 }
