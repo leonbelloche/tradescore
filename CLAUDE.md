@@ -56,9 +56,14 @@ Talent = 0.00488 × max(0, GmSc − 6)^1.56 × Dispo
 
 ### 3. Valeur nette joueur (sur son contrat, max 5 saisons)
 ```
-Valeur = Σ_t 0.9^t × (Contexte[mode][t] × Talent_t − Salaire_t / Cap_t)
+Valeur = Σ_t 0.9^t × (Contexte[mode][t] × Talent_t − Coût_t)
+Coût_t = 0.7 × max(0, Salaire_t / Cap_t − 0.013)
 ```
 - Cap projeté +7 %/an (configurable). Valeur négative possible (mauvais contrat).
+- **Correctif du 2026-11-04** (avant : Coût = Salaire/Cap) : avec l'ancienne version, 33 joueurs de démo sur 36
+  avaient une valeur négative → donner un bon joueur gratuitement était noté comme une victoire.
+  - 0.013 (`replacementSalary`) ≈ un contrat minimum : seul le salaire au-dessus du minimum est un vrai coût.
+  - 0.7 (`salaryWeight`) : un dollar économisé vaut moins qu'un dollar de talent.
 
 ### 4. Contexte de l'équipe qui REÇOIT
 Mode auto : win% ≥ .600 → contender, ≤ .400 → rebuild, sinon milieu. Modifiable dans le simulateur.
@@ -85,14 +90,19 @@ Score = round(50 + 50 × tanh((Σ reçues − Σ cédées) / 0.25))
 - **Affichage : seulement le score /100 par équipe.** Le détail (valeur de chaque actif) est quand même retourné par la fonction pour la page Méthode et le debug.
 
 ### Tests unitaires obligatoires (résultats attendus de la formule)
-| Trade | A | B |
-|---|---|---|
-| A contender reçoit All-Star 27 ans GmSc 21, 0.30×3 ans ; B rebuild reçoit jeune 22 ans GmSc 13, 0.06×2 ans + 1er tour futur (dans 1 an) | 54 | 92 |
-| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 100 | 0 |
-| Deux joueurs (GmSc 15, 26 ans, 0.15×3) vs (GmSc 14.5, 25 ans, 0.14×3), milieu | 50 | 50 |
-| A contender cède 32 ans GmSc 9, 0.25×2 + pick 4-10 (cette année) à B rebuild contre 28 ans GmSc 11, 0.08×1 | 73 | 31 |
+| Trade | A | B | (avant correctif) |
+|---|---|---|---|
+| A contender reçoit All-Star 27 ans GmSc 21, 0.30×3 ans ; B rebuild reçoit jeune 22 ans GmSc 13, 0.06×2 ans + 1er tour futur (dans 1 an) | 87 | 66 | 54 / 92 |
+| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 100 | 0 | 100 / 0 |
+| Deux joueurs (GmSc 15, 26 ans, 0.15×3) vs (GmSc 14.5, 25 ans, 0.14×3), milieu | 49 | 51 (Even) | 50 / 50 |
+| A contender cède 32 ans GmSc 9, 0.25×2 + pick 4-10 (cette année) à B rebuild contre 28 ans GmSc 11, 0.08×1 | 50 | 56 | 73 / 31 |
 
 (Ces tests utilisent Dispo = 1 et ignorent la croissance du cap.)
+
+Tests "de bon sens" (lib/score/engine.test.ts) :
+- Donner une star gratuitement → donneur < 20, receveur > 60.
+- Donner un remplaçant au salaire minimum → ~50/50.
+- Un joueur de rôle payé au prix du marché vaut ≈ 0.
 
 ### Précisions (vérifiées : avec elles, les 4 tests donnent exactement les résultats attendus)
 - Chaque équipe évalue **tout** (actifs reçus ET cédés) avec **son propre** contexte.

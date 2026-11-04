@@ -117,7 +117,10 @@ export function playerValue(p: PlayerAsset, mode: TeamMode): number {
   let age = p.age;
   const seasons = Math.min(p.salaries.length, C.maxContractSeasons);
   for (let t = 0; t < seasons; t++) {
-    value += Math.pow(C.discountPerSeason, t) * (contextAt(mode, t) * seasonTalent - p.salaries[t]);
+    // Only the salary ABOVE a replacement-level (minimum) contract is a real cost,
+    // and saved salary is worth less than the same amount of talent.
+    const cost = C.salaryWeight * Math.max(0, p.salaries[t] - C.replacementSalary);
+    value += Math.pow(C.discountPerSeason, t) * (contextAt(mode, t) * seasonTalent - cost);
     seasonTalent *= 1 + ageGrowth(age);
     age += 1;
   }

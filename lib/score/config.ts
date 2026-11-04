@@ -29,6 +29,13 @@ export const SCORE_CONFIG = {
   maxContractSeasons: 5,
   discountPerSeason: 0.9, // value of season t is multiplied by 0.9^t
   capGrowthPerYear: 0.07,
+  // Cost of a contract = salaryWeight x (salary - replacementSalary), never below 0.
+  // - replacementSalary ~ a minimum contract (~$2.1M): anyone can sign a replacement for that,
+  //   so a minimum-salary player costs nothing extra.
+  // - salaryWeight < 1: a saved dollar is worth less than a dollar of talent.
+  // Calibrated so that a fairly-paid role player is ~0 and giving away a star for nothing is a clear loss.
+  salaryWeight: 0.7,
+  replacementSalary: 0.013,
 
   // 4. Context of the team valuing the asset, season by season (index 0 = this season).
   context: {

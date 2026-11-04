@@ -3,6 +3,7 @@ import {
   ageGrowth,
   blendGameScore,
   modeFromRecord,
+  playerValue,
   scoreTrade,
   talent,
   tierFor,
@@ -31,8 +32,10 @@ const pick = (name: string, extra: Partial<PickAsset>): PickAsset => ({
 const scoresOf = (result: ReturnType<typeof scoreTrade>) =>
   Object.fromEntries(result.teams.map((t) => [t.teamId, t.score]));
 
+// Expected scores updated on 2026-11-04 after the salary fix (salaryWeight 0.7,
+// replacementSalary 0.013). The original spec values were 54/92, 100/0, 50/50, 73/31.
 describe("Trade Score — required trades from CLAUDE.md", () => {
-  it("1. contender gets an All-Star, rebuild gets a young player + future 1st -> 54 / 92", () => {
+  it("1. contender gets an All-Star, rebuild gets a young player + future 1st -> 87 / 66 (both win)", () => {
     const result = scoreTrade({
       teams: [{ id: "A", mode: "contender" }, { id: "B", mode: "rebuild" }],
       moves: [
@@ -41,7 +44,7 @@ describe("Trade Score — required trades from CLAUDE.md", () => {
         { asset: pick("Future 1st", { yearsUntilDraft: 1 }), from: "A", to: "B" },
       ],
     });
-    expect(scoresOf(result)).toEqual({ A: 54, B: 92 });
+    expect(scoresOf(result)).toEqual({ A: 87, B: 66 });
   });
 
   it("2. middle team gets an MVP for a declining player -> 100 / 0", () => {
@@ -55,7 +58,7 @@ describe("Trade Score — required trades from CLAUDE.md", () => {
     expect(scoresOf(result)).toEqual({ A: 100, B: 0 });
   });
 
-  it("3. two similar players -> 50 / 50, even trade", () => {
+  it("3. two similar players -> 49 / 51, even trade", () => {
     const result = scoreTrade({
       teams: [{ id: "A", mode: "middle" }, { id: "B", mode: "middle" }],
       moves: [
@@ -63,12 +66,12 @@ describe("Trade Score — required trades from CLAUDE.md", () => {
         { asset: player("P2", 25, 14.5, 0.14, 3), from: "B", to: "A" },
       ],
     });
-    expect(scoresOf(result)).toEqual({ A: 50, B: 50 });
+    expect(scoresOf(result)).toEqual({ A: 49, B: 51 });
     expect(result.isEven).toBe(true);
     expect(result.winnerTeamId).toBeNull();
   });
 
-  it("4. contender dumps a vet + this year's 4-10 pick to a rebuild team -> 73 / 31", () => {
+  it("4. contender pays a lottery pick to dump a bad contract -> 50 / 56 (rebuild team gets paid)", () => {
     const result = scoreTrade({
       teams: [{ id: "A", mode: "contender" }, { id: "B", mode: "rebuild" }],
       moves: [
@@ -77,8 +80,35 @@ describe("Trade Score — required trades from CLAUDE.md", () => {
         { asset: player("Role player", 28, 11, 0.08, 1), from: "B", to: "A" },
       ],
     });
-    expect(scoresOf(result)).toEqual({ A: 73, B: 31 });
-    expect(result.winnerTeamId).toBe("A");
+    expect(scoresOf(result)).toEqual({ A: 50, B: 56 });
+    expect(result.winnerTeamId).toBe("B");
+  });
+});
+
+describe("Trade Score — common sense", () => {
+  const gift = (asset: PlayerAsset) =>
+    scoresOf(
+      scoreTrade({
+        teams: [{ id: "giver", mode: "contender" }, { id: "taker", mode: "rebuild" }],
+        moves: [{ asset, from: "giver", to: "taker" }],
+      }),
+    );
+
+  it("giving away a star for nothing is a clear loss, and a win for the team receiving him", () => {
+    const s = gift(player("Star", 27, 21, 0.3, 3));
+    expect(s.giver).toBeLessThan(20);
+    expect(s.taker).toBeGreaterThan(60);
+  });
+
+  it("giving away a minimum-salary bench player is about even", () => {
+    const s = gift(player("Bench", 30, 6, 0.013, 1));
+    expect(Math.abs(s.giver - 50)).toBeLessThanOrEqual(2);
+    expect(Math.abs(s.taker - 50)).toBeLessThanOrEqual(2);
+  });
+
+  it("a fairly paid role player is worth about nothing (not a big minus)", () => {
+    const v = playerValue(player("Role", 27, 12, 0.11, 2), "middle");
+    expect(Math.abs(v)).toBeLessThan(0.03);
   });
 });
 
