@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import Link from "next/link";
+import TeamList from "@/components/TeamList";
 
 export default function HomePage() {
   return (
@@ -17,6 +19,14 @@ export default function HomePage() {
         >
           Build a trade
         </Link>
+      </section>
+
+      {/* Teams */}
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold">Teams</h2>
+        <Suspense fallback={<div className="h-20 animate-pulse rounded-xl bg-surface" />}>
+          <TeamList />
+        </Suspense>
       </section>
 
       {/* Popular trades (filled in later steps) */}
