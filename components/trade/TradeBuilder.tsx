@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import ScoreBadge from "@/components/ScoreBadge";
+import ScoreBadge, { scoreTone } from "@/components/ScoreBadge";
 import { formatMoney } from "@/lib/format";
 import { getLeagueRules } from "@/lib/leagues";
 import type { TeamCheck, TradeMove } from "@/lib/leagues/types";
 import type { TeamMode } from "@/lib/score/config";
-import { modeFromRecord, scoreTrade, type TradeScore } from "@/lib/score/engine";
+import { modeFromRecord, scoreTrade, type TradeInput, type TradeScore } from "@/lib/score/engine";
 
 export type BuilderPlayer = {
   id: string;
@@ -30,16 +30,27 @@ export type BuilderTeam = {
   players: BuilderPlayer[];
 };
 
+// A draft pick added in the simulator.
+type PickDraft = {
+  id: string;
+  from: string; // team giving the pick (also the team whose record sets the slot)
+  to: string;
+  round: 1 | 2;
+  year: number; // draft year, e.g. 2027
+  protected: boolean;
+};
+
 const MODE_LABEL: Record<TeamMode, string> = { contender: "Contender", middle: "Middle", rebuild: "Rebuild" };
 
 type Props = {
   leagueId: string;
+  currentSeason: string; // e.g. "2026-27"
   salaryCap: number;
   rules: Record<string, unknown>;
   teams: BuilderTeam[];
 };
 
-export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Props) {
+export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules, teams }: Props) {
   const leagueRules = getLeagueRules(leagueId);
 
   // Team picked in each slot ("" = not picked yet).
@@ -48,6 +59,8 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
   const [moves, setMoves] = useState<Record<string, string>>({});
   // Team mode chosen by the user; otherwise it comes from the win-loss record.
   const [modeOverrides, setModeOverrides] = useState<Record<string, TeamMode>>({});
+  const [picks, setPicks] = useState<PickDraft[]>([]);
+  const nextPickId = useRef(1);
   const [result, setResult] = useState<TradeScore | null>(null);
   const resultRef = useRef<HTMLElement>(null);
 
@@ -57,12 +70,24 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
     [teams],
   );
 
+  // This season's draft (2026-27 season -> 2027 draft).
+  const thisDraft = Number(currentSeason.slice(0, 4)) + 1;
+  // Projected slot of a team's pick in this year's draft: worst record = earliest pick,
+  // scaled to a 30-team league.
+  const projectedSlot = useMemo(() => {
+    const winPct = (t: BuilderTeam) => (t.wins + t.losses ? t.wins / (t.wins + t.losses) : 0.5);
+    const ranked = [...teams].sort((a, b) => winPct(a) - winPct(b));
+    return new Map(ranked.map((t, i) => [t.id, Math.ceil(((i + 1) / ranked.length) * 30)]));
+  }, [teams]);
+
   const selected = slots.filter(Boolean).map((id) => teamById.get(id)!);
 
   const tradeMoves: TradeMove[] = Object.entries(moves).map(([playerId, to]) => {
     const player = playerById.get(playerId)!;
     return { playerId, from: player.teamId, to, salary: player.salary };
   });
+  // Picks carry no salary but still count as "sending something".
+  const pickMoves: TradeMove[] = picks.map((p) => ({ playerId: p.id, from: p.from, to: p.to, salary: 0 }));
 
   const validation =
     selected.length >= 2
@@ -70,11 +95,14 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
           salaryCap,
           rules,
           teams: selected.map((t) => ({ id: t.id, abbreviation: t.abbreviation, payroll: t.payroll })),
-          moves: tradeMoves,
+          moves: [...tradeMoves, ...pickMoves],
         })
       : null;
 
-  // Keep only moves whose both teams are still in the trade.
+  const pickLabel = (p: PickDraft) =>
+    `${p.year} ${p.round === 1 ? "1st" : "2nd"}${p.protected ? " (prot.)" : ""} · ${teamById.get(p.from)!.abbreviation}`;
+
+  // Keep only moves and picks whose both teams are still in the trade.
   function pruneMoves(nextSlots: string[]) {
     const inTrade = new Set(nextSlots.filter(Boolean));
     setMoves((prev) =>
@@ -82,6 +110,25 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
         Object.entries(prev).filter(([pid, to]) => inTrade.has(to) && inTrade.has(playerById.get(pid)!.teamId)),
       ),
     );
+    setPicks((prev) => prev.filter((p) => inTrade.has(p.from) && inTrade.has(p.to)));
+  }
+
+  function addPick(fromTeamId: string) {
+    const to = selected.find((t) => t.id !== fromTeamId);
+    if (!to) return;
+    const id = `pick-${nextPickId.current++}`;
+    setPicks((prev) => [...prev, { id, from: fromTeamId, to: to.id, round: 1, year: thisDraft + 1, protected: false }]);
+    setResult(null);
+  }
+
+  function updatePick(id: string, patch: Partial<PickDraft>) {
+    setPicks((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+    setResult(null);
+  }
+
+  function removePick(id: string) {
+    setPicks((prev) => prev.filter((p) => p.id !== id));
+    setResult(null);
   }
 
   const modeOf = (team: BuilderTeam) => modeOverrides[team.id] ?? modeFromRecord(team.wins, team.losses);
@@ -106,24 +153,38 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
   }
 
   function analyze() {
+    const playerAssets: TradeInput["moves"] = tradeMoves.map((m) => {
+      const p = playerById.get(m.playerId)!;
+      return {
+        from: m.from,
+        to: m.to,
+        asset: {
+          kind: "player",
+          id: p.id,
+          name: p.name,
+          age: p.age,
+          gameScore: p.gameScore,
+          availability: p.availability,
+          salaries: p.salaryCapFractions,
+        },
+      };
+    });
+    const pickAssets: TradeInput["moves"] = picks.map((p) => ({
+      from: p.from,
+      to: p.to,
+      asset: {
+        kind: "pick",
+        id: p.id,
+        name: pickLabel(p),
+        round: p.round,
+        yearsUntilDraft: p.year - thisDraft,
+        projectedSlot: projectedSlot.get(p.from),
+        protected: p.protected,
+      },
+    }));
     const score = scoreTrade({
       teams: selected.map((t) => ({ id: t.id, mode: modeOf(t) })),
-      moves: tradeMoves.map((m) => {
-        const p = playerById.get(m.playerId)!;
-        return {
-          from: m.from,
-          to: m.to,
-          asset: {
-            kind: "player" as const,
-            id: p.id,
-            name: p.name,
-            age: p.age,
-            gameScore: p.gameScore,
-            availability: p.availability,
-            salaries: p.salaryCapFractions,
-          },
-        };
-      }),
+      moves: [...playerAssets, ...pickAssets],
     });
     setResult(score);
     // Let React render the result, then bring it into view.
@@ -151,11 +212,12 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
 
   function reset() {
     setMoves({});
+    setPicks([]);
     setResult(null);
   }
 
   const checkFor = (teamId: string) => validation?.teams.find((t) => t.teamId === teamId);
-  const hasMoves = tradeMoves.length > 0;
+  const hasMoves = tradeMoves.length + picks.length > 0;
 
   return (
     <div className="space-y-6 pb-28">
@@ -204,25 +266,53 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
 
       {/* Trade Score result (after Analyze) */}
       {result && (
-        <section ref={resultRef} className="scroll-mt-4 space-y-3 rounded-xl border border-accent/50 bg-surface p-4">
-          <p className="text-center text-sm font-bold uppercase text-muted">
-            {result.isEven
-              ? "Even trade"
-              : `${teamById.get(result.winnerTeamId!)!.name} win the trade`}
-          </p>
-          <div className={`grid gap-3 ${result.teams.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
-            {result.teams.map((t) => {
-              const team = teamById.get(t.teamId)!;
-              return (
-                <div key={t.teamId} className="flex flex-col items-center gap-1 text-center">
-                  <p className="text-xs font-black text-accent">{team.abbreviation}</p>
-                  <ScoreBadge score={t.score} size="lg" />
-                  <p className="text-sm font-bold">{t.tier}</p>
-                  <p className="text-[11px] text-muted">{MODE_LABEL[t.mode]}</p>
-                </div>
-              );
-            })}
+        <section ref={resultRef} className="scroll-mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
+          {/* Headline */}
+          <div className="border-b border-border bg-gradient-to-b from-accent/20 to-transparent px-4 py-6 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Trade Score</p>
+            <p className="mt-1 text-3xl font-black uppercase leading-none tracking-tight sm:text-4xl">
+              {result.isEven ? (
+                "Even trade"
+              ) : (
+                <>
+                  <span className="text-accent">{teamById.get(result.winnerTeamId!)!.name}</span>
+                  <br />
+                  win the trade
+                </>
+              )}
+            </p>
           </div>
+
+          {/* One row per team, best score first */}
+          <ul className="divide-y divide-border">
+            {[...result.teams]
+              .sort((a, b) => b.score - a.score)
+              .map((t) => {
+                const team = teamById.get(t.teamId)!;
+                const tone = scoreTone(t.score);
+                return (
+                  <li key={t.teamId} className="space-y-3 px-4 py-4">
+                    <div className="flex items-center gap-4">
+                      <ScoreBadge score={t.score} size="lg" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold">{team.name}</p>
+                        <p className={`text-lg font-black uppercase leading-tight ${tone.text}`}>{t.tier}</p>
+                        <p className="text-xs text-muted">{MODE_LABEL[t.mode]}</p>
+                      </div>
+                    </div>
+                    {/* Score bar: 0 on the left, 100 on the right, 50 marked in the middle */}
+                    <div className="relative h-2 rounded-full bg-background">
+                      <div className={`h-2 rounded-full ${tone.bg}`} style={{ width: `${t.score}%` }} />
+                      <div className="absolute inset-y-0 left-1/2 w-px bg-muted/60" />
+                    </div>
+                    <p className="text-xs text-muted">
+                      <span className="font-semibold text-foreground">Gets:</span>{" "}
+                      {t.received.length ? t.received.map((a) => a.name).join(", ") : "nothing"}
+                    </p>
+                  </li>
+                );
+              })}
+          </ul>
         </section>
       )}
 
@@ -320,7 +410,77 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
                   })}
                 </ul>
 
-                {incoming.length > 0 && (
+                {/* Draft picks this team sends */}
+                <div className="space-y-2 border-t border-border px-4 py-3">
+                  <p className="text-[11px] uppercase text-muted">Draft picks sent</p>
+                  {picks
+                    .filter((p) => p.from === team.id)
+                    .map((p) => (
+                      <div key={p.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-accent/15 p-2 text-xs">
+                        <select
+                          value={p.year}
+                          onChange={(e) => updatePick(p.id, { year: Number(e.target.value) })}
+                          aria-label="Draft year"
+                          className="rounded border border-border bg-background px-1 py-1"
+                        >
+                          {[0, 1, 2, 3, 4].map((k) => (
+                            <option key={k} value={thisDraft + k}>
+                              {thisDraft + k}
+                              {k === 0 ? " (this draft)" : ""}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          value={p.round}
+                          onChange={(e) => updatePick(p.id, { round: Number(e.target.value) as 1 | 2 })}
+                          aria-label="Round"
+                          className="rounded border border-border bg-background px-1 py-1"
+                        >
+                          <option value={1}>1st round</option>
+                          <option value={2}>2nd round</option>
+                        </select>
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="checkbox"
+                            checked={p.protected}
+                            onChange={(e) => updatePick(p.id, { protected: e.target.checked })}
+                          />
+                          Protected
+                        </label>
+                        {others.length > 1 ? (
+                          <select
+                            value={p.to}
+                            onChange={(e) => updatePick(p.id, { to: e.target.value })}
+                            aria-label="Send pick to"
+                            className="rounded border border-accent bg-background px-1 py-1"
+                          >
+                            {others.map((o) => (
+                              <option key={o.id} value={o.id}>
+                                → {o.abbreviation}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="font-bold text-accent">→ {teamById.get(p.to)!.abbreviation}</span>
+                        )}
+                        <button
+                          onClick={() => removePick(p.id)}
+                          aria-label="Remove pick"
+                          className="ml-auto px-1 text-muted hover:text-foreground"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  <button
+                    onClick={() => addPick(team.id)}
+                    className="w-full rounded-lg border border-dashed border-border py-2 text-xs text-muted hover:text-foreground"
+                  >
+                    + Add a pick
+                  </button>
+                </div>
+
+                {(incoming.length > 0 || picks.some((p) => p.to === team.id)) && (
                   <div className="border-t border-border px-4 py-3 text-sm">
                     <p className="text-[11px] uppercase text-muted">Receives</p>
                     {incoming.map((p) => (
@@ -331,6 +491,14 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
                         <span className="tabular-nums">{formatMoney(p.salary)}</span>
                       </p>
                     ))}
+                    {picks
+                      .filter((p) => p.to === team.id)
+                      .map((p) => (
+                        <p key={p.id} className="flex justify-between">
+                          <span>{pickLabel(p)}</span>
+                          <span className="text-xs text-muted">pick</span>
+                        </p>
+                      ))}
                   </div>
                 )}
 
