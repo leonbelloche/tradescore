@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import LoadingBlock from "@/components/LoadingBlock";
 import TradeBuilder, { type BuilderTeam } from "@/components/trade/TradeBuilder";
 import { getLeagueWithRosters } from "@/lib/db/teams";
+import { blendGameScore, salariesAsCapFraction } from "@/lib/score/engine";
 
 export default function TradeSimulatorPage() {
   return (
@@ -17,23 +18,40 @@ export default function TradeSimulatorPage() {
   );
 }
 
+// "2026-27" -> "2025-26"
+function previousSeason(season: string): string {
+  const start = Number(season.slice(0, 4)) - 1;
+  return `${start}-${String((start + 1) % 100).padStart(2, "0")}`;
+}
+
 async function Simulator() {
   const { league, teams } = await getLeagueWithRosters("nba");
+  const current = league.current_season;
+  const previous = previousSeason(current);
 
   // Only send the browser what the simulator needs.
   const builderTeams: BuilderTeam[] = teams.map((t) => ({
     id: t.id,
     name: t.name,
     abbreviation: t.abbreviation,
+    wins: t.wins,
+    losses: t.losses,
     payroll: t.payroll,
-    players: t.roster.map((p) => ({
-      id: p.id,
-      name: p.name,
-      position: p.position,
-      age: p.age,
-      salary: p.currentSalary,
-      yearsLeft: p.yearsLeft,
-    })),
+    players: t.roster.map((p) => {
+      const { gameScore, availability } = blendGameScore(p.stats_json[current], p.stats_json[previous], t.wins + t.losses);
+      const remaining = p.contracts.filter((c) => c.season >= current).map((c) => c.salary);
+      return {
+        id: p.id,
+        name: p.name,
+        position: p.position,
+        age: p.age,
+        salary: p.currentSalary,
+        yearsLeft: p.yearsLeft,
+        gameScore,
+        availability,
+        salaryCapFractions: salariesAsCapFraction(remaining, league.salary_cap),
+      };
+    }),
   }));
 
   return (

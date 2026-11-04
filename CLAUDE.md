@@ -106,12 +106,22 @@ Score = round(50 + 50 × tanh((Σ reçues − Σ cédées) / 0.25))
 - Commence avec des **données de démo** (3-4 équipes) pour avancer sans attendre les vraies données.
 
 ## Roadmap (une étape = une validation de ma part)
-1. Squelette Next.js + Tailwind + pages vides + déploiement Vercel. ✅ si le site tourne en local et en ligne.
-2. Supabase + tables + données de démo. ✅ si la fiche équipe affiche effectif + masse salariale.
-3. Simulateur. ✅ si un trade trop déséquilibré en salaire est bloqué avec un message clair.
-4. Trade Score + page résultat. ✅ si 15/20 trades réels testés donnent le bon gagnant.
-5. Partage : lien unique + image OG. ✅ si le lien collé sur Discord/X affiche le score.
-6. Vraies données 30 équipes + page Méthode + nom de domaine.
+1. ✅ Squelette Next.js + Tailwind + pages vides + déploiement Vercel.
+2. ✅ Supabase + tables + données de démo (4 équipes fictives).
+3. ✅ Simulateur avec règles salariales (lib/leagues/nba.ts).
+4. ✅ Moteur du Trade Score (lib/score/) + 4 tests obligatoires, branché sur "Analyze" du simulateur.
+
+### Nouvelle direction (validée le 2026-11-04)
+L'option principale du site = le **Trade Score des VRAIS trades** ("Who won the trade?").
+Le simulateur devient une option secondaire ("Build your own trade").
+Inspiration design/idées : thewagescore.com (sans copier leur marque) → titres condensés en majuscules,
+badges de score colorés, paliers (Fleeced / Lost It / Fair Deal / Won It / Heist!), classements, rivalités.
+
+5. Nouveau design + accueil "Who won the trade?" (derniers trades notés, paliers, classements). Simulateur en option.
+6. Vraies données : joueurs/stats/trades réels (source à confirmer — ESPN n'a pas de salaires) + contrats.
+   ✅ si 15/20 trades réels testés donnent le bon gagnant.
+7. Partage : lien unique /trade/[id] + image OG. ✅ si le lien collé sur Discord/X affiche le score.
+8. Page Méthode + nom de domaine.
 
 ## Commence par
 L'étape 1. Explique-moi d'abord en 5 lignes ce que tu vas installer et pourquoi, puis lance.

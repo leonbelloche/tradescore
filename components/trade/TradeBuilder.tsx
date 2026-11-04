@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import ScoreBadge from "@/components/ScoreBadge";
 import { formatMoney } from "@/lib/format";
 import { getLeagueRules } from "@/lib/leagues";
 import type { TeamCheck, TradeMove } from "@/lib/leagues/types";
+import type { TeamMode } from "@/lib/score/config";
+import { modeFromRecord, scoreTrade, type TradeScore } from "@/lib/score/engine";
 
 export type BuilderPlayer = {
   id: string;
@@ -12,15 +15,22 @@ export type BuilderPlayer = {
   age: number;
   salary: number;
   yearsLeft: number;
+  gameScore: number;
+  availability: number;
+  salaryCapFractions: number[];
 };
 
 export type BuilderTeam = {
   id: string;
   name: string;
   abbreviation: string;
+  wins: number;
+  losses: number;
   payroll: number;
   players: BuilderPlayer[];
 };
+
+const MODE_LABEL: Record<TeamMode, string> = { contender: "Contender", middle: "Middle", rebuild: "Rebuild" };
 
 type Props = {
   leagueId: string;
@@ -36,7 +46,10 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
   const [slots, setSlots] = useState<string[]>(["", ""]);
   // playerId -> id of the team receiving him.
   const [moves, setMoves] = useState<Record<string, string>>({});
-  const [notice, setNotice] = useState("");
+  // Team mode chosen by the user; otherwise it comes from the win-loss record.
+  const [modeOverrides, setModeOverrides] = useState<Record<string, TeamMode>>({});
+  const [result, setResult] = useState<TradeScore | null>(null);
+  const resultRef = useRef<HTMLElement>(null);
 
   const teamById = useMemo(() => new Map(teams.map((t) => [t.id, t])), [teams]);
   const playerById = useMemo(
@@ -71,22 +84,54 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
     );
   }
 
+  const modeOf = (team: BuilderTeam) => modeOverrides[team.id] ?? modeFromRecord(team.wins, team.losses);
+
   function pickTeam(slot: number, teamId: string) {
     const next = slots.map((id, i) => (i === slot ? teamId : id));
     setSlots(next);
     pruneMoves(next);
-    setNotice("");
+    setResult(null);
   }
 
   function removeSlot(slot: number) {
     const next = slots.filter((_, i) => i !== slot);
     setSlots(next);
     pruneMoves(next);
-    setNotice("");
+    setResult(null);
+  }
+
+  function setMode(teamId: string, mode: TeamMode) {
+    setModeOverrides((prev) => ({ ...prev, [teamId]: mode }));
+    setResult(null);
+  }
+
+  function analyze() {
+    const score = scoreTrade({
+      teams: selected.map((t) => ({ id: t.id, mode: modeOf(t) })),
+      moves: tradeMoves.map((m) => {
+        const p = playerById.get(m.playerId)!;
+        return {
+          from: m.from,
+          to: m.to,
+          asset: {
+            kind: "player" as const,
+            id: p.id,
+            name: p.name,
+            age: p.age,
+            gameScore: p.gameScore,
+            availability: p.availability,
+            salaries: p.salaryCapFractions,
+          },
+        };
+      }),
+    });
+    setResult(score);
+    // Let React render the result, then bring it into view.
+    requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
   function togglePlayer(playerId: string, fromTeamId: string) {
-    setNotice("");
+    setResult(null);
     setMoves((prev) => {
       const next = { ...prev };
       if (next[playerId]) {
@@ -101,11 +146,12 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
 
   function setDestination(playerId: string, toTeamId: string) {
     setMoves((prev) => ({ ...prev, [playerId]: toTeamId }));
+    setResult(null);
   }
 
   function reset() {
     setMoves({});
-    setNotice("");
+    setResult(null);
   }
 
   const checkFor = (teamId: string) => validation?.teams.find((t) => t.teamId === teamId);
@@ -156,6 +202,30 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
         </div>
       </section>
 
+      {/* Trade Score result (after Analyze) */}
+      {result && (
+        <section ref={resultRef} className="scroll-mt-4 space-y-3 rounded-xl border border-accent/50 bg-surface p-4">
+          <p className="text-center text-sm font-bold uppercase text-muted">
+            {result.isEven
+              ? "Even trade"
+              : `${teamById.get(result.winnerTeamId!)!.name} win the trade`}
+          </p>
+          <div className={`grid gap-3 ${result.teams.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+            {result.teams.map((t) => {
+              const team = teamById.get(t.teamId)!;
+              return (
+                <div key={t.teamId} className="flex flex-col items-center gap-1 text-center">
+                  <p className="text-xs font-black text-accent">{team.abbreviation}</p>
+                  <ScoreBadge score={t.score} size="lg" />
+                  <p className="text-sm font-bold">{t.tier}</p>
+                  <p className="text-[11px] text-muted">{MODE_LABEL[t.mode]}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {selected.length < 2 ? (
         <p className="rounded-xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
           Choose at least 2 teams to start.
@@ -180,6 +250,22 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
                     </span>
                   </p>
                 </div>
+                <label className="flex items-center justify-between gap-2 border-b border-border px-4 py-2 text-xs text-muted">
+                  <span>
+                    {team.wins}-{team.losses} · Team mode
+                  </span>
+                  <select
+                    value={modeOf(team)}
+                    onChange={(e) => setMode(team.id, e.target.value as TeamMode)}
+                    className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground"
+                  >
+                    {(Object.keys(MODE_LABEL) as TeamMode[]).map((m) => (
+                      <option key={m} value={m}>
+                        {MODE_LABEL[m]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
                 <p className="px-4 pt-3 text-[11px] uppercase text-muted">Tap to send</p>
                 <ul className="divide-y divide-border">
@@ -259,9 +345,7 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
           <p className="min-w-0 flex-1 text-sm">
-            {notice ? (
-              <span className="text-accent">{notice}</span>
-            ) : !validation || !hasMoves ? (
+            {!validation || !hasMoves ? (
               <span className="text-muted">No players moved yet.</span>
             ) : validation.valid ? (
               <span className="font-semibold text-emerald-400">✓ Valid trade</span>
@@ -278,7 +362,7 @@ export default function TradeBuilder({ leagueId, salaryCap, rules, teams }: Prop
           )}
           <button
             disabled={!validation?.valid}
-            onClick={() => setNotice("Trade Score is coming soon.")}
+            onClick={analyze}
             className="rounded-full bg-accent px-6 py-3 font-bold text-black transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Analyze
