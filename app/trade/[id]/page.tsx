@@ -17,7 +17,7 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
   return (
     <Placeholder
       title={`Trade #${id}`}
-      description="Trade Score out of 100 for each team, the winner, and the top 3 reasons."
+      description="Trade Score out of 100 for each team and the winner."
     />
   );
 }
