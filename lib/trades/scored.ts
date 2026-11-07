@@ -2,8 +2,7 @@
 import { supabase } from "@/lib/db/client";
 import { getLeagueWithRosters, type RosterPlayer, type TeamWithRoster } from "@/lib/db/teams";
 import type { TradeRow } from "@/lib/db/types";
-import { modeFromRecord, scoreTrade, type Asset, type TradeInput } from "@/lib/score/engine";
-import type { TeamMode } from "@/lib/score/config";
+import { modeFromRecord, scoreTrade, type Asset, type TeamMode, type TeamResult, type TradeLeg, type Verdict } from "@/lib/score";
 import { draftYearOf, toPlayerAsset } from "./assets";
 
 export type TeamSummary = Pick<TeamWithRoster, "id" | "name" | "short_name" | "slug" | "abbreviation" | "logo_url" | "wins" | "losses">;
@@ -13,7 +12,9 @@ export type ScoredTeam = {
   mode: TeamMode;
   score: number;
   tier: string;
+  verdict: Verdict;
   receives: string[]; // asset names
+  result: TeamResult; // full detail (asset values and calculation steps) for the Method page
 };
 
 export type ScoredTrade = {
@@ -45,7 +46,7 @@ export async function getScoredTrades(): Promise<ScoredTrade[]> {
 
   return (tradesRes.data as TradeRow[]).map((row) => {
     const warnings: string[] = [];
-    const moves: TradeInput["moves"] = [];
+    const legs: TradeLeg[] = [];
 
     row.assets_json.forEach((a, i) => {
       const from = teamByAbbr.get(a.from)!;
@@ -70,14 +71,20 @@ export async function getScoredTrades(): Promise<ScoredTrade[]> {
           yearsUntilDraft: a.year ? a.year - thisDraft : 1,
         };
       }
-      moves.push({ asset, from: from.id, to: to.id });
+      legs.push({ asset, fromTeamId: from.id, toTeamId: to.id });
     });
 
     const involved = row.teams_json.map((abbr) => teamByAbbr.get(abbr)!);
     const result = scoreTrade({
-      teams: involved.map((t) => ({ id: t.id, mode: modeFromRecord(t.wins, t.losses) })),
-      moves,
+      league: "NBA",
+      salaryCap: league.salary_cap,
+      rules: league.rules_json,
+      teams: involved.map((t) => ({ id: t.id, abbreviation: t.abbreviation, mode: modeFromRecord(t.wins, t.losses), payroll: t.payroll })),
+      legs,
+      // Real trades use CBA exceptions (trade exceptions, etc.) our simplified rules don't model.
+      skipValidation: true,
     });
+    if (!result.valid) throw new Error(`Trade ${row.slug} could not be scored: ${result.errors.join(" ")}`);
 
     const scoredTeams: ScoredTeam[] = result.teams
       .map((r) => ({
@@ -85,7 +92,9 @@ export async function getScoredTrades(): Promise<ScoredTrade[]> {
         mode: r.mode,
         score: r.score,
         tier: r.tier,
-        receives: r.received.map((x) => x.name),
+        verdict: r.verdict,
+        receives: r.received.map((x) => x.label),
+        result: r,
       }))
       .sort((a, b) => b.score - a.score);
 

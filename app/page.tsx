@@ -3,8 +3,7 @@ import Link from "next/link";
 import ScoreBadge, { TierLabel, scoreTone } from "@/components/ScoreBadge";
 import TradeRow from "@/components/trades/TradeRow";
 import { Card, SectionTitle, TeamMark } from "@/components/ui";
-import { SCORE_CONFIG } from "@/lib/score/config";
-import { tierFor } from "@/lib/score/engine";
+import { TIERS, tierFor } from "@/lib/score";
 import { getScoredTrades, teamStats, type TeamTradeStats } from "@/lib/trades/scored";
 
 export default function HomePage() {
@@ -137,8 +136,8 @@ function TraderCard({ label, stat }: { label: string; stat: TeamTradeStats }) {
 
 // Share of results in each tier, as one segmented bar.
 function TierBar({ scores, label }: { scores: number[]; label: string }) {
-  const tiers = SCORE_CONFIG.tiers.map((tier, i) => {
-    const min = i === 0 ? 0 : SCORE_CONFIG.tiers[i - 1].max + 1;
+  const tiers = TIERS.map((tier, i) => {
+    const min = i === 0 ? 0 : TIERS[i - 1].max + 1;
     const count = scores.filter((s) => tierFor(s) === tier.label).length;
     return { label: tier.label, sample: min, pct: Math.round((count / scores.length) * 100) };
   }).filter((t) => t.pct > 0);

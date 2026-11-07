@@ -3,10 +3,17 @@
 import { useMemo, useRef, useState } from "react";
 import ScoreBadge, { scoreTone } from "@/components/ScoreBadge";
 import { formatMoney } from "@/lib/format";
-import { getLeagueRules } from "@/lib/leagues";
-import type { TeamCheck, TradeMove } from "@/lib/leagues/types";
-import type { TeamMode } from "@/lib/score/config";
-import { modeFromRecord, scoreTrade, type TradeInput, type TradeScore } from "@/lib/score/engine";
+import {
+  modeFromRecord,
+  rulesFor,
+  scoreTrade,
+  validateTrade,
+  type SalaryCheck as SalaryCheckResult,
+  type TeamMode,
+  type Trade,
+  type TradeLeg,
+  type TradeResult,
+} from "@/lib/score";
 
 export type BuilderPlayer = {
   id: string;
@@ -43,15 +50,14 @@ type PickDraft = {
 const MODE_LABEL: Record<TeamMode, string> = { contender: "Contender", middle: "Middle", rebuild: "Rebuild" };
 
 type Props = {
-  leagueId: string;
   currentSeason: string; // e.g. "2026-27"
   salaryCap: number;
   rules: Record<string, unknown>;
   teams: BuilderTeam[];
 };
 
-export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules, teams }: Props) {
-  const leagueRules = getLeagueRules(leagueId);
+export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }: Props) {
+  const leagueRules = rulesFor("NBA");
 
   // Team picked in each slot ("" = not picked yet).
   const [slots, setSlots] = useState<string[]>(["", ""]);
@@ -61,7 +67,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
   const [modeOverrides, setModeOverrides] = useState<Record<string, TeamMode>>({});
   const [picks, setPicks] = useState<PickDraft[]>([]);
   const nextPickId = useRef(1);
-  const [result, setResult] = useState<TradeScore | null>(null);
+  const [result, setResult] = useState<TradeResult | null>(null);
   const resultRef = useRef<HTMLElement>(null);
 
   const teamById = useMemo(() => new Map(teams.map((t) => [t.id, t])), [teams]);
@@ -72,8 +78,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
 
   // This season's draft (2026-27 season -> 2027 draft).
   const thisDraft = Number(currentSeason.slice(0, 4)) + 1;
-  // Projected slot of a team's pick in this year's draft: worst record = earliest pick,
-  // scaled to a 30-team league.
+  // Projected slot of a team's pick in this year's draft: worst record = earliest pick, on a 30-team scale.
   const projectedSlot = useMemo(() => {
     const winPct = (t: BuilderTeam) => (t.wins + t.losses ? t.wins / (t.wins + t.losses) : 0.5);
     const ranked = [...teams].sort((a, b) => winPct(a) - winPct(b));
@@ -81,26 +86,49 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
   }, [teams]);
 
   const selected = slots.filter(Boolean).map((id) => teamById.get(id)!);
-
-  const tradeMoves: TradeMove[] = Object.entries(moves).map(([playerId, to]) => {
-    const player = playerById.get(playerId)!;
-    return { playerId, from: player.teamId, to, salary: player.salary };
-  });
-  // Picks carry no salary but still count as "sending something".
-  const pickMoves: TradeMove[] = picks.map((p) => ({ playerId: p.id, from: p.from, to: p.to, salary: 0 }));
-
-  const validation =
-    selected.length >= 2
-      ? leagueRules.validateTrade({
-          salaryCap,
-          rules,
-          teams: selected.map((t) => ({ id: t.id, abbreviation: t.abbreviation, payroll: t.payroll })),
-          moves: [...tradeMoves, ...pickMoves],
-        })
-      : null;
+  const modeOf = (team: BuilderTeam) => modeOverrides[team.id] ?? modeFromRecord(team.wins, team.losses);
 
   const pickLabel = (p: PickDraft) =>
     `${p.year} ${p.round === 1 ? "1st" : "2nd"}${p.protected ? " (prot.)" : ""} · ${teamById.get(p.from)!.abbreviation}`;
+
+  // Players moved, as { playerId, from, to }.
+  const playerMoves = Object.entries(moves).map(([playerId, to]) => ({ playerId, from: playerById.get(playerId)!.teamId, to }));
+
+  // The trade as the Trade Score engine expects it (lib/score/types.ts).
+  const trade: Trade | null =
+    selected.length >= 2
+      ? {
+          league: "NBA",
+          salaryCap,
+          rules,
+          teams: selected.map((t) => ({ id: t.id, abbreviation: t.abbreviation, mode: modeOf(t), payroll: t.payroll })),
+          legs: [
+            ...playerMoves.map((m): TradeLeg => {
+              const p = playerById.get(m.playerId)!;
+              return {
+                fromTeamId: m.from,
+                toTeamId: m.to,
+                asset: { kind: "player", id: p.id, name: p.name, age: p.age, gameScore: p.gameScore, availability: p.availability, salaries: p.salaryCapFractions },
+              };
+            }),
+            ...picks.map((p): TradeLeg => ({
+              fromTeamId: p.from,
+              toTeamId: p.to,
+              asset: {
+                kind: "pick",
+                id: p.id,
+                name: pickLabel(p),
+                round: p.round,
+                yearsUntilDraft: p.year - thisDraft,
+                projectedSlot: projectedSlot.get(p.from),
+                protected: p.protected,
+              },
+            })),
+          ],
+        }
+      : null;
+
+  const validation = trade ? validateTrade(trade) : null;
 
   // Keep only moves and picks whose both teams are still in the trade.
   function pruneMoves(nextSlots: string[]) {
@@ -131,8 +159,6 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
     setResult(null);
   }
 
-  const modeOf = (team: BuilderTeam) => modeOverrides[team.id] ?? modeFromRecord(team.wins, team.losses);
-
   function pickTeam(slot: number, teamId: string) {
     const next = slots.map((id, i) => (i === slot ? teamId : id));
     setSlots(next);
@@ -153,40 +179,8 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
   }
 
   function analyze() {
-    const playerAssets: TradeInput["moves"] = tradeMoves.map((m) => {
-      const p = playerById.get(m.playerId)!;
-      return {
-        from: m.from,
-        to: m.to,
-        asset: {
-          kind: "player",
-          id: p.id,
-          name: p.name,
-          age: p.age,
-          gameScore: p.gameScore,
-          availability: p.availability,
-          salaries: p.salaryCapFractions,
-        },
-      };
-    });
-    const pickAssets: TradeInput["moves"] = picks.map((p) => ({
-      from: p.from,
-      to: p.to,
-      asset: {
-        kind: "pick",
-        id: p.id,
-        name: pickLabel(p),
-        round: p.round,
-        yearsUntilDraft: p.year - thisDraft,
-        projectedSlot: projectedSlot.get(p.from),
-        protected: p.protected,
-      },
-    }));
-    const score = scoreTrade({
-      teams: selected.map((t) => ({ id: t.id, mode: modeOf(t) })),
-      moves: [...playerAssets, ...pickAssets],
-    });
-    setResult(score);
+    if (!trade) return;
+    setResult(scoreTrade(trade));
     // Let React render the result, then bring it into view.
     requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
@@ -216,8 +210,9 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
     setResult(null);
   }
 
-  const checkFor = (teamId: string) => validation?.teams.find((t) => t.teamId === teamId);
-  const hasMoves = tradeMoves.length + picks.length > 0;
+  const checkFor = (teamId: string) => validation?.checks.find((c) => c.teamId === teamId);
+  const hasMoves = playerMoves.length + picks.length > 0;
+  const errors = validation && !validation.valid ? validation.errors : [];
 
   return (
     <div className="space-y-6 pb-28">
@@ -265,7 +260,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
       </section>
 
       {/* Trade Score result (after Analyze) */}
-      {result && (
+      {result && result.valid && (
         <section ref={resultRef} className="scroll-mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
           {/* Headline */}
           <div className="border-b border-border bg-gradient-to-b from-accent/20 to-transparent px-4 py-6 text-center">
@@ -307,7 +302,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
                     </div>
                     <p className="text-xs text-muted">
                       <span className="font-semibold text-foreground">Gets:</span>{" "}
-                      {t.received.length ? t.received.map((a) => a.name).join(", ") : "nothing"}
+                      {t.received.length ? t.received.map((a) => a.label).join(", ") : "nothing"}
                     </p>
                   </li>
                 );
@@ -325,7 +320,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
         <section className={`grid gap-4 ${selected.length === 3 ? "lg:grid-cols-3" : "md:grid-cols-2"}`}>
           {selected.map((team) => {
             const others = selected.filter((t) => t.id !== team.id);
-            const incoming = tradeMoves.filter((m) => m.to === team.id).map((m) => playerById.get(m.playerId)!);
+            const incoming = playerMoves.filter((m) => m.to === team.id).map((m) => playerById.get(m.playerId)!);
             return (
               <div key={team.id} className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -553,7 +548,7 @@ export default function TradeBuilder({ leagueId, currentSeason, salaryCap, rules
   );
 }
 
-function SalaryCheck({ check, salaryCap, active }: { check?: TeamCheck; salaryCap: number; active: boolean }) {
+function SalaryCheck({ check, salaryCap, active }: { check?: SalaryCheckResult; salaryCap: number; active: boolean }) {
   if (!check || !active) return null;
   return (
     <div className={`border-t px-4 py-3 text-sm ${check.ok ? "border-border" : "border-score-1/40 bg-score-1/10"}`}>

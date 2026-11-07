@@ -1,7 +1,7 @@
 // Every Trade Score coefficient lives here (see CLAUDE.md, "Trade Score").
 // All values are expressed as a FRACTION OF THE SALARY CAP (0.30 = 30% of the cap).
 
-export type TeamMode = "contender" | "middle" | "rebuild";
+import type { TeamMode } from "./types";
 
 export const SCORE_CONFIG = {
   // 1. Talent per season = talentScale x max(0, GmSc - gmscFloor)^talentExponent x availability

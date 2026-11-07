@@ -47,7 +47,6 @@ async function Simulator() {
 
   return (
     <TradeBuilder
-      leagueId={league.id}
       currentSeason={league.current_season}
       salaryCap={league.salary_cap}
       rules={league.rules_json}

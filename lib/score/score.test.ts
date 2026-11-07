@@ -1,0 +1,204 @@
+import { describe, expect, it } from "vitest";
+import { blendGameScore } from "./gameScore";
+import { modeFromRecord } from "./context";
+import { pickValue } from "./pickValue";
+import { ageGrowth, playerValue, talent } from "./playerValue";
+import { scoreTrade, tierFor } from "./tradeScore";
+import type { PickAsset, PlayerAsset, TeamMode, Trade, TradeLeg, TradeResult } from "./types";
+
+// Test helpers: Availability = 1, no cap growth (as stated in CLAUDE.md).
+const player = (name: string, age: number, gmsc: number, salary: number, years: number): PlayerAsset => ({
+  kind: "player",
+  id: name,
+  name,
+  age,
+  gameScore: gmsc,
+  availability: 1,
+  salaries: Array(years).fill(salary),
+});
+const pick = (name: string, extra: Partial<PickAsset>): PickAsset => ({
+  kind: "pick",
+  id: name,
+  name,
+  round: 1,
+  yearsUntilDraft: 0,
+  ...extra,
+});
+const leg = (asset: PlayerAsset | PickAsset, fromTeamId: string, toTeamId: string): TradeLeg => ({ asset, fromTeamId, toTeamId });
+
+// Abstract trades: no payroll known, so salary rules are skipped (they have their own tests in lib/rules).
+const trade = (teams: [string, TeamMode][], legs: TradeLeg[]): Trade => ({
+  league: "NBA",
+  salaryCap: 165_000_000,
+  teams: teams.map(([id, mode]) => ({ id, abbreviation: id, mode, payroll: 0 })),
+  legs,
+  skipValidation: true,
+});
+
+function valid(result: TradeResult) {
+  if (!result.valid) throw new Error(`expected a valid trade, got: ${result.errors.join(" ")}`);
+  return result;
+}
+const scoresOf = (result: TradeResult) => Object.fromEntries(valid(result).teams.map((t) => [t.teamId, t.score]));
+
+// Expected scores updated on 2026-11-04 after the salary fix (salaryWeight 0.7,
+// replacementSalary 0.013), validated by Léon. The original spec values were 54/92, 100/0, 50/50, 73/31.
+describe("Trade Score — reference trades from CLAUDE.md", () => {
+  it("1. contender gets an All-Star, rebuild gets a young player + future 1st -> 87 / 66 (both win)", () => {
+    const result = scoreTrade(
+      trade([["A", "contender"], ["B", "rebuild"]], [
+        leg(player("All-Star", 27, 21, 0.3, 3), "B", "A"),
+        leg(player("Young", 22, 13, 0.06, 2), "A", "B"),
+        leg(pick("Future 1st", { yearsUntilDraft: 1 }), "A", "B"),
+      ]),
+    );
+    expect(scoresOf(result)).toEqual({ A: 87, B: 66 });
+    expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Win"]);
+  });
+
+  it("2. middle team gets an MVP for a declining player -> 100 / 0", () => {
+    const result = scoreTrade(
+      trade([["A", "middle"], ["B", "middle"]], [
+        leg(player("MVP", 26, 28, 0.32, 4), "B", "A"),
+        leg(player("Vet", 29, 11, 0.15, 2), "A", "B"),
+      ]),
+    );
+    expect(scoresOf(result)).toEqual({ A: 100, B: 0 });
+    expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Loss"]);
+  });
+
+  it("3. two similar players -> 49 / 51, even trade", () => {
+    const result = valid(
+      scoreTrade(
+        trade([["A", "middle"], ["B", "middle"]], [
+          leg(player("P1", 26, 15, 0.15, 3), "A", "B"),
+          leg(player("P2", 25, 14.5, 0.14, 3), "B", "A"),
+        ]),
+      ),
+    );
+    expect(scoresOf(result)).toEqual({ A: 49, B: 51 });
+    expect(result.isEven).toBe(true);
+    expect(result.winnerTeamId).toBeNull();
+    expect(result.teams.every((t) => t.verdict === "Even")).toBe(true);
+  });
+
+  it("4. contender pays a lottery pick to dump a bad contract -> 50 / 56 (rebuild team gets paid)", () => {
+    const result = valid(
+      scoreTrade(
+        trade([["A", "contender"], ["B", "rebuild"]], [
+          leg(player("Old vet", 32, 9, 0.25, 2), "A", "B"),
+          leg(pick("Lottery pick", { yearsUntilDraft: 0, projectedSlot: 7 }), "A", "B"),
+          leg(player("Role player", 28, 11, 0.08, 1), "B", "A"),
+        ]),
+      ),
+    );
+    expect(scoresOf(result)).toEqual({ A: 50, B: 56 });
+    expect(result.winnerTeamId).toBe("B");
+  });
+});
+
+describe("Trade Score — common sense", () => {
+  const gift = (asset: PlayerAsset) =>
+    scoresOf(scoreTrade(trade([["giver", "contender"], ["taker", "rebuild"]], [leg(asset, "giver", "taker")])));
+
+  it("giving away a star for nothing is a clear loss, and a win for the team receiving him", () => {
+    const s = gift(player("Star", 27, 21, 0.3, 3));
+    expect(s.giver).toBeLessThan(20);
+    expect(s.taker).toBeGreaterThan(60);
+  });
+
+  it("giving away a minimum-salary bench player is about even", () => {
+    const s = gift(player("Bench", 30, 6, 0.013, 1));
+    expect(Math.abs(s.giver - 50)).toBeLessThanOrEqual(2);
+    expect(Math.abs(s.taker - 50)).toBeLessThanOrEqual(2);
+  });
+
+  it("a fairly paid role player is worth about nothing (not a big minus)", () => {
+    expect(Math.abs(playerValue(player("Role", 27, 12, 0.11, 2), "middle").value)).toBeLessThan(0.03);
+  });
+});
+
+describe("Trade Score — edge cases", () => {
+  it("a player below Game Score 6 has no talent: his value is only his cost", () => {
+    const { value, breakdown } = playerValue(player("Deep bench", 28, 4, 0.05, 1), "middle");
+    expect(breakdown.talentNow).toBe(0);
+    expect(value).toBeCloseTo(-0.7 * (0.05 - 0.013), 6);
+  });
+
+  it("a player with no contract left is worth 0", () => {
+    const { value, breakdown } = playerValue(player("Expiring", 27, 18, 0.2, 0), "contender");
+    expect(value).toBe(0);
+    expect(breakdown.seasons).toBe(0);
+  });
+
+  it("a protected pick is worth 70% of the same unprotected pick", () => {
+    const open = pickValue(pick("Open", { yearsUntilDraft: 2 }), "rebuild").value;
+    const prot = pickValue(pick("Prot", { yearsUntilDraft: 2, protected: true }), "rebuild").value;
+    expect(prot).toBeCloseTo(open * 0.7, 10);
+  });
+
+  it("an invalid trade gets no score, only the errors", () => {
+    const result = scoreTrade({
+      league: "NBA",
+      salaryCap: 165_000_000,
+      teams: [
+        { id: "A", abbreviation: "AAA", mode: "middle", payroll: 180_000_000 },
+        { id: "B", abbreviation: "BBB", mode: "middle", payroll: 120_000_000 },
+      ],
+      // AAA is over the cap and takes back 30% of the cap for 10% sent.
+      legs: [leg(player("Small", 27, 10, 0.1, 1), "A", "B"), leg(player("Big", 27, 15, 0.3, 1), "B", "A")],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.teams).toEqual([]);
+    if (!result.valid) expect(result.errors[0]).toContain("AAA would be over the cap");
+  });
+
+  it("scores a 3-team trade: every team gets a score and the asset details", () => {
+    const result = valid(
+      scoreTrade(
+        trade([["A", "contender"], ["B", "middle"], ["C", "rebuild"]], [
+          leg(player("Star", 27, 20, 0.25, 2), "C", "A"),
+          leg(player("Young", 21, 12, 0.04, 3), "A", "C"),
+          leg(pick("2nd", { round: 2, yearsUntilDraft: 1 }), "A", "B"),
+          leg(player("Vet", 31, 11, 0.1, 1), "B", "C"),
+        ]),
+      ),
+    );
+    expect(result.teams).toHaveLength(3);
+    const a = result.teams.find((t) => t.teamId === "A")!;
+    expect(a.received.map((d) => d.label)).toEqual(["Star"]);
+    expect(a.sent.map((d) => d.label)).toEqual(["Young", "2nd"]);
+    expect(a.details.net).toBeCloseTo(a.details.receivedTotal - a.details.sentTotal, 10);
+    expect(a.received[0].breakdown).toHaveProperty("talentNow");
+  });
+});
+
+describe("Trade Score — building blocks", () => {
+  it("talent matches the reference points (GmSc 12/15/20/25)", () => {
+    expect(talent(12)).toBeCloseTo(0.08, 2);
+    expect(talent(15)).toBeCloseTo(0.15, 2);
+    expect(talent(20)).toBeCloseTo(0.3, 2);
+    expect(talent(25)).toBeCloseTo(0.48, 2);
+    expect(talent(5)).toBe(0);
+  });
+
+  it("age growth follows the table", () => {
+    expect([22, 24, 27, 30, 31, 35].map(ageGrowth)).toEqual([0.08, 0.04, 0, -0.05, -0.1, -0.15]);
+  });
+
+  it("picks the team mode from the record", () => {
+    expect(modeFromRecord(7, 1)).toBe("contender");
+    expect(modeFromRecord(4, 4)).toBe("middle");
+    expect(modeFromRecord(2, 6)).toBe("rebuild");
+  });
+
+  it("uses only last season when fewer than 10 games were played this season", () => {
+    const line = (gp: number, pts: number) => ({ gp, pts, fgm: 0, fga: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, tov: 0, pf: 0 });
+    expect(blendGameScore(line(8, 30), line(82, 10), 8).gameScore).toBe(10);
+    expect(blendGameScore(line(20, 30), line(82, 10), 20).gameScore).toBeCloseTo(0.6 * 30 + 0.4 * 10);
+  });
+
+  it("maps scores to tiers", () => {
+    expect([0, 31, 50, 73, 92].map(tierFor)).toEqual(["Fleeced", "Lost It", "Fair Deal", "Won It", "Heist!"]);
+  });
+});

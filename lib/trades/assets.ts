@@ -1,7 +1,7 @@
 // Turns database rows into Trade Score engine assets.
 import type { RosterPlayer, TeamWithRoster } from "@/lib/db/teams";
 import type { League } from "@/lib/db/types";
-import { blendGameScore, salariesAsCapFraction, type PlayerAsset } from "@/lib/score/engine";
+import { blendGameScore, salariesAsCapFraction, type PlayerAsset } from "@/lib/score";
 
 // "2026-27" -> "2025-26"
 export function previousSeason(season: string): string {

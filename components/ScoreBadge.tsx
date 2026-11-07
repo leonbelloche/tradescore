@@ -1,4 +1,4 @@
-import { tierFor } from "@/lib/score/engine";
+import { tierFor } from "@/lib/score";
 
 // 5-step color scale, matching the 5 tiers (Fleeced -> Heist!).
 export function scoreTone(score: number) {

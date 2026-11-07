@@ -5,6 +5,10 @@
 - Avance étape par étape. À la fin de chaque étape : dis-moi quoi tester et attends ma validation avant la suivante.
 - Pas de blabla technique inutile. Si une de mes idées est mauvaise, dis-le.
 
+## Organisation du code
+- Le contrat entre SCORE et DESIGN est dans CONTRAT.md (agents dans .claude/agents/score.md et design.md).
+- Données réelles : scripts/fetch-espn.mjs → build-contracts.mjs → import-db.mjs (voir data/).
+
 ## Le produit
 Site d'analyse des transferts sportifs US. Cœur = simulateur de trades qui donne un **Trade Score /100** à chaque équipe et désigne le gagnant.
 - **V1 = NBA uniquement.** NHL, NFL, MLB viendront plus tard → l'architecture doit permettre d'ajouter une ligue sans tout réécrire (une table `leagues`, un moteur de règles par ligue).
