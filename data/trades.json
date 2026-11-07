@@ -2,161 +2,468 @@
   {
     "slug": "2026-09-27-hornets-bulls-dillingham-hield",
     "date": "2026-09-27",
-    "source": ["CHA: Acquired G Rob Dillingham from Chicago Bulls for G Buddy Hield.", "CHI: Acquired G Buddy Hield from Charlotte in exchange for G Rob Dillingham."],
+    "source": [
+      "CHA: Acquired G Rob Dillingham from Chicago Bulls for G Buddy Hield.",
+      "CHI: Acquired G Buddy Hield from Charlotte in exchange for G Rob Dillingham."
+    ],
     "assets": [
-      { "name": "Rob Dillingham", "from": "CHI", "to": "CHA" },
-      { "name": "Buddy Hield", "from": "CHA", "to": "CHI" }
+      {
+        "name": "Rob Dillingham",
+        "from": "CHI",
+        "to": "CHA"
+      },
+      {
+        "name": "Buddy Hield",
+        "from": "CHA",
+        "to": "CHI"
+      }
     ]
   },
   {
     "slug": "2026-09-22-hornets-hawks-hield-nembhard",
     "date": "2026-09-22",
-    "source": ["CHA: Acquired Gs Buddy Hield, Ryan Nembhard and cash considerations from Atlanta in exchange for F Dorian Finney-Smith."],
+    "source": [
+      "CHA: Acquired Gs Buddy Hield, Ryan Nembhard and cash considerations from Atlanta in exchange for F Dorian Finney-Smith."
+    ],
     "assets": [
-      { "name": "Buddy Hield", "from": "ATL", "to": "CHA" },
-      { "name": "Ryan Nembhard", "from": "ATL", "to": "CHA" },
-      { "name": "Dorian Finney-Smith", "from": "CHA", "to": "ATL" }
+      {
+        "name": "Buddy Hield",
+        "from": "ATL",
+        "to": "CHA"
+      },
+      {
+        "name": "Ryan Nembhard",
+        "from": "ATL",
+        "to": "CHA"
+      },
+      {
+        "name": "Dorian Finney-Smith",
+        "from": "CHA",
+        "to": "ATL"
+      }
     ]
   },
   {
     "slug": "2026-09-08-grizzlies-pelicans-peavy-hawkins",
     "date": "2026-09-08",
-    "source": ["MEM: Acquired G Micah Peavy, G Jordan Hawkins and draft considerations from New Orleans Pelicans for G AJ Johnson and F Taj Gibson."],
+    "source": [
+      "MEM: Acquired G Micah Peavy, G Jordan Hawkins and draft considerations from New Orleans Pelicans for G AJ Johnson and F Taj Gibson."
+    ],
     "assets": [
-      { "name": "Micah Peavy", "from": "NO", "to": "MEM" },
-      { "name": "Jordan Hawkins", "from": "NO", "to": "MEM" },
-      { "pick": "considerations", "from": "NO", "to": "MEM" },
-      { "name": "AJ Johnson", "from": "MEM", "to": "NO" },
-      { "name": "Taj Gibson", "from": "MEM", "to": "NO" }
+      {
+        "name": "Micah Peavy",
+        "from": "NO",
+        "to": "MEM"
+      },
+      {
+        "name": "Jordan Hawkins",
+        "from": "NO",
+        "to": "MEM"
+      },
+      {
+        "pick": "considerations",
+        "from": "NO",
+        "to": "MEM"
+      },
+      {
+        "name": "AJ Johnson",
+        "from": "MEM",
+        "to": "NO"
+      },
+      {
+        "name": "Taj Gibson",
+        "from": "MEM",
+        "to": "NO"
+      }
     ]
   },
   {
     "slug": "2026-08-29-jazz-wolves-josh-green",
     "date": "2026-08-29",
-    "source": ["UTAH: Acquired SG Josh Green and cash considerations from Minnesota Timberwolves for Fs John Konchar and Cody Williams.", "MIN: ... Waived F John Konchar."],
+    "source": [
+      "UTAH: Acquired SG Josh Green and cash considerations from Minnesota Timberwolves for Fs John Konchar and Cody Williams.",
+      "MIN: ... Waived F John Konchar."
+    ],
     "assets": [
-      { "name": "Josh Green", "from": "MIN", "to": "UTAH" },
-      { "name": "John Konchar", "from": "UTAH", "to": "MIN" },
-      { "name": "Cody Williams", "from": "UTAH", "to": "MIN" }
+      {
+        "name": "Josh Green",
+        "from": "MIN",
+        "to": "UTAH"
+      },
+      {
+        "name": "John Konchar",
+        "from": "UTAH",
+        "to": "MIN"
+      },
+      {
+        "name": "Cody Williams",
+        "from": "UTAH",
+        "to": "MIN"
+      }
     ]
   },
   {
     "slug": "2026-07-19-hawks-mavs-thunder-risacher",
     "date": "2026-07-19",
-    "source": ["ATL: Acquired G Ryan Nembhard from Dallas and G Luguentz Dort from Oklahoma City in a three-team trade that sent F Zaccharie Risacher to Dallas. Dallas received draft consideration from Atlanta, while Oklahoma City received draft considerations from Atlanta and Dallas."],
+    "source": [
+      "ATL: Acquired G Ryan Nembhard from Dallas and G Luguentz Dort from Oklahoma City in a three-team trade that sent F Zaccharie Risacher to Dallas. Dallas received draft consideration from Atlanta, while Oklahoma City received draft considerations from Atlanta and Dallas."
+    ],
     "assets": [
-      { "name": "Ryan Nembhard", "from": "DAL", "to": "ATL" },
-      { "name": "Luguentz Dort", "from": "OKC", "to": "ATL" },
-      { "name": "Zaccharie Risacher", "from": "ATL", "to": "DAL" },
-      { "pick": "considerations", "from": "ATL", "to": "DAL" },
-      { "pick": "considerations", "from": "ATL", "to": "OKC" },
-      { "pick": "considerations", "from": "DAL", "to": "OKC" }
+      {
+        "name": "Ryan Nembhard",
+        "from": "DAL",
+        "to": "ATL"
+      },
+      {
+        "name": "Luguentz Dort",
+        "from": "OKC",
+        "to": "ATL"
+      },
+      {
+        "name": "Zaccharie Risacher",
+        "from": "ATL",
+        "to": "DAL"
+      },
+      {
+        "pick": "considerations",
+        "from": "ATL",
+        "to": "DAL"
+      },
+      {
+        "pick": "second",
+        "from": "ATL",
+        "to": "OKC"
+      },
+      {
+        "pick": "second",
+        "from": "ATL",
+        "to": "OKC"
+      },
+      {
+        "pick": "second",
+        "from": "DAL",
+        "to": "OKC"
+      }
     ]
   },
   {
     "slug": "2026-07-13-hornets-suns-bridges",
     "date": "2026-07-13",
-    "source": ["CHA: Acquired G Grayson Allen, F Royce O'Neale and draft considerations from Phoenix Suns for F Miles Bridges and draft considerations."],
+    "source": [
+      "CHA: Acquired G Grayson Allen, F Royce O'Neale and draft considerations from Phoenix Suns for F Miles Bridges and draft considerations."
+    ],
     "assets": [
-      { "name": "Grayson Allen", "from": "PHX", "to": "CHA" },
-      { "name": "Royce O'Neale", "from": "PHX", "to": "CHA" },
-      { "pick": "considerations", "from": "PHX", "to": "CHA" },
-      { "name": "Miles Bridges", "from": "CHA", "to": "PHX" },
-      { "pick": "considerations", "from": "CHA", "to": "PHX" }
-    ]
+      {
+        "name": "Miles Bridges",
+        "from": "CHA",
+        "to": "PHX"
+      },
+      {
+        "pick": "first",
+        "year": 2029,
+        "from": "CHA",
+        "to": "PHX"
+      },
+      {
+        "pick": "second",
+        "year": 2027,
+        "from": "CHA",
+        "to": "PHX"
+      },
+      {
+        "name": "Grayson Allen",
+        "from": "PHX",
+        "to": "CHA"
+      },
+      {
+        "name": "Royce O'Neale",
+        "from": "PHX",
+        "to": "CHA"
+      },
+      {
+        "pick": "first",
+        "year": 2033,
+        "from": "PHX",
+        "to": "CHA"
+      }
+    ],
+    "note": "Picks per ESPN / Yahoo trade details."
   },
   {
     "slug": "2026-07-10-wolves-land-lamelo-ball",
     "date": "2026-07-10",
-    "source": ["CHA: Acquired F Naz Reid and draft considerations from Minnesota Timberwolves for Gs LaMelo Ball and Josh Green."],
+    "source": [
+      "CHA: Acquired F Naz Reid and draft considerations from Minnesota Timberwolves for Gs LaMelo Ball and Josh Green."
+    ],
     "assets": [
-      { "name": "LaMelo Ball", "from": "CHA", "to": "MIN" },
-      { "name": "Josh Green", "from": "CHA", "to": "MIN" },
-      { "name": "Naz Reid", "from": "MIN", "to": "CHA" },
-      { "pick": "considerations", "from": "MIN", "to": "CHA" }
+      {
+        "name": "LaMelo Ball",
+        "from": "CHA",
+        "to": "MIN"
+      },
+      {
+        "name": "Josh Green",
+        "from": "CHA",
+        "to": "MIN"
+      },
+      {
+        "name": "Naz Reid",
+        "from": "MIN",
+        "to": "CHA"
+      },
+      {
+        "pick": "considerations",
+        "from": "MIN",
+        "to": "CHA"
+      }
     ]
   },
   {
     "slug": "2026-07-08-lakers-jazz-walker-kessler",
     "date": "2026-07-08",
-    "source": ["LAL: Acquired C Walker Kessler from Utah in exchange for draft consideration."],
+    "source": [
+      "LAL: Acquired C Walker Kessler from Utah in exchange for draft consideration."
+    ],
     "assets": [
-      { "name": "Walker Kessler", "from": "UTAH", "to": "LAL" },
-      { "pick": "considerations", "from": "LAL", "to": "UTAH" }
-    ]
+      {
+        "name": "Walker Kessler",
+        "from": "UTAH",
+        "to": "LAL"
+      },
+      {
+        "pick": "first",
+        "year": 2031,
+        "from": "LAL",
+        "to": "UTAH"
+      },
+      {
+        "pick": "first",
+        "year": 2033,
+        "from": "LAL",
+        "to": "UTAH"
+      }
+    ],
+    "note": "Picks per CBS Sports; 2028 and 2030 pick swaps are not modeled."
   },
   {
     "slug": "2026-07-07-wizards-lakers-ayton-hardy",
     "date": "2026-07-07",
-    "source": ["WSH: Acquired C Deandre Ayton from Los Angeles Lakers.", "LAL: Acquired G Jaden Hardy from Washington in exchange for draft considerations."],
-    "note": "Two ESPN lines from the same day combined into one trade.",
+    "source": [
+      "WSH: Acquired C Deandre Ayton from Los Angeles Lakers.",
+      "LAL: Acquired G Jaden Hardy from Washington in exchange for draft considerations."
+    ],
+    "note": "Picks per NBA.com.",
     "assets": [
-      { "name": "Deandre Ayton", "from": "LAL", "to": "WSH" },
-      { "name": "Jaden Hardy", "from": "WSH", "to": "LAL" },
-      { "pick": "considerations", "from": "LAL", "to": "WSH" }
+      {
+        "name": "Deandre Ayton",
+        "from": "LAL",
+        "to": "WSH"
+      },
+      {
+        "name": "Jaden Hardy",
+        "from": "WSH",
+        "to": "LAL"
+      },
+      {
+        "pick": "second",
+        "year": 2031,
+        "from": "WSH",
+        "to": "LAL"
+      },
+      {
+        "pick": "second",
+        "year": 2032,
+        "from": "WSH",
+        "to": "LAL"
+      }
     ]
   },
   {
     "slug": "2026-07-06-heat-land-giannis",
     "date": "2026-07-06",
-    "source": ["MIA: Acquired Fs Giannis Antetokounmpo and Bobby Portis from the Milwaukee Bucks in exchange for Gs Tyler Herro, Jaime Jaquez Jr. and Kasparas Jakucionis, C Kel'el Ware and draft considerations."],
+    "source": [
+      "MIA: Acquired Fs Giannis Antetokounmpo and Bobby Portis from the Milwaukee Bucks in exchange for Gs Tyler Herro, Jaime Jaquez Jr. and Kasparas Jakucionis, C Kel'el Ware and draft considerations."
+    ],
     "assets": [
-      { "name": "Giannis Antetokounmpo", "from": "MIL", "to": "MIA" },
-      { "name": "Bobby Portis", "from": "MIL", "to": "MIA" },
-      { "name": "Tyler Herro", "from": "MIA", "to": "MIL" },
-      { "name": "Jaime Jaquez Jr.", "from": "MIA", "to": "MIL" },
-      { "name": "Kasparas Jakucionis", "from": "MIA", "to": "MIL" },
-      { "name": "Kel'el Ware", "from": "MIA", "to": "MIL" },
-      { "pick": "considerations", "from": "MIA", "to": "MIL" }
+      {
+        "name": "Giannis Antetokounmpo",
+        "from": "MIL",
+        "to": "MIA"
+      },
+      {
+        "name": "Bobby Portis",
+        "from": "MIL",
+        "to": "MIA"
+      },
+      {
+        "name": "Tyler Herro",
+        "from": "MIA",
+        "to": "MIL"
+      },
+      {
+        "name": "Jaime Jaquez Jr.",
+        "from": "MIA",
+        "to": "MIL"
+      },
+      {
+        "name": "Kasparas Jakucionis",
+        "from": "MIA",
+        "to": "MIL"
+      },
+      {
+        "name": "Kel'el Ware",
+        "from": "MIA",
+        "to": "MIL"
+      },
+      {
+        "pick": "considerations",
+        "from": "MIA",
+        "to": "MIL"
+      }
     ]
   },
   {
     "slug": "2026-07-06-sixers-celtics-jaylen-brown",
     "date": "2026-07-06",
-    "source": ["PHI: Acquired G Jaylen Brown from the Boston Celtics.", "BOS: Acquired F Paul George from the Philadelphia 76ers in exchange for draft considerations."],
-    "note": "Two ESPN lines from the same day combined into one trade.",
+    "source": [
+      "PHI: Acquired G Jaylen Brown from the Boston Celtics.",
+      "BOS: Acquired F Paul George from the Philadelphia 76ers in exchange for draft considerations."
+    ],
+    "note": "Picks per NBC Sports Boston / Yahoo: PHI sent two 1sts and two 2nds to BOS.",
     "assets": [
-      { "name": "Jaylen Brown", "from": "BOS", "to": "PHI" },
-      { "name": "Paul George", "from": "PHI", "to": "BOS" },
-      { "pick": "considerations", "from": "BOS", "to": "PHI" }
+      {
+        "name": "Jaylen Brown",
+        "from": "BOS",
+        "to": "PHI"
+      },
+      {
+        "name": "Paul George",
+        "from": "PHI",
+        "to": "BOS"
+      },
+      {
+        "pick": "first",
+        "from": "PHI",
+        "to": "BOS"
+      },
+      {
+        "pick": "first",
+        "from": "PHI",
+        "to": "BOS"
+      },
+      {
+        "pick": "second",
+        "from": "PHI",
+        "to": "BOS"
+      },
+      {
+        "pick": "second",
+        "from": "PHI",
+        "to": "BOS"
+      }
     ]
   },
   {
     "slug": "2026-07-06-pistons-thunder-isaiah-joe",
     "date": "2026-07-06",
-    "source": ["DET: Acquired G Isaiah Joe from the Oklahoma City Thunder in exchange for draft considerations."],
+    "source": [
+      "DET: Acquired G Isaiah Joe from the Oklahoma City Thunder in exchange for draft considerations."
+    ],
     "assets": [
-      { "name": "Isaiah Joe", "from": "OKC", "to": "DET" },
-      { "pick": "considerations", "from": "DET", "to": "OKC" }
+      {
+        "name": "Isaiah Joe",
+        "from": "OKC",
+        "to": "DET"
+      },
+      {
+        "pick": "second",
+        "from": "DET",
+        "to": "OKC"
+      },
+      {
+        "pick": "second",
+        "from": "DET",
+        "to": "OKC"
+      }
     ]
   },
   {
     "slug": "2026-07-06-hawks-thunder-aaron-wiggins",
     "date": "2026-07-06",
-    "source": ["ATL: Acquired G Aaron Wiggins from the Oklahoma City Thunder in exchange for draft considerations."],
+    "source": [
+      "ATL: Acquired G Aaron Wiggins from the Oklahoma City Thunder in exchange for draft considerations."
+    ],
     "assets": [
-      { "name": "Aaron Wiggins", "from": "OKC", "to": "ATL" },
-      { "pick": "considerations", "from": "ATL", "to": "OKC" }
+      {
+        "name": "Aaron Wiggins",
+        "from": "OKC",
+        "to": "ATL"
+      },
+      {
+        "pick": "second",
+        "from": "ATL",
+        "to": "OKC"
+      },
+      {
+        "pick": "second",
+        "from": "ATL",
+        "to": "OKC"
+      }
     ]
   },
   {
     "slug": "2026-07-06-hornets-rockets-finney-smith",
     "date": "2026-07-06",
-    "source": ["CHA: Acquired F Dorian Finney-Smith and three second-round picks from Houston in exchange for cash considerations."],
+    "source": [
+      "CHA: Acquired F Dorian Finney-Smith and three second-round picks from Houston in exchange for cash considerations."
+    ],
     "assets": [
-      { "name": "Dorian Finney-Smith", "from": "HOU", "to": "CHA" },
-      { "pick": "second", "from": "HOU", "to": "CHA" },
-      { "pick": "second", "from": "HOU", "to": "CHA" },
-      { "pick": "second", "from": "HOU", "to": "CHA" }
+      {
+        "name": "Dorian Finney-Smith",
+        "from": "HOU",
+        "to": "CHA"
+      },
+      {
+        "pick": "second",
+        "from": "HOU",
+        "to": "CHA"
+      },
+      {
+        "pick": "second",
+        "from": "HOU",
+        "to": "CHA"
+      },
+      {
+        "pick": "second",
+        "from": "HOU",
+        "to": "CHA"
+      }
     ]
   },
   {
     "slug": "2026-06-30-hawks-kings-devin-carter",
     "date": "2026-06-30",
-    "source": ["SAC: Acquired draft consideration from Atlanta Hawks for G Devin Carter."],
+    "source": [
+      "SAC: Acquired draft consideration from Atlanta Hawks for G Devin Carter."
+    ],
     "assets": [
-      { "name": "Devin Carter", "from": "SAC", "to": "ATL" },
-      { "pick": "considerations", "from": "ATL", "to": "SAC" }
-    ]
+      {
+        "name": "Devin Carter",
+        "from": "SAC",
+        "to": "ATL"
+      },
+      {
+        "pick": "second",
+        "year": 2033,
+        "from": "SAC",
+        "to": "ATL"
+      },
+      {
+        "pick": "considerations",
+        "from": "ATL",
+        "to": "SAC"
+      }
+    ],
+    "note": "Per NBA.com; 'considerations' = draft rights to Alpha Kaba."
   }
 ]

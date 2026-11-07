@@ -1,6 +1,5 @@
 espn_id,player,team,in_trade,source,2026-27,2027-28,2028-29,2029-30,2030-31,note
 4433629,Ryan Nembhard,DEN,yes,missing,,,,,,"fill salaries in dollars, then set source to manual"
-4433136,Walker Kessler,LAL,yes,missing,,,,,,"fill salaries in dollars, then set source to manual"
 4397020,Luguentz Dort,ATL,yes,espn,18222222,,,,,
 2578185,Dorian Finney-Smith,ATL,yes,espn,13335000,13335000,13335000,,,future years = current salary (estimate)
 4397183,Aaron Wiggins,ATL,yes,espn,9224300,9224300,9224300,,,future years = current salary (estimate)
@@ -28,6 +27,7 @@ espn_id,player,team,in_trade,source,2026-27,2027-28,2028-29,2029-30,2030-31,note
 4066383,Miles Bridges,PHX,yes,espn,22826087,,,,,
 4432811,Josh Green,UTAH,yes,espn,14679012,,,,,
 4278129,Deandre Ayton,WSH,yes,espn,8104000,,,,,
+4433136,Walker Kessler,LAL,yes,manual,32500000,32500000,32500000,32500000,,"4y/$130M sign-and-trade (CBS Sports, ClutchPoints), split evenly"
 4431941,RayJ Dennis,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
 5106262,Zuby Ejiofor,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
 5149077,Kingston Flemings,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
