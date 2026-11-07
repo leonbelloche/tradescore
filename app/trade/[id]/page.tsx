@@ -22,7 +22,7 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
   const trade = (await getScoredTrades()).find((t) => t.id === id);
   if (!trade) notFound();
 
-  const shortName = (name: string) => name.split(" ").slice(-1)[0];
+
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -39,7 +39,7 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
         <h1 className="display mt-1 text-4xl font-bold leading-[0.95] sm:text-5xl">
           {trade.winner ? (
             <>
-              <span className="text-accent">{shortName(trade.winner.team.name)}</span>
+              <span className="text-accent">{trade.winner.team.short_name ?? trade.winner.team.name}</span>
               <br />
               win the trade
             </>
@@ -54,7 +54,7 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
         {trade.teams.map((t) => (
           <Card key={t.team.id} className="space-y-4 p-4">
             <div className="flex items-center gap-3">
-              <TeamMark abbreviation={t.team.abbreviation} size="lg" />
+              <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} size="lg" />
               <div className="min-w-0 flex-1">
                 <Link href={`/team/${t.team.slug}`} className="display block text-xl font-bold leading-tight hover:text-accent sm:text-2xl">
                   {t.team.name}
@@ -90,15 +90,35 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
         ))}
       </div>
 
+      {trade.warnings.length > 0 && (
+        <div className="rounded-[14px] border border-score-3/40 bg-score-3/10 p-4 text-sm" role="note">
+          <p className="display mb-1 font-semibold text-score-3">Data warning</p>
+          <ul className="list-disc space-y-0.5 pl-5">
+            {trade.warnings.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {trade.source && (
+        <div className="text-xs text-muted">
+          <p className="display mb-1 font-semibold tracking-[0.06em]">As reported by ESPN</p>
+          {trade.source.split("\n").map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-wrap justify-center gap-3 pt-2">
-        <Link href="/trade" className="display rounded-lg bg-accent px-5 py-2.5 font-bold text-black hover:brightness-110">
+        <Link href="/trade" className="display flex min-h-11 items-center rounded-lg bg-accent px-5 font-bold text-black hover:brightness-110">
           Build your own trade ▸
         </Link>
-        <Link href="/method" className="display rounded-lg border border-border-strong px-5 py-2.5 font-bold hover:border-accent">
+        <Link href="/method" className="display flex min-h-11 items-center rounded-lg border border-border-strong px-5 font-bold hover:border-accent">
           How is it scored?
         </Link>
       </div>
-      <p className="text-center text-xs text-muted">Demo trade between fictional teams.</p>
+      
     </div>
   );
 }

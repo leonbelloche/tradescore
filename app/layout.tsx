@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="h-1.5 w-1.5 rounded-full bg-score-5" />
               2026-27 season live
             </span>
-            <span className="text-muted">Demo data · fictional teams</span>
+            <span className="text-muted">Stats via ESPN</span>
           </div>
 
           {/* Header */}

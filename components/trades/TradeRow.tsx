@@ -28,14 +28,14 @@ export default function TradeRow({ trade }: { trade: ScoredTrade }) {
       <ul className="space-y-1.5">
         {trade.teams.map((t) => (
           <li key={t.team.id} className="flex items-center gap-2.5">
-            <TeamMark abbreviation={t.team.abbreviation} />
+            <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
             <span className="min-w-0 flex-1">
               <span
                 className={`display block truncate text-[15px] font-semibold leading-tight ${
                   trade.winner?.team.id === t.team.id ? "underline decoration-accent decoration-2 underline-offset-4" : ""
                 }`}
               >
-                {t.team.name.split(" ").slice(-1)[0]}
+                {t.team.short_name ?? t.team.name}
               </span>
               <span className="block truncate text-[11px] text-muted">Gets {t.receives.join(", ")}</span>
             </span>

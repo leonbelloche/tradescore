@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LoadingBlock from "@/components/LoadingBlock";
+import { TeamMark } from "@/components/ui";
 import { getTeamBySlug } from "@/lib/db/teams";
 import { formatMoney } from "@/lib/format";
 
@@ -19,14 +20,13 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
   if (!team) notFound();
 
   const overCap = team.capSpace < 0;
+  const missingSalary = team.roster.filter((p) => p.currentSalary === 0);
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <header className="flex items-center gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-accent text-lg font-bold text-black display">
-          {team.abbreviation}
-        </div>
+        <TeamMark abbreviation={team.abbreviation} logoUrl={team.logo_url} size="lg" />
         <div>
           <h1 className="display text-3xl font-bold leading-tight sm:text-4xl">{team.name}</h1>
           <p className="text-sm text-muted">
@@ -45,6 +45,13 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
           tone={overCap ? "bad" : "good"}
         />
       </section>
+      {missingSalary.length > 0 && (
+        <p className="rounded-[14px] border border-score-3/40 bg-score-3/10 px-4 py-3 text-sm">
+          <span className="display font-semibold text-score-3">Incomplete payroll · </span>
+          No contract data yet for {missingSalary.length} player{missingSalary.length > 1 ? "s" : ""}:{" "}
+          {missingSalary.map((p) => p.name).join(", ")}. The payroll above leaves them out.
+        </p>
+      )}
 
       {/* Roster */}
       <section className="space-y-3">
@@ -70,7 +77,7 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">{p.age}</td>
                   <td className="px-3 py-2 text-right tabular-nums">
-                    {formatMoney(p.currentSalary)}
+                    {p.currentSalary ? formatMoney(p.currentSalary) : "—"}
                     <span className="block text-xs text-muted sm:hidden">
                       {p.yearsLeft} yr{p.yearsLeft > 1 ? "s" : ""}
                     </span>
@@ -83,7 +90,7 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted">Demo data — fictional team.</p>
+        <p className="text-xs text-muted">Stats and rosters: ESPN. Contracts: ESPN + manual entries.</p>
       </section>
     </div>
   );

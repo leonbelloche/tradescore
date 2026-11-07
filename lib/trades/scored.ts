@@ -1,13 +1,15 @@
-// Scores the season's trades with the Trade Score engine.
-import { getLeagueWithRosters, type TeamWithRoster } from "@/lib/db/teams";
-import { getLeagueRules } from "@/lib/leagues";
+// Scores the season's real trades (stored in the `trades` table) with the Trade Score engine.
+import { supabase } from "@/lib/db/client";
+import { getLeagueWithRosters, type RosterPlayer, type TeamWithRoster } from "@/lib/db/teams";
+import type { TradeRow } from "@/lib/db/types";
 import { modeFromRecord, scoreTrade, type Asset, type TradeInput } from "@/lib/score/engine";
 import type { TeamMode } from "@/lib/score/config";
-import { draftYearOf, projectedSlots, toPlayerAsset } from "./assets";
-import { DEMO_TRADES, type DemoTrade } from "./demo";
+import { draftYearOf, toPlayerAsset } from "./assets";
+
+export type TeamSummary = Pick<TeamWithRoster, "id" | "name" | "short_name" | "slug" | "abbreviation" | "logo_url" | "wins" | "losses">;
 
 export type ScoredTeam = {
-  team: Pick<TeamWithRoster, "id" | "name" | "slug" | "abbreviation" | "wins" | "losses">;
+  team: TeamSummary;
   mode: TeamMode;
   score: number;
   tier: string;
@@ -15,105 +17,97 @@ export type ScoredTeam = {
 };
 
 export type ScoredTrade = {
-  id: string;
+  id: string; // slug
   date: string;
   teams: ScoredTeam[]; // best score first
   winner: ScoredTeam | null; // null = even trade
+  source: string | null; // ESPN wording
+  // Data problems that make the score less reliable, in plain English.
+  warnings: string[];
 };
 
-function buildTrade(def: DemoTrade, teamsBySlug: Map<string, TeamWithRoster>, league: Awaited<ReturnType<typeof getLeagueWithRosters>>["league"], slots: Map<string, number>) {
-  const team = (slug: string) => {
-    const t = teamsBySlug.get(slug);
-    if (!t) throw new Error(`Trade ${def.id}: unknown team ${slug}`);
-    return t;
-  };
-  const thisDraft = draftYearOf(league.current_season);
-
-  const moves: TradeInput["moves"] = def.moves.map((m, i) => {
-    const from = team(m.from);
-    const to = team(m.to);
-    let asset: Asset;
-    if ("player" in m) {
-      const p = from.roster.find((r) => r.slug === m.player);
-      if (!p) throw new Error(`Trade ${def.id}: ${m.player} is not on ${m.from}`);
-      asset = toPlayerAsset(p, from, league);
-    } else {
-      asset = {
-        kind: "pick",
-        id: `${def.id}-pick-${i}`,
-        name: `${m.pick.year} ${m.pick.round === 1 ? "1st" : "2nd"}${m.pick.protected ? " (prot.)" : ""} · ${from.abbreviation}`,
-        round: m.pick.round,
-        yearsUntilDraft: m.pick.year - thisDraft,
-        projectedSlot: slots.get(from.id),
-        protected: m.pick.protected,
-      };
-    }
-    return { asset, from: from.id, to: to.id };
-  });
-
-  const teamIds = [...new Set(moves.flatMap((m) => [m.from, m.to]))];
-  const teams = teamIds.map((id) => [...teamsBySlug.values()].find((t) => t.id === id)!);
-  return { moves, teams };
-}
+const summary = (t: TeamWithRoster): TeamSummary => ({
+  id: t.id, name: t.name, short_name: t.short_name, slug: t.slug, abbreviation: t.abbreviation, logo_url: t.logo_url, wins: t.wins, losses: t.losses,
+});
 
 export async function getScoredTrades(): Promise<ScoredTrade[]> {
-  const { league, teams } = await getLeagueWithRosters("nba");
-  const teamsBySlug = new Map(teams.map((t) => [t.slug, t]));
-  const slots = projectedSlots(teams);
-  const rules = getLeagueRules(league.id);
+  const [{ league, teams }, tradesRes] = await Promise.all([
+    getLeagueWithRosters("nba"),
+    supabase.from("trades").select("*").order("trade_date", { ascending: false }),
+  ]);
+  if (tradesRes.error) throw new Error(`Could not load trades: ${tradesRes.error.message}`);
 
-  return DEMO_TRADES.map((def) => {
-    const { moves, teams: involved } = buildTrade(def, teamsBySlug, league, slots);
+  const teamByAbbr = new Map(teams.map((t) => [t.abbreviation, t]));
+  // A player is scored with his CURRENT data, wherever he plays now.
+  const playerByEspnId = new Map<string, { player: RosterPlayer; team: TeamWithRoster }>();
+  for (const team of teams) for (const player of team.roster) if (player.espn_id) playerByEspnId.set(player.espn_id, { player, team });
+  const thisDraft = draftYearOf(league.current_season);
 
-    // Safety net: demo trades must respect the salary rules.
-    const check = rules.validateTrade({
-      salaryCap: league.salary_cap,
-      rules: league.rules_json,
-      teams: involved.map((t) => ({ id: t.id, abbreviation: t.abbreviation, payroll: t.payroll })),
-      moves: moves.map((m) => ({
-        playerId: m.asset.id,
-        from: m.from,
-        to: m.to,
-        salary: m.asset.kind === "player" ? m.asset.salaries[0] * league.salary_cap : 0,
-      })),
+  return (tradesRes.data as TradeRow[]).map((row) => {
+    const warnings: string[] = [];
+    const moves: TradeInput["moves"] = [];
+
+    row.assets_json.forEach((a, i) => {
+      const from = teamByAbbr.get(a.from)!;
+      const to = teamByAbbr.get(a.to)!;
+      let asset: Asset;
+      if ("name" in a) {
+        const found = a.espn_id ? playerByEspnId.get(a.espn_id) : undefined;
+        if (!found) {
+          warnings.push(`${a.name} is no longer on an NBA roster and is not counted.`);
+          return;
+        }
+        if (found.player.currentSalary === 0) warnings.push(`${a.name}'s contract is missing: his salary is not counted.`);
+        asset = toPlayerAsset(found.player, found.team, league);
+      } else {
+        // ESPN rarely details picks: "draft considerations" are valued as a future 2nd-round pick.
+        const round = a.pick === "first" ? 1 : 2;
+        asset = {
+          kind: "pick",
+          id: `${row.slug}-pick-${i}`,
+          name: a.pick === "considerations" ? `Draft considerations · ${from.abbreviation}` : `${a.year ?? "Future"} ${round === 1 ? "1st" : "2nd"} · ${from.abbreviation}`,
+          round,
+          yearsUntilDraft: a.year ? a.year - thisDraft : 1,
+        };
+      }
+      moves.push({ asset, from: from.id, to: to.id });
     });
-    if (!check.valid) throw new Error(`Demo trade ${def.id} breaks the salary rules: ${check.errors.join(" ")}`);
 
+    const involved = row.teams_json.map((abbr) => teamByAbbr.get(abbr)!);
     const result = scoreTrade({
       teams: involved.map((t) => ({ id: t.id, mode: modeFromRecord(t.wins, t.losses) })),
       moves,
     });
 
     const scoredTeams: ScoredTeam[] = result.teams
-      .map((r) => {
-        const t = involved.find((x) => x.id === r.teamId)!;
-        return {
-          team: { id: t.id, name: t.name, slug: t.slug, abbreviation: t.abbreviation, wins: t.wins, losses: t.losses },
-          mode: r.mode,
-          score: r.score,
-          tier: r.tier,
-          receives: r.received.map((a) => a.name),
-        };
-      })
+      .map((r) => ({
+        team: summary(involved.find((t) => t.id === r.teamId)!),
+        mode: r.mode,
+        score: r.score,
+        tier: r.tier,
+        receives: r.received.map((x) => x.name),
+      }))
       .sort((a, b) => b.score - a.score);
 
     return {
-      id: def.id,
-      date: def.date,
+      id: row.slug,
+      date: row.trade_date,
       teams: scoredTeams,
       winner: result.isEven ? null : scoredTeams[0],
+      source: row.source_text,
+      warnings,
     };
-  }).sort((a, b) => b.date.localeCompare(a.date));
+  });
 }
 
 export type TeamTradeStats = {
-  team: ScoredTeam["team"];
+  team: TeamSummary;
   trades: number;
   average: number; // average Trade Score over the team's trades
 };
 
 export function teamStats(trades: ScoredTrade[]): TeamTradeStats[] {
-  const byTeam = new Map<string, { team: ScoredTeam["team"]; scores: number[] }>();
+  const byTeam = new Map<string, { team: TeamSummary; scores: number[] }>();
   for (const trade of trades) {
     for (const t of trade.teams) {
       const entry = byTeam.get(t.team.id) ?? { team: t.team, scores: [] };
@@ -127,5 +121,5 @@ export function teamStats(trades: ScoredTrade[]): TeamTradeStats[] {
       trades: scores.length,
       average: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
     }))
-    .sort((a, b) => b.average - a.average);
+    .sort((a, b) => b.average - a.average || b.trades - a.trades);
 }

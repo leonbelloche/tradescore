@@ -36,6 +36,17 @@ export default function HomePage() {
 
 async function Season() {
   const trades = await getScoredTrades();
+  if (trades.length === 0) {
+    return (
+      <Card className="p-6 text-center">
+        <p className="display text-xl font-bold">No trades yet this season</p>
+        <p className="mt-1 text-sm text-muted">Real trades show up here as soon as they are imported.</p>
+        <Link href="/trade" className="display mt-4 inline-flex min-h-11 items-center rounded-lg bg-accent px-5 font-bold text-black">
+          Build your own trade ▸
+        </Link>
+      </Card>
+    );
+  }
   const stats = teamStats(trades);
   const half = Math.ceil(trades.length / 2);
   const heists = trades
@@ -86,7 +97,7 @@ async function Season() {
               className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2"
             >
               <span className="display w-7 text-lg font-bold text-muted">#{i + 1}</span>
-              <TeamMark abbreviation={t.team.abbreviation} />
+              <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
               <span className="min-w-0 flex-1">
                 <span className="display block truncate font-semibold">{t.team.name}</span>
                 <span className="block truncate text-xs text-muted">Got {t.receives.join(", ")}</span>
@@ -110,7 +121,7 @@ function TraderCard({ label, stat }: { label: string; stat: TeamTradeStats }) {
       <div className="min-w-0 flex-1">
         <p className="display text-sm font-semibold tracking-[0.08em] text-muted">{label}</p>
         <div className="mt-1 flex items-center gap-3">
-          <TeamMark abbreviation={stat.team.abbreviation} size="lg" />
+          <TeamMark abbreviation={stat.team.abbreviation} logoUrl={stat.team.logo_url} size="lg" />
           <div className="min-w-0">
             <p className="display text-xl font-bold leading-tight sm:text-2xl">{stat.team.name}</p>
             <p className="text-sm">

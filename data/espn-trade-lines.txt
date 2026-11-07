@@ -1,0 +1,36 @@
+2026-06-30 | SAC  | Acquired draft consideration from Atlanta Hawks for G Devin Carter.
+2026-06-30 | ATL  | Acquired G Devin Carter and draft consideration from Sacramento.
+2026-07-06 | CHA  | Signed F Hannes Steinbach and G Christian Anderson to rookie scale contracts. Re-signed G Coby White to a contract. Signed Gs Michael Ajayi and Kylan Boswell to two-way contracts. Waived F Tosan Evbuomwan. Acquired F Dorian Finney-Smith and three second-round picks from Houston in exchange for cash considerations.
+2026-07-06 | OKC  | Acquired draft considerations from Atlanta Hawks for G Aaron Wiggins.
+2026-07-06 | PHI  | Signed G Anfernee Simons and F Dean Wade to contracts. Acquired G Jaylen Brown from the Boston Celtics. Signed C Ariel Hukporti to a contract.
+2026-07-06 | MIA  | Re-signed F Andrew Wiggins to a veteran extension. Acquired Fs Giannis Antetokounmpo and Bobby Portis from the Milwaukee Bucks in exchange for Gs Tyler Herro, Jaime Jaquez Jr. and Kasparas Jakucionis, C Kel'el Ware and draft considerations. Signed G Tim Hardaway Jr. to a contract.
+2026-07-06 | DET  | Signed G Ebuka Okorie to a rookie scale contract. Acquired G Isaiah Joe from the Oklahoma City Thunder in exchange for draft considerations.
+2026-07-06 | BOS  | Re-signed G Ron Harper Jr. to a contract. Re-signed C Neemias Queta to a veteran extension. Acquired F Paul George from the Philadelphia 76ers in exchange for draft considerations. Signed C Mitchell Robinson to a contract. Signed G Mike Conley to a contract.
+2026-07-06 | ATL  | Acquired G Aaron Wiggins from the Oklahoma City Thunder in exchange for draft considerations.
+2026-07-07 | WSH  | Signed C Felix Okpara to a two-way contract. Acquired C Deandre Ayton from Los Angeles Lakers.
+2026-07-07 | LAL  | Acquired G Jaden Hardy from Washington in exchange for draft considerations.
+2026-07-08 | MEM  | Acquired G AJ Johnson and draft consideration from Dallas. Acquired G D'Angelo Russell and draft consideration from Washington. Acquired F Isaiah Stewart from Detroit.
+2026-07-08 | WSH  | Acquired F Khris Middleton and draft consideration from Dallas.
+2026-07-08 | UTAH | Acquired draft consideration from Los Angeles Lakers for C Walker Kessler.
+2026-07-08 | MIL  | Acquired G Caris Levert from Detroit.
+2026-07-08 | LAL  | Acquired C Walker Kessler from Utah in exchange for draft consideration.
+2026-07-08 | DET  | Acquired F John Collins from the L.A. Clippers. Acquired F Taurean Prince and G Garry Harris from Milwaukee. Acquired draft consideration from Memphis.
+2026-07-08 | DAL  | Acquired F Santi Aldama from Memphis. Acquired G Marcus Sasser from Detroit.
+2026-07-10 | CHA  | Acquired F Naz Reid and draft considerations from Minnesota Timberwolves for Gs LaMelo Ball and Josh Green.
+2026-07-10 | BKN  | Acquired F Julius Randle from Minnesota. Waived G Malachi Smith. Signed F Joshua Jefferson to a rookie scale contract.
+2026-07-10 | MIN  | Acquired Gs LaMelo Ball and Josh Green from Charlotte in exchange for F Naz Reid and draft considerations. Re-signed Gs Jaylen Clark and Ayo Dosunmo to a contract.
+2026-07-10 | CHI  | Acquired C Nic Claxton from Brooklyn.
+2026-07-13 | CHA  | Acquired G Grayson Allen, F Royce O'Neale and draft considerations from Phoenix Suns for F Miles Bridges and draft considerations.
+2026-07-13 | PHX  | Acquired F Miles Bridges and draft considerations from Charlotte in exchange for G Grayson Allen, F Royce O'Neale and draft considerations.
+2026-07-19 | ATL  | Acquired G Ryan Nembhard from Dallas and G Luguentz Dort from Oklahoma City in a three-team trade that sent F Zaccharie Risacher to Dallas. Dallas received draft consideration from Atlanta, while Oklahoma City received draft considerations from Atlanta and Dallas.
+2026-08-20 | CHA  | Acquired G Dennis Schroder from Cleveland.
+2026-08-20 | WSH  | Acquired G Tre Mann from Charlotte. Received draft considerations from LA Clippers.
+2026-08-20 | LAC  | Acquired G Max Strus from Cleveland.
+2026-08-20 | DEN  | Acquired draft considerations from Cleveland Guardians for G Peyton Watson.
+2026-08-29 | UTAH | Acquired SG Josh Green and cash considerations from Minnesota Timberwolves for Fs John Konchar and Cody Williams.
+2026-08-29 | MIN  | Acquired Fs John Konchar and Cody Williams from Utah in exchange for SG Josh Green and cash considerations. Waived F John Konchar.
+2026-09-08 | MEM  | Acquired G Micah Peavy, G Jordan Hawkins and draft considerations from New Orleans Pelicans for G AJ Johnson and F Taj Gibson.
+2026-09-08 | NO   | Acquired G AJ Johnson and F Taj Gibson from Memphis in exchange for G Micah Peavy, G Jordan Hawkins and draft considerations.
+2026-09-22 | CHA  | Waived G DJ Armstrong and C Tre Carroll. Acquired Gs Buddy Hield, Ryan Nembhard and cash considerations from Atlanta in exchange for F Dorian Finney-Smith.
+2026-09-27 | CHA  | Acquired G Rob Dillingham from Chicago Bulls for G Buddy Hield.
+2026-09-27 | CHI  | Acquired G Buddy Hield from Charlotte in exchange for G Rob Dillingham.

@@ -1,0 +1,522 @@
+espn_id,player,team,in_trade,source,2026-27,2027-28,2028-29,2029-30,2030-31,note
+4433629,Ryan Nembhard,DEN,yes,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433136,Walker Kessler,LAL,yes,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397020,Luguentz Dort,ATL,yes,espn,18222222,,,,,
+2578185,Dorian Finney-Smith,ATL,yes,espn,13335000,13335000,13335000,,,future years = current salary (estimate)
+4397183,Aaron Wiggins,ATL,yes,espn,9224300,9224300,9224300,,,future years = current salary (estimate)
+4433188,Devin Carter,BOS,yes,espn,5158080,5158080,,,,future years = current salary (estimate)
+4251,Paul George,BOS,yes,espn,54126380,54126380,,,,future years = current salary (estimate)
+3135045,Grayson Allen,CHA,yes,espn,18125000,18125000,,,,future years = current salary (estimate)
+2583632,Royce O'Neale,CHA,yes,espn,11375000,11375000,,,,future years = current salary (estimate)
+4396971,Naz Reid,CHA,yes,espn,23275862,23275862,23275862,23275862,,future years = current salary (estimate)
+4683750,Jordan Hawkins,CHI,yes,espn,7021895,,,,,
+2990984,Buddy Hield,CHI,yes,espn,9658536,9658536,,,,future years = current salary (estimate)
+5211175,Zaccharie Risacher,DAL,yes,espn,13826040,13826040,,,,future years = current salary (estimate)
+4395702,Isaiah Joe,DET,yes,espn,11323006,11323006,,,,future years = current salary (estimate)
+4868423,Jaden Hardy,LAL,yes,espn,6000000,6000000,,,,future years = current salary (estimate)
+3032977,Giannis Antetokounmpo,MIA,yes,espn,58456566,58456566,,,,future years = current salary (estimate)
+3064482,Bobby Portis,MIA,yes,espn,14521414,14521414,,,,future years = current salary (estimate)
+4395725,Tyler Herro,MIL,yes,espn,33000000,,,,,
+5214640,Kasparas Jakucionis,MIL,yes,espn,3841680,3841680,3841680,,,future years = current salary (estimate)
+4432848,Jaime Jaquez Jr.,MIL,yes,espn,5939141,,,,,
+5105623,Kel'el Ware,MIL,yes,espn,4654920,4654920,,,,future years = current salary (estimate)
+4432816,LaMelo Ball,MIN,yes,espn,40770520,40770520,40770520,,,future years = current salary (estimate)
+4895758,Cody Williams,MIN,yes,espn,6015600,6015600,,,,future years = current salary (estimate)
+5170947,AJ Johnson,NO,yes,espn,3237120,3237120,,,,future years = current salary (estimate)
+4432185,Micah Peavy,OKC,yes,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+3917376,Jaylen Brown,PHI,yes,espn,57078728,57078728,57078728,,,future years = current salary (estimate)
+4066383,Miles Bridges,PHX,yes,espn,22826087,,,,,
+4432811,Josh Green,UTAH,yes,espn,14679012,,,,,
+4278129,Deandre Ayton,WSH,yes,espn,8104000,,,,,
+4431941,RayJ Dennis,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5106262,Zuby Ejiofor,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5149077,Kingston Flemings,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4585618,Keshon Gilbert,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3146557,Jock Landale,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105571,Henri Veesaar,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4431714,Jalen Wilson,ATL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105626,Tyler Bilodeau,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5101761,Mikel Brown Jr.,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702177,Keon Ellis,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4870564,Joshua Jefferson,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5174655,Chaney Johnson,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702670,Grant Nelson,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3150844,Moritz Wagner,BKN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3195,Mike Conley,BOS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397251,Ron Harper Jr.,BOS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5106283,Dillon Mitchell,BOS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4351852,Mitchell Robinson,BOS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702745,Amari Williams,BOS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5176517,Michael Ajayi,CHA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5060701,Christian Anderson,CHA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4684269,Kylan Boswell,CHA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5281370,Hannes Steinbach,CHA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4395651,Coby White,CHA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105555,Tobe Awaka,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066650,Zach Collins,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2595516,Norman Powell,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4898010,Jaylin Sellers,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4848625,Dailyn Swain,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5095151,Caleb Wilson,CHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3934723,Thomas Bryant,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2995706,Mario Hezonja,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702134,Norchad Omier,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5041951,Meleek Thomas,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5106261,Ernest Udeh Jr.,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4576087,Peyton Watson,CLE,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5148538,Tarik Biberovic,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4701208,Moussa Cisse,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5279129,Sergio de Larrea,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105806,Jett Howard,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4873153,Morez Johnson Jr.,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5106040,Tobi Lawal,DAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4277848,Marvin Bagley III,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4698719,Trevon Brazile,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4065813,Alpha Diallo,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4565698,Bryce Hopkins,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592427,Spencer Jones,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3135046,Tyus Jones,DEN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3908845,John Collins,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433621,Jalen Duren,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2596112,Javonte Green,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397449,Elijah Harkless,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066372,Kevin Huerter,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5258459,Ebuka Okorie,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5037878,Ugonna Onyenso,DET,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397886,Charles Bassey,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4703396,Graham Ike,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5175737,Yaxel Lendeborg,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066436,De'Anthony Melton,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2990969,Georges Niang,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3134903,Gary Payton II,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3102531,Kristaps Porzingis,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397040,Brandon Williams,GS,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4683860,Quadir Copeland,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592857,Isaiah Crawford,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433192,Tari Eason,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105553,Julian Phillips,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3136777,Jae'Sean Tate,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432827,Oscar Tshiebwe,HOU,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4431752,Kobe Brown,IND,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2580365,Larry Nance Jr.,IND,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3133603,Kelly Oubre Jr.,IND,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4398207,Jalen Slawson,IND,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105854,Braden Smith,IND,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066648,Rui Hachimura,LAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105832,Nick Martinelli,LAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5075626,Baba Miller,LAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5254165,Keaton Wagler,LAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4683935,Blake Wesley,LAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5113969,Cameron Carr,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397014,Quentin Grimes,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433599,Arthur Kaluma,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4596528,Lawson Lovering,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278580,Sandro Mamukelashvili,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702972,Chris Manon,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5114350,AK Okereke,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066457,Austin Reaves,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4277811,Collin Sexton,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3907498,Matisse Thybulle,LAL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5041935,Cameron Boozer,MEM,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105817,Carson Cooper,MEM,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5231919,Karim Lopez,MEM,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4593016,Quinten Post,MEM,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5107157,Ryan Conwell,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4837356,Tre Donaldson,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3899664,Simone Fontecchio,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4700818,Vladislav Goldin,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2528210,Tim Hardaway Jr.,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4431786,Keshad Johnson,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278076,Nick Richards,MIA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5164559,Nate Ament,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5082206,Brayden Burries,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4997526,Ousmane Dieng,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5214989,Bogoljub Markovic,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397233,Pete Nance,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397114,Cormac Ryan,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4277922,Jericho Sims,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4277843,Gary Trent Jr.,MIL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432247,Jaylen Clark,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3934673,Donte DiVincenzo,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397002,Ayo Dosunmu,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5061585,Isaiah Evans,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592492,Bones Hyland,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3136196,Trey Lyles,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592979,Zyon Pullin,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5157587,Rocco Zikarsky,MIN,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4712862,Malik Dia,NO,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3442,DeAndre Jordan,NO,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4683634,Bennedict Mathurin,NO,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4703115,Jaron Pierre Jr.,NO,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4683730,Jaden Akins,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2528426,Jordan Clarkson,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5289900,Mohamed Diawara,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+6585,Andre Drummond,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4838721,Tyler Nickel,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3914044,Landry Shamet,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432808,James Wiseman,NY,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4684208,Brooks Barnhizer,OKC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105800,Josh Dix,OKC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5174983,Aday Mara,OKC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5241364,Bennett Stirtz,OKC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433159,Dalen Terry,OKC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278572,Jamal Cain,ORL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3133635,Jevon Carter,ORL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397204,Colin Castleton,ORL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5107251,Izaiyah Nelson,ORL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+6478,Nikola Vucevic,ORL,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3904625,Tacko Fall,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4871141,Ariel Hukporti,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+1966,LeBron James,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433144,Caleb Love,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4873090,Labaron Philon Jr.,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5099752,Rayan Rupert,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4351851,Anfernee Simons,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3912848,Dean Wade,PHI,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278585,Collin Gillespie,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278402,Jordan Goodwin,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3913174,Luke Kennard,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5041953,Koa Peat,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066268,Duop Reath,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592714,Pat Spencer,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4431695,Drew Timme,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4701232,Mark Williams,PHX,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4592435,Branden Carlson,POR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4593043,John Tonje,POR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4066211,Robert Williams III,POR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+6578,Harrison Barnes,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105337,Maliq Brown,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5107968,Ja'Kobi Gillespie,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+6440,Tobias Harris,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4713010,David Jones Garcia,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3134916,Jordan McLaughlin,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5101845,Jayden Quaintance,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105809,Tarris Reed Jr.,SA,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4431679,Precious Achiuwa,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5142620,Darius Acuff Jr.,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4917149,Alex Karaban,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4279318,Daeqwon Plowden,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5106058,Emanuel Sharp,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3907387,Ben Simmons,SAC,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2993874,Kyle Anderson,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432586,Nate Bittle,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432737,Jaden Bradley,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5149115,Allen Graves,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4702656,Alijah Martin,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4411057,Kevin McCullar Jr.,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397784,Malachi Smith,TOR,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433268,Trey Alexander,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4277919,Mo Bamba,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4065673,Tony Bradley,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4397077,Jaxson Hayes,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4433618,Harrison Ingram,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+3102530,Jusuf Nurkic,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4065663,Josh Okogie,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5041955,Darryn Peterson,UTAH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4432187,Reece Beekman,WSH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5142718,AJ Dybantsa,WSH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+2581184,Anthony Gill,WSH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+6609,Khris Middleton,WSH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+5105841,Felix Okpara,WSH,,missing,,,,,,"fill salaries in dollars, then set source to manual"
+4278039,Nickeil Alexander-Walker,ATL,,espn,14403710,14403710,14403710,,,future years = current salary (estimate)
+4869342,Dyson Daniels,ATL,,espn,25000000,25000000,25000000,25000000,,future years = current salary (estimate)
+4712863,Mouhamed Gueye,ATL,,espn,2406205,,,,,
+4701230,Jalen Johnson,ATL,,espn,30000000,30000000,30000000,30000000,,future years = current salary (estimate)
+4280151,Corey Kispert,ATL,,espn,13975000,13975000,13975000,,,future years = current salary (estimate)
+2490149,CJ McCollum,ATL,,espn,21000000,,,,,
+4873201,Asa Newell,ATL,,espn,3399480,3399480,3399480,,,future years = current salary (estimate)
+4431680,Onyeka Okongwu,ATL,,espn,16120000,16120000,,,,future years = current salary (estimate)
+4712896,Noah Clowney,BKN,,espn,5414034,,,,,
+5175643,Egor Demin,BKN,,espn,7233720,7233720,7233720,,,future years = current salary (estimate)
+3907823,Terance Mann,BKN,,espn,15500000,15500000,,,,future years = current salary (estimate)
+4687718,Josh Minott,BKN,,espn,2584539,,,,,
+4278104,Michael Porter Jr.,BKN,,espn,40906150,,,,,
+5037873,Drake Powell,BKN,,espn,3540600,3540600,3540600,,,future years = current salary (estimate)
+3064514,Julius Randle,BKN,,espn,33333333,33333333,,,,future years = current salary (estimate)
+5242502,Ben Saraf,BKN,,espn,3028560,3028560,3028560,,,future years = current salary (estimate)
+4432194,Day'Ron Sharpe,BKN,,espn,6250000,,,,,
+5279130,Nolan Traore,BKN,,espn,4002000,4002000,4002000,,,future years = current salary (estimate)
+5107173,Danny Wolf,BKN,,espn,2941440,2941440,2941440,,,future years = current salary (estimate)
+4277951,Luka Garza,BOS,,espn,2801346,,,,,
+5175647,Hugo Gonzalez,BOS,,espn,2923560,2923560,2923560,,,future years = current salary (estimate)
+4065804,Sam Hauser,BOS,,espn,10848241,10848241,10848241,,,future years = current salary (estimate)
+4066354,Payton Pritchard,BOS,,espn,7767857,7767857,,,,future years = current salary (estimate)
+4397424,Neemias Queta,BOS,,espn,2667944,,,,,
+4593841,Baylor Scheierman,BOS,,espn,2744040,2744040,,,,future years = current salary (estimate)
+4065648,Jayson Tatum,BOS,,espn,58456566,58456566,58456566,58456566,,future years = current salary (estimate)
+4683689,Jordan Walsh,BOS,,espn,2406205,,,,,
+3078576,Derrick White,BOS,,espn,30348001,30348001,30348001,,,future years = current salary (estimate)
+4433249,Moussa Diabate,CHA,,espn,2461462,,,,,
+4701225,PJ Hall,CHA,,espn,0,,,,,
+4602025,Sion James,CHA,,espn,2411090,2411090,2411090,,,future years = current salary (estimate)
+4576060,Ryan Kalkbrenner,CHA,,espn,2411090,2411090,2411090,,,future years = current salary (estimate)
+5061575,Kon Knueppel,CHA,,espn,10516560,10516560,10516560,,,future years = current salary (estimate)
+5239590,Liam McNeeley,CHA,,espn,2902080,2902080,2902080,,,future years = current salary (estimate)
+4433287,Brandon Miller,CHA,,espn,15104625,,,,,
+5211176,Tidjane Salaun,CHA,,espn,8237880,8237880,,,,future years = current salary (estimate)
+3032979,Dennis Schroder,CHA,,espn,14809200,,,,,
+4066218,Grant Williams,CHA,,espn,14265750,,,,,
+4711294,Matas Buzelis,CHI,,espn,5715360,5715360,5715360,,,future years = current salary (estimate)
+4278067,Nic Claxton,CHI,,espn,23147727,23147727,,,,future years = current salary (estimate)
+5242496,Noa Essengue,CHI,,espn,5701200,5701200,5701200,,,future years = current salary (estimate)
+4871145,Josh Giddey,CHI,,espn,25000000,25000000,25000000,,,future years = current salary (estimate)
+4395626,Tre Jones,CHI,,espn,8000000,8000000,,,,future years = current salary (estimate)
+5044385,Leonard Miller,CHI,,espn,2406205,,,,,
+4432822,Isaac Okoro,CHI,,espn,11814815,,,,,
+4397189,Jalen Smith,CHI,,espn,9428571,,,,,
+4431687,Patrick Williams,CHI,,espn,18000000,18000000,18000000,,,future years = current salary (estimate)
+4066328,Jarrett Allen,CLE,,espn,28000000,28000000,28000000,,,future years = current salary (estimate)
+4431734,Tristan Enaruna,CLE,,espn,0,,,,,
+3992,James Harden,CLE,,espn,42317308,,,,,
+4066757,Sam Merrill,CLE,,espn,9160714,9160714,9160714,,,future years = current salary (estimate)
+3908809,Donovan Mitchell,CLE,,espn,50105628,50105628,,,,future years = current salary (estimate)
+4432158,Evan Mobley,CLE,,espn,50105628,50105628,50105628,50105628,,future years = current salary (estimate)
+4701233,Craig Porter Jr.,CLE,,espn,2406205,,,,,
+5023693,Tyrese Proctor,CLE,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+4683747,Jaylon Tyson,CLE,,espn,3658560,3658560,,,,future years = current salary (estimate)
+4593125,Santi Aldama,DAL,,espn,17007043,17007043,,,,future years = current salary (estimate)
+4432582,Max Christie,DAL,,espn,8285714,8285714,,,,future years = current salary (estimate)
+4896372,Walter Clayton Jr.,DAL,,espn,4190520,4190520,4190520,,,future years = current salary (estimate)
+5041939,Cooper Flagg,DAL,,espn,14517480,14517480,14517480,,,future years = current salary (estimate)
+4278049,Daniel Gafford,DAL,,espn,17263584,17263584,17263584,,,future years = current salary (estimate)
+6442,Kyrie Irving,DAL,,espn,39416562,39416562,,,,future years = current salary (estimate)
+4683688,Dereck Lively II,DAL,,espn,7239130,,,,,
+4278594,Naji Marshall,DAL,,espn,9428571,,,,,
+3138160,Caleb Martin,DAL,,espn,10001494,10001494,,,,future years = current salary (estimate)
+4432107,Marcus Sasser,DAL,,espn,5198983,,,,,
+4278078,P.J. Washington,DAL,,espn,19813044,19813044,19813044,19813044,,future years = current salary (estimate)
+4431767,Christian Braun,DEN,,espn,21551774,21551774,21551774,21551774,,future years = current salary (estimate)
+3978,DeMar DeRozan,DEN,,espn,25740000,,,,,
+3064290,Aaron Gordon,DEN,,espn,33658037,33658037,33658037,,,future years = current salary (estimate)
+4433607,DaRon Holmes II,DEN,,espn,3372120,3372120,,,,future years = current salary (estimate)
+3138196,Cameron Johnson,DEN,,espn,23062500,,,,,
+3112335,Nikola Jokic,DEN,,espn,59033114,59033114,,,,future years = current salary (estimate)
+3936299,Jamal Murray,DEN,,espn,50105628,50105628,50105628,,,future years = current salary (estimate)
+4431690,Zeke Nnaji,DEN,,espn,7466667,7466667,,,,future years = current salary (estimate)
+4432181,Julian Strawther,DEN,,espn,4826931,,,,,
+5105592,Cam Whitmore,DEN,,espn,5458310,,,,,
+4432166,Cade Cunningham,DET,,espn,50105628,50105628,50105628,50105628,,future years = current salary (estimate)
+4683771,Ronald Holland II,DET,,espn,9069600,9069600,,,,future years = current salary (estimate)
+5107199,Daniss Jenkins,DET,,espn,4000000,,,,,
+5107818,Isaac Jones,DET,,espn,0,,,,,
+4700852,Chaz Lanier,DET,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+2990962,Taurean Prince,DET,,espn,3815861,,,,,
+4278562,Paul Reed,DET,,espn,5000000,,,,,
+3157465,Duncan Robinson,DET,,espn,15992957,15992957,,,,future years = current salary (estimate)
+4397882,Tolu Smith,DET,,espn,2411090,,,,,
+4684742,Ausar Thompson,DET,,espn,11117925,,,,,
+6430,Jimmy Butler III,GS,,espn,56832773,,,,,
+4433149,LJ Cryer,GS,,espn,0,,,,,
+3975,Stephen Curry,GS,,espn,62587158,,,,,
+6589,Draymond Green,GS,,espn,27678571,,,,,
+3213,Al Horford,GS,,espn,5969250,,,,,
+4897449,Malevy Leons,GS,,espn,0,,,,,
+4432171,Moses Moody,GS,,espn,12500000,12500000,,,,future years = current salary (estimate)
+4709138,Brandin Podziemski,GS,,espn,5679458,,,,,
+4897262,Will Richard,GS,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+4997536,Gui Santos,GS,,espn,4629630,4629630,4629630,,,future years = current salary (estimate)
+2991235,Steven Adams,HOU,,espn,13000000,13000000,,,,future years = current salary (estimate)
+3037789,Bogdan Bogdanovic,HOU,,espn,16020000,,,,,
+3102529,Clint Capela,HOU,,espn,7035000,7035000,,,,future years = current salary (estimate)
+3202,Kevin Durant,HOU,,espn,43902439,43902439,,,,future years = current salary (estimate)
+4871144,Alperen Sengun,HOU,,espn,35642202,35642202,35642202,35642202,,future years = current salary (estimate)
+4711272,Reed Sheppard,HOU,,espn,11108880,11108880,,,,future years = current salary (estimate)
+2990992,Marcus Smart,HOU,,espn,5390700,,,,,
+4432639,Jabari Smith Jr.,HOU,,espn,23643411,23643411,23643411,23643411,23643411,future years = current salary (estimate)
+4684740,Amen Thompson,HOU,,espn,12258609,,,,,
+2991230,Fred VanVleet,HOU,,espn,25000000,,,,,
+5157066,Johnny Furphy,IND,,espn,2296271,2296271,,,,future years = current salary (estimate)
+4396993,Tyrese Haliburton,IND,,espn,48924624,48924624,48924624,,,future years = current salary (estimate)
+4065731,Jay Huff,IND,,espn,2667944,2667944,,,,future years = current salary (estimate)
+4592829,Quenton Jackson,IND,,espn,2584539,2584539,,,,future years = current salary (estimate)
+2530530,T.J. McConnell,IND,,espn,11000000,11000000,11000000,,,future years = current salary (estimate)
+4395712,Andrew Nembhard,IND,,espn,19550160,19550160,,,,future years = current salary (estimate)
+4396909,Aaron Nesmith,IND,,espn,11000000,11000000,11000000,,,future years = current salary (estimate)
+4433076,Ben Sheppard,IND,,espn,5031668,,,,,
+3149673,Pascal Siakam,IND,,espn,48924624,48924624,,,,future years = current salary (estimate)
+4278355,Obi Toppin,IND,,espn,15000000,15000000,,,,future years = current salary (estimate)
+5106060,Jarace Walker,IND,,espn,8478541,,,,,
+4017837,Ivica Zubac,IND,,espn,20342140,20342140,,,,future years = current salary (estimate)
+6580,Bradley Beal,LAC,,espn,5621700,,,,,
+4845363,Cam Christie,LAC,,espn,2296271,,,,,
+5106258,Gradey Dick,LAC,,espn,7131510,,,,,
+2991139,Kris Dunn,LAC,,espn,5684800,,,,,
+4396907,Darius Garland,LAC,,espn,42166510,42166510,,,,future years = current salary (estimate)
+3913176,Brandon Ingram,LAC,,espn,40000000,40000000,,,,future years = current salary (estimate)
+4432170,Isaiah Jackson,LAC,,espn,7000000,7000000,,,,future years = current salary (estimate)
+3936099,Derrick Jones Jr.,LAC,,espn,10476190,,,,,
+3448,Brook Lopez,LAC,,espn,8750000,,,,,
+4396818,Jordan Miller,LAC,,espn,2497812,,,,,
+5108024,Yanic Konan Niederhauser,LAC,,espn,2880960,2880960,2880960,,,future years = current salary (estimate)
+4398390,Jalen Pickett,LAC,,espn,2406205,,,,,
+4702352,Kobe Sanders,LAC,,espn,2150917,,,,,
+4065778,Max Strus,LAC,,espn,16660836,,,,,
+3945274,Luka Doncic,LAL,,espn,49500000,49500000,49500000,,,future years = current salary (estimate)
+4683774,Bronny James,LAL,,espn,2296274,2296274,,,,future years = current salary (estimate)
+4592691,Jake LaRavia,LAL,,espn,6000000,,,,,
+3155535,Kevon Looney,LAL,,espn,8000000,,,,,
+5060631,Adou Thiero,LAL,,espn,2150917,2150917,,,,future years = current salary (estimate)
+4278077,Jarred Vanderbilt,LAL,,espn,12428571,12428571,,,,future years = current salary (estimate)
+4433137,Ziaire Williams,LAL,,espn,6250000,,,,,
+4903027,Cedric Coward,MEM,,espn,6001080,6001080,6001080,,,future years = current salary (estimate)
+4600663,Zach Edey,MEM,,espn,6332760,6332760,6332760,,,future years = current salary (estimate)
+2991070,Jerami Grant,MEM,,espn,34206897,34206897,,,,future years = current salary (estimate)
+4684806,Taylor Hendricks,MEM,,espn,7805900,,,,,
+5105550,GG Jackson,MEM,,espn,2406205,,,,,
+4065733,Ty Jerome,MEM,,espn,9220050,9220050,,,,future years = current salary (estimate)
+4683934,Jahmai Mashack,MEM,,espn,0,,,,,
+4594326,Kris Murray,MEM,,espn,5315004,,,,,
+4431785,Scotty Pippen Jr.,MEM,,espn,2461462,2461462,,,,future years = current salary (estimate)
+4595400,Olivier-Maxence Prosper,MEM,,espn,2497812,,,,,
+4781746,Javon Small,MEM,,espn,0,,,,,
+4433083,Cam Spencer,MEM,,espn,2411090,2411090,2411090,,,future years = current salary (estimate)
+4432810,Isaiah Stewart,MEM,,espn,15000000,15000000,,,,future years = current salary (estimate)
+5112087,Jaylen Wells,MEM,,espn,2296271,2296271,,,,future years = current salary (estimate)
+4066261,Bam Adebayo,MIA,,espn,49500000,49500000,49500000,,,future years = current salary (estimate)
+4431772,Myron Gardner,MIA,,espn,2150917,2150917,,,,future years = current salary (estimate)
+4997528,Nikola Jovic,MIA,,espn,16200000,16200000,16200000,16200000,,future years = current salary (estimate)
+4601025,Pelle Larsson,MIA,,espn,2296271,,,,,
+4278053,Davion Mitchell,MIA,,espn,12400000,,,,,
+4066993,Dru Smith,MIA,,espn,2584359,2584359,,,,future years = current salary (estimate)
+6475,Klay Thompson,MIA,,espn,17460317,,,,,
+3059319,Andrew Wiggins,MIA,,espn,30169643,,,,,
+4397475,AJ Green,MIL,,espn,10044643,10044643,10044643,10044643,,future years = current salary (estimate)
+4697268,Kam Jones,MIL,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+3134907,Kyle Kuzma,MIL,,espn,20345152,,,,,
+2991043,Caris LeVert,MIL,,espn,14809200,,,,,
+4591725,Ryan Rollins,MIL,,espn,4000000,4000000,,,,future years = current salary (estimate)
+3133628,Myles Turner,MIL,,espn,26584164,26584164,26584164,,,future years = current salary (estimate)
+5279133,Joan Beringer,MIN,,espn,4411200,4411200,4411200,,,future years = current salary (estimate)
+4594268,Anthony Edwards,MIN,,espn,48924624,48924624,48924624,48924624,,future years = current salary (estimate)
+3032976,Rudy Gobert,MIN,,espn,36500000,36500000,,,,future years = current salary (estimate)
+4433247,Jonathan Kuminga,MIN,,espn,24300000,,,,,
+4431671,Jaden McDaniels,MIN,,espn,26200001,26200001,26200001,,,future years = current salary (estimate)
+4432847,Terrence Shannon Jr.,MIN,,espn,2801640,2801640,,,,future years = current salary (estimate)
+4397136,Saddiq Bey,NO,,espn,6440678,,,,,
+5144091,Jeremiah Fears,NO,,espn,7896240,7896240,7896240,,,future years = current salary (estimate)
+4277813,Herbert Jones,NO,,espn,14898786,14898786,14898786,14898786,,future years = current salary (estimate)
+4997538,Karlo Matkovic,NO,,espn,2296271,,,,,
+4576086,Bryce McGowens,NO,,espn,2584539,2584539,,,,future years = current salary (estimate)
+5061589,Yves Missi,NO,,espn,3512760,3512760,,,,future years = current salary (estimate)
+4397688,Trey Murphy III,NO,,espn,27000000,27000000,27000000,,,future years = current salary (estimate)
+3907497,Dejounte Murray,NO,,espn,32785071,32785071,,,,future years = current salary (estimate)
+4277956,Jordan Poole,NO,,espn,34044642,,,,,
+4869780,Derik Queen,NO,,espn,5416080,5416080,5416080,,,future years = current salary (estimate)
+4683742,Julian Reese,NO,,espn,0,,,,,
+4431675,Trendon Watford,NO,,espn,2801346,,,,,
+4395628,Zion Williamson,NO,,espn,42166510,42166510,,,,future years = current salary (estimate)
+4277869,Jose Alvarado,NY,,espn,4500000,,,,,
+3934719,OG Anunoby,NY,,espn,42500000,42500000,42500000,,,future years = current salary (estimate)
+3147657,Mikal Bridges,NY,,espn,33482143,33482143,33482143,33482143,,future years = current salary (estimate)
+3934672,Jalen Brunson,NY,,espn,37739521,37739521,37739521,,,future years = current salary (estimate)
+5211983,Pacome Dadiet,NY,,espn,2983680,2983680,,,,future years = current salary (estimate)
+3062679,Josh Hart,NY,,espn,20923760,20923760,,,,future years = current salary (estimate)
+4897943,Dalton Knecht,NY,,espn,4201080,,,,,
+4433225,Tyler Kolek,NY,,espn,2296271,2296271,,,,future years = current salary (estimate)
+4431823,Miles McBride,NY,,espn,3956523,,,,,
+3136195,Karl-Anthony Towns,NY,,espn,57078728,57078728,,,,future years = current salary (estimate)
+2991350,Alex Caruso,OKC,,espn,19550160,19550160,19550160,,,future years = current salary (estimate)
+4278073,Shai Gilgeous-Alexander,OKC,,espn,40806150,40806150,40806150,40806150,40806150,future years = current salary (estimate)
+4222252,Isaiah Hartenstein,OKC,,espn,28500000,,,,,
+4433255,Chet Holmgren,OKC,,espn,41500000,41500000,41500000,41500000,41500000,future years = current salary (estimate)
+4683778,Jared McCain,OKC,,espn,4422600,4422600,,,,future years = current salary (estimate)
+4900671,Ajay Mitchell,OKC,,espn,2850000,2850000,,,,future years = current salary (estimate)
+5061603,Thomas Sorber,OKC,,espn,4887720,4887720,4887720,,,future years = current salary (estimate)
+5159925,Nikola Topic,OKC,,espn,5429760,5429760,,,,future years = current salary (estimate)
+4683692,Cason Wallace,OKC,,espn,7420806,,,,,
+4593803,Jalen Williams,OKC,,espn,41500000,41500000,41500000,41500000,41500000,future years = current salary (estimate)
+4432823,Jaylin Williams,OKC,,espn,7774648,7774648,,,,future years = current salary (estimate)
+3133626,Kenrich Williams,OKC,,espn,7163000,,,,,
+4432573,Paolo Banchero,ORL,,espn,41500000,41500000,41500000,41500000,41500000,future years = current salary (estimate)
+4066320,Desmond Bane,ORL,,espn,39446090,39446090,39446090,,,future years = current salary (estimate)
+4348700,Goga Bitadze,ORL,,espn,7608696,,,,,
+4712849,Anthony Black,ORL,,espn,10106315,,,,,
+4277847,Wendell Carter Jr.,ORL,,espn,18102000,18102000,18102000,,,future years = current salary (estimate)
+4702382,Tristan da Silva,ORL,,espn,3991200,3991200,,,,future years = current salary (estimate)
+4065654,Jonathan Isaac,ORL,,espn,14500000,14500000,14500000,,,future years = current salary (estimate)
+4593034,Alex Morales,ORL,,espn,0,,,,,
+5214637,Noah Penda,ORL,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+5239561,Jase Richardson,ORL,,espn,3132360,3132360,3132360,,,future years = current salary (estimate)
+4432165,Jalen Suggs,ORL,,espn,32400000,32400000,32400000,32400000,,future years = current salary (estimate)
+4566434,Franz Wagner,ORL,,espn,41754690,41754690,41754690,41754690,,future years = current salary (estimate)
+4870562,Dominick Barlow,PHI,,espn,3415000,,,,,
+5105637,Adem Bona,PHI,,espn,2296271,2296271,,,,future years = current salary (estimate)
+2581018,Kentavious Caldwell-Pope,PHI,,espn,21621500,,,,,
+5124612,VJ Edgecombe,PHI,,espn,11663880,11663880,11663880,,,future years = current salary (estimate)
+4711297,Justin Edwards,PHI,,espn,2411090,2411090,,,,future years = current salary (estimate)
+3059318,Joel Embiid,PHI,,espn,58100000,58100000,58100000,,,future years = current salary (estimate)
+4431678,Tyrese Maxey,PHI,,espn,40770520,40770520,40770520,,,future years = current salary (estimate)
+4432446,Jabari Walker,PHI,,espn,2584539,,,,,
+3136193,Devin Booker,PHX,,espn,57078728,57078728,57078728,57078728,,future years = current salary (estimate)
+4280245,Jamaree Bouyea,PHX,,espn,2584539,,,,,
+3155526,Dillon Brooks,PHX,,espn,19992727,,,,,
+4888725,Ryan Dunn,PHX,,espn,2784240,2784240,,,,future years = current salary (estimate)
+5105977,Rasheer Fleming,PHX,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+4437244,Jalen Green,PHX,,espn,36251166,36251166,,,,future years = current salary (estimate)
+4601023,Oso Ighodaro,PHX,,espn,2296271,2296271,,,,future years = current salary (estimate)
+5203685,Khaman Maluach,PHX,,espn,6316680,6316680,6316680,,,future years = current salary (estimate)
+4683021,Deni Avdija,POR,,espn,13125000,13125000,,,,future years = current salary (estimate)
+4431736,Toumani Camara,POR,,espn,18080358,18080358,18080358,18080358,,future years = current salary (estimate)
+5081727,Sidy Cissoko,POR,,espn,2497812,,,,,
+5105565,Donovan Clingan,POR,,espn,7519920,7519920,,,,future years = current salary (estimate)
+5217746,Yang Hansen,POR,,espn,4643520,4643520,4643520,,,future years = current salary (estimate)
+4683678,Scoot Henderson,POR,,espn,13585522,,,,,
+3995,Jrue Holiday,POR,,espn,34800000,34800000,,,,future years = current salary (estimate)
+4703889,Jayson Kent,POR,,espn,0,,,,,
+4578893,Vit Krejci,POR,,espn,2667944,2667944,,,,future years = current salary (estimate)
+6606,Damian Lillard,POR,,espn,13398000,13398000,,,,future years = current salary (estimate)
+4279888,Ja Morant,POR,,espn,42166510,42166510,,,,future years = current salary (estimate)
+4066399,Micah Potter,POR,,espn,2801346,,,,,
+4914336,Shaedon Sharpe,POR,,espn,20089286,20089286,20089286,20089286,,future years = current salary (estimate)
+4706557,Chris Youngblood,POR,,espn,0,,,,,
+5061568,Carter Bryant,SA,,espn,5145360,5145360,5145360,,,future years = current salary (estimate)
+4845367,Stephon Castle,SA,,espn,10015920,10015920,,,,future years = current salary (estimate)
+4592479,Julian Champagnie,SA,,espn,3000000,,,,,
+4066259,De'Aaron Fox,SA,,espn,49800000,49800000,49800000,49800000,,future years = current salary (estimate)
+5037871,Dylan Harper,SA,,espn,12989040,12989040,12989040,,,future years = current salary (estimate)
+4395723,Keldon Johnson,SA,,espn,17500000,,,,,
+3064560,Luke Kornet,SA,,espn,10450000,10450000,10450000,,,future years = current salary (estimate)
+4395630,Devin Vassell,SA,,espn,27000000,27000000,27000000,,,future years = current salary (estimate)
+5104157,Victor Wembanyama,SA,,espn,16868245,,,,,
+4395650,Leaky Black,SAC,,espn,0,,,,,
+4433174,Dylan Cardwell,SAC,,espn,2150917,2150917,2150917,,,future years = current salary (estimate)
+4702384,Nique Clifford,SAC,,espn,3263400,3263400,3263400,,,future years = current salary (estimate)
+4065732,De'Andre Hunter,SAC,,espn,24910714,,,,,
+3064440,Zach LaVine,SAC,,espn,48967380,,,,,
+5107897,Jonathan Mogbo,SAC,,espn,2296271,,,,,
+4066262,Malik Monk,SAC,,espn,21190034,21190034,,,,future years = current salary (estimate)
+4594327,Keegan Murray,SAC,,espn,24137931,24137931,24137931,24137931,,future years = current salary (estimate)
+4709131,Sean Pedulla,SAC,,espn,0,,,,,
+4898371,Maxime Raynaud,SAC,,espn,2150917,2150917,,,,future years = current salary (estimate)
+3155942,Domantas Sabonis,SAC,,espn,45472000,45472000,,,,future years = current salary (estimate)
+4433134,Scottie Barnes,TOR,,espn,41754690,41754690,41754690,41754690,,future years = current salary (estimate)
+4395625,RJ Barrett,TOR,,espn,29616071,,,,,
+4431893,Jamison Battle,TOR,,espn,2296271,,,,,
+4431684,Trayce Jackson-Davis,TOR,,espn,2406205,,,,,
+6450,Kawhi Leonard,TOR,,espn,50300000,,,,,
+5093267,Collin Murray-Boyles,TOR,,espn,6649560,6649560,6649560,,,future years = current salary (estimate)
+3134908,Jakob Poeltl,TOR,,espn,19500000,19500000,19500000,19500000,,future years = current salary (estimate)
+4395724,Immanuel Quickley,TOR,,espn,32500000,32500000,32500000,,,future years = current salary (estimate)
+4432241,Jamal Shead,TOR,,espn,2296271,,,,,
+4684272,Ja'Kobe Walter,TOR,,espn,3811800,3811800,,,,future years = current salary (estimate)
+4873138,Ace Bailey,UTAH,,espn,9523080,9523080,9523080,,,future years = current salary (estimate)
+4683736,Kobe Bufkin,UTAH,,espn,2497812,,,,,
+4683766,Isaiah Collier,UTAH,,espn,2763960,2763960,2763960,,,future years = current salary (estimate)
+4684793,Kyle Filipowski,UTAH,,espn,3000000,3000000,,,,future years = current salary (estimate)
+4433627,Keyonte George,UTAH,,espn,6563925,,,,,
+4277961,Jaren Jackson Jr.,UTAH,,espn,49000000,49000000,49000000,49000000,,future years = current salary (estimate)
+4066336,Lauri Markkanen,UTAH,,espn,46113154,46113154,46113154,,,future years = current salary (estimate)
+3133602,Svi Mykhailiuk,UTAH,,espn,3850000,3850000,,,,future years = current salary (estimate)
+5105839,Brice Sensabaugh,UTAH,,espn,4862237,,,,,
+4845374,Bub Carrington,WSH,,espn,4900560,4900560,,,,future years = current salary (estimate)
+4432907,Justin Champagnie,WSH,,espn,2667944,2667944,,,,future years = current salary (estimate)
+5104155,Bilal Coulibaly,WSH,,espn,9240012,,,,,
+6583,Anthony Davis,WSH,,espn,58456566,58456566,,,,future years = current salary (estimate)
+5174563,Kyshawn George,WSH,,espn,3108000,3108000,,,,future years = current salary (estimate)
+5238230,Tre Johnson,WSH,,espn,8649600,8649600,8649600,,,future years = current salary (estimate)
+4432819,Tre Mann,WSH,,espn,8000000,8000000,,,,future years = current salary (estimate)
+5144126,Will Riley,WSH,,espn,3688320,3688320,3688320,,,future years = current salary (estimate)
+5160992,Alex Sarr,WSH,,espn,12370680,12370680,,,,future years = current salary (estimate)
+4997537,Tristan Vukcevic,WSH,,espn,3000000,3000000,,,,future years = current salary (estimate)
+4606840,Jamir Watkins,WSH,,espn,2150917,,,,,
+4277905,Trae Young,WSH,,espn,48967380,,,,,
