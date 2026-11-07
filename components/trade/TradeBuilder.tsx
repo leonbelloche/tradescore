@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import ScoreBadge, { scoreTone } from "@/components/ScoreBadge";
+import ResultCard, { TradeErrors } from "@/components/trades/ResultCard";
+import { Button } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import {
   modeFromRecord,
@@ -241,7 +242,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
                 <button
                   onClick={() => removeSlot(slot)}
                   aria-label={`Remove team ${slot + 1}`}
-                  className="rounded-lg border border-border px-3 text-muted hover:text-foreground"
+                  className="min-h-11 min-w-11 rounded-lg border border-border px-3 text-muted hover:text-foreground"
                 >
                   ✕
                 </button>
@@ -251,7 +252,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
           {slots.length < leagueRules.maxTeams && (
             <button
               onClick={() => setSlots([...slots, ""])}
-              className="rounded-lg border border-dashed border-border px-3 py-2.5 text-sm text-muted hover:text-foreground"
+              className="min-h-11 rounded-lg border border-dashed border-border px-3 text-sm text-muted hover:text-foreground"
             >
               + Add a third team
             </button>
@@ -260,54 +261,41 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
       </section>
 
       {/* Trade Score result (after Analyze) */}
-      {result && result.valid && (
-        <section ref={resultRef} className="scroll-mt-4 overflow-hidden rounded-2xl border border-border bg-surface">
-          {/* Headline */}
-          <div className="border-b border-border bg-gradient-to-b from-accent/20 to-transparent px-4 py-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Trade Score</p>
-            <p className="mt-1 text-3xl font-black uppercase leading-none tracking-tight sm:text-4xl">
-              {result.isEven ? (
-                "Even trade"
-              ) : (
-                <>
-                  <span className="text-accent">{teamById.get(result.winnerTeamId!)!.name}</span>
-                  <br />
-                  win the trade
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* One row per team, best score first */}
-          <ul className="divide-y divide-border">
-            {[...result.teams]
-              .sort((a, b) => b.score - a.score)
-              .map((t) => {
-                const team = teamById.get(t.teamId)!;
-                const tone = scoreTone(t.score);
-                return (
-                  <li key={t.teamId} className="space-y-3 px-4 py-4">
-                    <div className="flex items-center gap-4">
-                      <ScoreBadge score={t.score} size="lg" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate display text-lg font-bold leading-tight">{team.name}</p>
-                        <p className={`text-lg font-black uppercase leading-tight ${tone.text}`}>{t.tier}</p>
-                        <p className="text-xs text-muted">{MODE_LABEL[t.mode]}</p>
-                      </div>
-                    </div>
-                    {/* Score bar: 0 on the left, 100 on the right, 50 marked in the middle */}
-                    <div className="relative h-2 rounded-full bg-background">
-                      <div className={`h-2 rounded-full ${tone.bg}`} style={{ width: `${t.score}%` }} />
-                      <div className="absolute inset-y-0 left-1/2 w-px bg-muted/60" />
-                    </div>
-                    <p className="text-xs text-muted">
-                      <span className="font-semibold text-foreground">Gets:</span>{" "}
-                      {t.received.length ? t.received.map((a) => a.label).join(", ") : "nothing"}
-                    </p>
-                  </li>
-                );
-              })}
-          </ul>
+      {result && (
+        <section ref={resultRef} className="scroll-mt-4 space-y-3">
+          {result.valid ? (
+            <>
+              <div className="text-center">
+                <p className="display text-sm font-semibold tracking-[0.12em] text-muted">Trade score</p>
+                <p className="display mt-1 text-3xl font-bold leading-[0.95] sm:text-4xl">
+                  {result.isEven ? (
+                    "Even trade"
+                  ) : (
+                    <>
+                      <span className="text-accent">{teamById.get(result.winnerTeamId!)!.name}</span>
+                      <br />
+                      win the trade
+                    </>
+                  )}
+                </p>
+              </div>
+              {[...result.teams]
+                .sort((x, y) => y.score - x.score)
+                .map((t) => {
+                  const team = teamById.get(t.teamId)!;
+                  return (
+                    <ResultCard
+                      key={t.teamId}
+                      team={{ name: team.name, abbreviation: team.abbreviation, record: `${team.wins}-${team.losses}` }}
+                      result={t}
+                      showSent
+                    />
+                  );
+                })}
+            </>
+          ) : (
+            <TradeErrors errors={result.errors} />
+          )}
         </section>
       )}
 
@@ -469,7 +457,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
                     ))}
                   <button
                     onClick={() => addPick(team.id)}
-                    className="w-full rounded-lg border border-dashed border-border py-2 text-xs text-muted hover:text-foreground"
+                    className="min-h-11 w-full rounded-lg border border-dashed border-border text-xs text-muted hover:text-foreground"
                   >
                     + Add a pick
                   </button>
@@ -519,31 +507,18 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
             )}
           </p>
           {hasMoves && (
-            <button onClick={reset} className="text-sm text-muted hover:text-foreground">
+            <Button variant="ghost" onClick={reset} className="px-3 text-sm">
               Reset
-            </button>
+            </Button>
           )}
-          <button
-            disabled={!validation?.valid}
-            onClick={analyze}
-            className="display rounded-lg bg-accent px-6 py-3 text-lg font-bold text-black transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-          >
+          <Button disabled={!validation?.valid} onClick={analyze} className="text-lg">
             Analyze
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Full list of problems, so the user knows exactly what to fix */}
-      {validation && hasMoves && !validation.valid && (
-        <section className="rounded-xl border border-score-1/40 bg-score-1/10 p-4 text-sm" role="alert">
-          <p className="mb-2 font-bold text-score-1">Why this trade is not allowed</p>
-          <ul className="list-disc space-y-1 pl-5 text-foreground">
-            {validation.errors.map((e) => (
-              <li key={e}>{e}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {hasMoves && errors.length > 0 && <TradeErrors errors={errors} />}
     </div>
   );
 }

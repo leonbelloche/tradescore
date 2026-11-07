@@ -2,12 +2,10 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LoadingBlock from "@/components/LoadingBlock";
-import ScoreBadge, { TierLabel, scoreTone } from "@/components/ScoreBadge";
 import { formatDay } from "@/components/trades/TradeRow";
-import { Card, TeamMark } from "@/components/ui";
+import ResultCard from "@/components/trades/ResultCard";
+import { Button } from "@/components/ui";
 import { getScoredTrades } from "@/lib/trades/scored";
-
-const MODE_LABEL = { contender: "Contender", middle: "Middle of the pack", rebuild: "Rebuilding" } as const;
 
 export default function TradeResultPage(props: PageProps<"/trade/[id]">) {
   return (
@@ -21,8 +19,6 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const trade = (await getScoredTrades()).find((t) => t.id === id);
   if (!trade) notFound();
-
-
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -52,44 +48,17 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
       {/* One card per team, best first */}
       <div className="space-y-3">
         {trade.teams.map((t) => (
-          <Card key={t.team.id} className="space-y-4 p-4">
-            <div className="flex items-center gap-3">
-              <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} size="lg" />
-              <div className="min-w-0 flex-1">
-                <Link href={`/team/${t.team.slug}`} className="display block text-xl font-bold leading-tight hover:text-accent sm:text-2xl">
-                  {t.team.name}
-                </Link>
-                <p className="text-sm">
-                  <TierLabel score={t.score} className="text-base" />
-                  <span className="text-muted">
-                    {" "}
-                    · {MODE_LABEL[t.mode]} ({t.team.wins}-{t.team.losses})
-                  </span>
-                </p>
-              </div>
-              <ScoreBadge score={t.score} size="xl" />
-            </div>
-
-            {/* 0-100 bar with the 50 mark */}
-            <div className="relative h-1.5 rounded-full bg-background">
-              <div className={`h-1.5 rounded-full ${scoreTone(t.score).bg}`} style={{ width: `${t.score}%` }} />
-              <div className="absolute -inset-y-1 left-1/2 w-px bg-muted/70" />
-            </div>
-
-            <div>
-              <p className="display text-xs font-semibold tracking-[0.08em] text-muted">Gets</p>
-              <ul className="mt-1 space-y-0.5">
-                {t.receives.map((name, i) => (
-                  <li key={`${name}-${i}`} className="display text-lg font-semibold">
-                    {name}
-                  </li>
-                ))}
-              </ul>
-              {t.receives.length === 0 && (
-                <p className="text-sm text-muted">Nothing counted: cash, or a player who is no longer in the NBA.</p>
-              )}
-            </div>
-          </Card>
+          <ResultCard
+            key={t.team.id}
+            team={{
+              name: t.team.name,
+              abbreviation: t.team.abbreviation,
+              logoUrl: t.team.logo_url,
+              href: `/team/${t.team.slug}`,
+              record: `${t.team.wins}-${t.team.losses}`,
+            }}
+            result={t.result}
+          />
         ))}
       </div>
 
@@ -114,14 +83,11 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
       )}
 
       <div className="flex flex-wrap justify-center gap-3 pt-2">
-        <Link href="/trade" className="display flex min-h-11 items-center rounded-lg bg-accent px-5 font-bold text-black hover:brightness-110">
-          Build your own trade ▸
-        </Link>
-        <Link href="/method" className="display flex min-h-11 items-center rounded-lg border border-border-strong px-5 font-bold hover:border-accent">
+        <Button href="/trade">Build your own trade ▸</Button>
+        <Button href={`/method/${trade.id}`} variant="ghost">
           How is it scored?
-        </Link>
+        </Button>
       </div>
-      
     </div>
   );
 }

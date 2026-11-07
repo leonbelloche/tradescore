@@ -32,7 +32,7 @@ Avant chaque tâche, lis CLAUDE.md, sections « Règles de validation NBA » et 
 - Un test qui échoue n'est jamais « corrigé » en changeant la valeur attendue sans l'accord de Léon.
 
 ## Calibrage (étape 4 de la roadmap)
-- scripts/calibration/run.ts score data/calibration_trades.json et compare au gagnant désigné par les analystes.
+- scripts/calibration/run.mts score data/calibration_trades.json et compare au gagnant désigné par les analystes.
 - Objectif : au moins 15 bons gagnants sur 20.
 - Sinon : ajuste d'abord le poids contender de la saison 0, puis la valeur des picks, un coefficient à la fois. Tableau avant/après.
 
