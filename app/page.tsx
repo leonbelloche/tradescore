@@ -26,7 +26,7 @@ async function Home() {
   const hero = (
     <div className="space-y-4">
       <p className="display text-sm font-bold text-accent">NBA · 2026-27 season</p>
-      <h1 className="display text-6xl font-black leading-[0.85] sm:text-7xl lg:text-8xl">
+      <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl lg:text-6xl">
         Who won
         <br />
         the <span className="text-accent">trade?</span>
@@ -57,7 +57,7 @@ async function Home() {
     .slice(0, 5);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       <section className="grid items-center gap-8 pt-2 lg:grid-cols-[1.1fr_1fr]">
         {hero}
         <FeaturedTrade trade={lopsided(trades)} label="Trade of the season" />
@@ -65,7 +65,7 @@ async function Home() {
 
       <section>
         <SectionTitle index={1} title="Latest trades" sub={`${trades.length} scored`} />
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {trades.map((trade) => (
             <TradeRow key={trade.id} trade={trade} />
           ))}
@@ -83,7 +83,7 @@ async function Home() {
             </Link>
           }
         />
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <GmCard label="Best GM" stat={stats[0]} />
           <GmCard label="Worst GM" stat={stats[stats.length - 1]} />
         </div>
@@ -100,7 +100,7 @@ async function Home() {
               <span className="num w-6 text-sm text-accent">{String(i + 1).padStart(2, "0")}</span>
               <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
               <span className="min-w-0 flex-1">
-                <span className="display block truncate text-lg font-extrabold leading-tight">{t.team.name}</span>
+                <span className="display block truncate text-base font-bold leading-tight">{t.team.name}</span>
                 <span className="block truncate text-xs text-muted">Got {t.receives.join(", ") || "nothing counted (cash)"}</span>
               </span>
               <TierLabel score={t.score} className="hidden text-sm sm:inline" />
@@ -122,7 +122,7 @@ function GmCard({ label, stat }: { label: string; stat: TeamTradeStats }) {
       <TeamMark abbreviation={stat.team.abbreviation} logoUrl={stat.team.logo_url} size="lg" />
       <div className="min-w-0 flex-1">
         <p className="display text-xs font-bold text-accent">{label}</p>
-        <p className="display text-2xl font-extrabold leading-tight">{stat.team.name}</p>
+        <p className="display text-xl font-bold leading-tight">{stat.team.name}</p>
         <p className="text-sm">
           <TierLabel score={stat.average} /> <span className="num text-xs text-muted">· {stat.trades} trade{stat.trades > 1 ? "s" : ""}</span>
         </p>

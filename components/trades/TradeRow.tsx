@@ -21,7 +21,7 @@ export default function TradeRow({ trade }: { trade: ScoredTrade }) {
   return (
     <Link
       href={`/trade/${trade.id}`}
-      className="block min-w-0 rounded-xl border border-border bg-surface p-3 transition hover:border-accent/60 hover:bg-surface-2"
+      className="block min-w-0 rounded-xl border border-border bg-surface p-4 transition hover:border-accent/60 hover:bg-surface-2"
     >
       <div className="mb-2 flex items-center justify-between text-xs">
         <span className="num text-muted">{formatDay(trade.date)}</span>
@@ -46,7 +46,7 @@ export default function TradeRow({ trade }: { trade: ScoredTrade }) {
             <li key={t.team.id} className="flex items-center gap-2.5">
               <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
               <span className="min-w-0 flex-1">
-                <span className="display block truncate text-lg font-extrabold leading-tight">{shortName(t)}</span>
+                <span className="display block truncate text-base font-bold leading-tight">{shortName(t)}</span>
                 <span className="block truncate text-xs text-muted">Gets {gets(t)}</span>
               </span>
               <TierLabel score={t.score} className="hidden text-sm sm:inline" />
@@ -65,7 +65,7 @@ function Side({ team, align }: { team: ScoredTeam; align: "left" | "right" }) {
     <div className={`min-w-0 ${right ? "text-right" : ""}`}>
       <div className={`flex items-center gap-2 ${right ? "flex-row-reverse" : ""}`}>
         <TeamMark abbreviation={team.team.abbreviation} logoUrl={team.team.logo_url} />
-        <span className="display truncate text-lg font-extrabold leading-tight">{shortName(team)}</span>
+        <span className="display truncate text-base font-bold leading-tight">{shortName(team)}</span>
       </div>
       <TierLabel score={team.score} className="mt-0.5 block text-xs" />
       <p className="mt-0.5 line-clamp-2 text-xs text-muted">Gets {gets(team)}</p>

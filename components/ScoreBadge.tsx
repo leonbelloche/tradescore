@@ -10,17 +10,17 @@ export function scoreTone(score: number) {
 }
 
 const SIZES = {
-  sm: "h-7 min-w-7 rounded-[5px] text-base",
-  md: "h-10 min-w-10 rounded-md text-2xl",
-  lg: "h-14 min-w-14 rounded-lg text-4xl",
-  xl: "h-20 min-w-20 rounded-xl text-6xl",
+  sm: "h-6 min-w-6 rounded text-sm",
+  md: "h-8 min-w-8 rounded-md text-lg",
+  lg: "h-10 min-w-10 rounded-md text-2xl",
+  xl: "h-14 min-w-14 rounded-lg text-4xl",
 };
 
 // Trade Score /100 on a solid scoreboard tile (tier color, dark digits, LED-dot texture).
 export default function ScoreBadge({ score, size = "sm" }: { score: number; size?: keyof typeof SIZES }) {
   return (
     <span
-      className={`display led inline-flex shrink-0 items-center justify-center px-1 font-black leading-none tabular-nums text-black ${scoreTone(score).bg} ${SIZES[size]}`}
+      className={`display led inline-flex shrink-0 items-center justify-center px-1 font-extrabold leading-none tabular-nums text-black ${scoreTone(score).bg} ${SIZES[size]}`}
       aria-label={`Trade Score ${score} out of 100`}
     >
       {score}

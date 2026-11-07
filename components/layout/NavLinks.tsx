@@ -10,8 +10,13 @@ const LINKS = [
   { href: "/method", label: "How it works" },
 ];
 
-const isActive = (href: string, path: string | null) =>
-  path !== null && (href === "/" ? path === "/" || path.startsWith("/trade/") : path.startsWith(href));
+// "/trade" is the builder; "/trade/<id>" pages belong to "Trades".
+const isActive = (href: string, path: string | null) => {
+  if (path === null) return false;
+  if (href === "/") return path === "/" || path.startsWith("/trade/");
+  if (href === "/trade") return path === "/trade";
+  return path.startsWith(href);
+};
 
 // The nav itself; `path` = current URL, or null while it is not known yet (no tab highlighted).
 export function NavLinksView({ path }: { path: string | null }) {

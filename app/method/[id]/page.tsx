@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LoadingBlock from "@/components/LoadingBlock";
+import ModeBadge from "@/components/ModeBadge";
 import ScoreBadge from "@/components/ScoreBadge";
 import { formatDay } from "@/components/trades/TradeRow";
 import { Badge, Card, TeamMark } from "@/components/ui";
@@ -54,7 +55,7 @@ async function MethodTrade({ params }: { params: Promise<{ id: string }> }) {
       </Link>
       <header className="text-center">
         <p className="display text-sm font-semibold tracking-[0.12em] text-muted">Score breakdown · {formatDay(trade.date)}</p>
-        <h1 className="display mt-1 text-3xl font-bold leading-tight sm:text-4xl">
+        <h1 className="display mt-1 text-2xl font-bold leading-tight sm:text-3xl">
           {trade.teams.map((t) => t.team.short_name ?? t.team.name).join(" · ")}
         </h1>
         <Link href={`/trade/${trade.id}`} className="mt-1 inline-flex min-h-11 items-center text-sm text-accent underline">
@@ -69,7 +70,7 @@ async function MethodTrade({ params }: { params: Promise<{ id: string }> }) {
             <div className="min-w-0 flex-1">
               <p className="display text-xl font-bold leading-tight">{team.name}</p>
               <p className="flex items-center gap-2 text-sm text-muted">
-                <Badge verdict={result.verdict} /> judged as a {result.mode === "middle" ? "middle-of-the-pack" : result.mode} team
+                <Badge verdict={result.verdict} /> <ModeBadge mode={result.mode} />
               </p>
             </div>
             <ScoreBadge score={result.score} size="lg" />

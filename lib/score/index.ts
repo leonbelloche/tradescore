@@ -3,6 +3,7 @@ import { SCORE_CONFIG } from "./config";
 
 export * from "./types";
 export { scoreTrade, tierFor } from "./tradeScore";
+export { reasonsFor } from "./reasons";
 export { validateTrade, rulesFor } from "@/lib/rules";
 export { modeFromRecord } from "./context";
 export { blendGameScore, type SeasonLine } from "./gameScore";

@@ -21,7 +21,7 @@ export default function SignupForm() {
     return (
       <div className="space-y-4 text-center">
         <p className="display text-sm font-bold text-accent">You&apos;re in</p>
-        <p className="display text-5xl font-black leading-none">Welcome, {user.name || "Rookie GM"}</p>
+        <p className="display text-3xl font-extrabold leading-tight">Welcome, {user.name || "Rookie GM"}</p>
         <p className="text-muted">Your front office is open. Go build your first trade.</p>
         <div className="flex flex-wrap justify-center gap-3">
           <Button href="/trade">Build a trade ▸</Button>

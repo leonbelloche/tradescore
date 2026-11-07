@@ -15,7 +15,7 @@ export default function SignupPage() {
     <div className="mx-auto grid max-w-4xl items-center gap-8 pt-4 md:grid-cols-2">
       <div className="space-y-4">
         <p className="display text-sm font-bold text-accent">Join the front office</p>
-        <h1 className="display text-6xl font-black leading-[0.85]">
+        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">
           Become
           <br />a <span className="text-accent">GM</span>
         </h1>

@@ -28,7 +28,7 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
       <header className="flex items-center gap-4">
         <TeamMark abbreviation={team.abbreviation} logoUrl={team.logo_url} size="lg" />
         <div>
-          <h1 className="display text-3xl font-bold leading-tight sm:text-4xl">{team.name}</h1>
+          <h1 className="display text-2xl font-bold leading-tight sm:text-3xl">{team.name}</h1>
           <p className="text-sm text-muted">
             {team.wins}-{team.losses} · {team.league.current_season} season
           </p>

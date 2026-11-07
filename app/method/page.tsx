@@ -10,7 +10,7 @@ export default function MethodPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <header className="space-y-2 pt-2 text-center">
-        <h1 className="display text-4xl font-bold leading-none sm:text-5xl">
+        <h1 className="display text-3xl font-extrabold leading-tight sm:text-4xl">
           How the <span className="text-accent">Trade Score</span> works
         </h1>
         <p className="text-muted">Every team in a trade gets its own score out of 100. 50 means it broke even.</p>

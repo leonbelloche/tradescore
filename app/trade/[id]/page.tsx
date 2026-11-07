@@ -50,7 +50,7 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
           Trade score · {formatDay(trade.date)}
           {trade.teams.length === 3 ? " · 3-team trade" : ""}
         </p>
-        <h1 className="display mt-1 text-4xl font-bold leading-[0.95] sm:text-5xl">
+        <h1 className="display mt-1 text-3xl font-extrabold leading-tight sm:text-4xl">
           {trade.winner ? (
             <>
               <span className="text-accent">{trade.winner.team.short_name ?? trade.winner.team.name}</span>

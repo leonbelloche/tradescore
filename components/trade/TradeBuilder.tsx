@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { MODE_INFO } from "@/components/ModeBadge";
 import ScoreBadge from "@/components/ScoreBadge";
 import ResultCard, { TradeErrors } from "@/components/trades/ResultCard";
 import { Button, TeamMark } from "@/components/ui";
@@ -50,7 +51,7 @@ type PickDraft = {
   protected: boolean;
 };
 
-const MODE_LABEL: Record<TeamMode, string> = { contender: "Contender", middle: "Middle", rebuild: "Rebuild" };
+const MODE_LABEL: Record<TeamMode, string> = { contender: MODE_INFO.contender.label, middle: MODE_INFO.middle.label, rebuild: MODE_INFO.rebuild.label };
 
 type Props = {
   currentSeason: string; // e.g. "2026-27"
@@ -207,7 +208,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
       {/* 1. Team picker: tap logos (2 or 3 teams) */}
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-3">
-          <h2 className="display text-2xl font-extrabold leading-none">
+          <h2 className="display text-xl font-bold leading-none">
             <span className="num mr-2 text-sm text-accent">01</span>Pick your teams
           </h2>
           <span className="num text-xs text-muted">
@@ -261,7 +262,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
       ) : (
         /* 2. One card per team: searchable roster, picks, live salary check */
         <section className="space-y-3">
-          <h2 className="display text-2xl font-extrabold leading-none">
+          <h2 className="display text-xl font-bold leading-none">
             <span className="num mr-2 text-sm text-accent">02</span>Tap the players to move
           </h2>
           <div className={`grid grid-cols-1 gap-4 ${selected.length === 3 ? "lg:grid-cols-3" : "md:grid-cols-2"}`}>
@@ -275,7 +276,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
                   <div className="flex items-center gap-3 border-b border-border px-4 py-3">
                     <TeamMark abbreviation={team.abbreviation} logoUrl={team.logoUrl} size="lg" />
                     <div className="min-w-0 flex-1">
-                      <p className="display truncate text-xl font-extrabold leading-tight">{team.name}</p>
+                      <p className="display truncate text-lg font-bold leading-tight">{team.name}</p>
                       <p className="num text-xs text-muted">
                         {team.wins}-{team.losses} · payroll {formatMoney(team.payroll)}
                       </p>
@@ -322,7 +323,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
                               {to ? "✓" : ""}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className="display block truncate text-base font-extrabold">{p.name}</span>
+                              <span className="display block truncate text-sm font-bold">{p.name}</span>
                               <span className="num text-[11px] text-muted">
                                 {p.position} · {p.age}y · {p.yearsLeft ? `${p.yearsLeft} yr${p.yearsLeft > 1 ? "s" : ""}` : "no contract data"}
                               </span>
@@ -431,7 +432,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
       {/* 3. Live Trade Score: recomputed on every change */}
       {result && result.valid && (
         <section id="result" className="scroll-mt-40 space-y-3">
-          <h2 className="display text-2xl font-extrabold leading-none">
+          <h2 className="display text-xl font-bold leading-none">
             <span className="num mr-2 text-sm text-accent">03</span>
             {result.isEven ? "Even trade" : `${teamById.get(result.winnerTeamId!)!.shortName} win the trade`}
           </h2>

@@ -19,8 +19,8 @@ export default function FeaturedTrade({ trade, label }: { trade: ScoredTrade; la
         {trade.teams.map((t) => (
           <div key={t.team.id} className="flex flex-col items-center text-center">
             <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} size="lg" />
-            <span className="display mt-1 text-lg font-extrabold leading-tight">{t.team.short_name ?? t.team.name}</span>
-            <span className={`display text-7xl font-black leading-none tabular-nums sm:text-8xl ${scoreTone(t.score).text}`}>{t.score}</span>
+            <span className="display mt-1 text-base font-bold leading-tight">{t.team.short_name ?? t.team.name}</span>
+            <span className={`display text-5xl font-extrabold leading-none tabular-nums sm:text-6xl ${scoreTone(t.score).text}`}>{t.score}</span>
             <TierLabel score={t.score} className="text-sm" />
           </div>
         ))}

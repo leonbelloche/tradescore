@@ -10,9 +10,9 @@ export default function TeamMark({
   logoUrl?: string | null;
   size?: "sm" | "lg";
 }) {
-  const box = size === "lg" ? "h-12 w-12 text-sm" : "h-7 w-7 text-[10px]";
+  const box = size === "lg" ? "h-9 w-9 text-xs" : "h-6 w-6 text-[9px]";
   if (logoUrl) {
-    const px = size === "lg" ? 48 : 28;
+    const px = size === "lg" ? 36 : 24;
     return <Image src={logoUrl} alt={`${abbreviation} logo`} width={px} height={px} className={`${box} shrink-0 object-contain`} />;
   }
   return (

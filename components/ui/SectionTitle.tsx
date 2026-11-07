@@ -13,9 +13,9 @@ export default function SectionTitle({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-4 flex items-end gap-3 border-b border-border pb-2">
+    <div className="mb-5 flex items-end gap-3 border-b border-border pb-2">
       {index !== undefined && <span className="num text-sm text-accent">{String(index).padStart(2, "0")}</span>}
-      <h2 className="display text-2xl font-extrabold leading-none sm:text-3xl">{title}</h2>
+      <h2 className="display text-xl font-bold leading-none sm:text-2xl">{title}</h2>
       {sub && <span className="display pb-0.5 text-sm font-bold text-muted">{sub}</span>}
       {live && (
         <span className="display flex items-center gap-1 pb-0.5 text-xs font-bold text-accent">

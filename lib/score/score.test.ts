@@ -3,6 +3,7 @@ import { blendGameScore } from "./gameScore";
 import { modeFromRecord } from "./context";
 import { pickValue } from "./pickValue";
 import { ageGrowth, playerValue, talent } from "./playerValue";
+import { reasonsFor } from "./reasons";
 import { scoreTrade, tierFor } from "./tradeScore";
 import type { PickAsset, PlayerAsset, TeamMode, Trade, TradeLeg, TradeResult } from "./types";
 
@@ -170,6 +171,30 @@ describe("Trade Score — edge cases", () => {
     expect(a.sent.map((d) => d.label)).toEqual(["Young", "2nd"]);
     expect(a.details.net).toBeCloseTo(a.details.receivedTotal - a.details.sentTotal, 10);
     expect(a.received[0].breakdown).toHaveProperty("talentNow");
+  });
+});
+
+describe("Trade Score — reasons (Why X?)", () => {
+  it("explains a lopsided trade with the asset that matters most first", () => {
+    const result = valid(
+      scoreTrade(
+        trade([["A", "middle"], ["B", "middle"]], [
+          leg(player("MVP", 26, 28, 0.32, 4), "B", "A"),
+          leg({ ...player("Injured vet", 33, 18, 0.3, 2), availability: 0.5 }, "A", "B"),
+        ]),
+      ),
+    );
+    const b = result.teams.find((t) => t.teamId === "B")!;
+    const reasons = reasonsFor(b);
+    expect(reasons.length).toBeGreaterThan(0);
+    expect(reasons.length).toBeLessThanOrEqual(3);
+    expect(reasons[0]).toContain("Gives up MVP");
+    expect(reasons.join(" ")).toContain("only 50% of games played");
+  });
+
+  it("says when nothing much happens", () => {
+    const result = valid(scoreTrade(trade([["A", "middle"], ["B", "middle"]], [leg(player("Bench", 30, 6, 0.013, 1), "A", "B")])));
+    expect(reasonsFor(result.teams[0])).toEqual(["Small move: nothing in this trade changes much for them."]);
   });
 });
 
