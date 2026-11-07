@@ -6,7 +6,13 @@ import "./globals.css";
 const oswald = Oswald({ variable: "--font-oswald", subsets: ["latin"], weight: ["500", "600", "700"] });
 const roboto = Roboto({ variable: "--font-roboto", subsets: ["latin"], weight: ["400", "500", "700"] });
 
+// Absolute base for share links and images (Vercel sets the production domain).
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "TRADE SCORE NBA: who won the trade?",
   description: "Every NBA trade gets a Trade Score out of 100 for each team. See who won, who got fleeced, and build your own.",
 };

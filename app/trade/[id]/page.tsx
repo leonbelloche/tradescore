@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,6 +7,23 @@ import { formatDay } from "@/components/trades/TradeRow";
 import ResultCard from "@/components/trades/ResultCard";
 import { Button } from "@/components/ui";
 import { getScoredTrades } from "@/lib/trades/scored";
+
+// Title and description shown with the share image (Discord, X, iMessage...).
+export async function generateMetadata(props: PageProps<"/trade/[id]">): Promise<Metadata> {
+  const { id } = await props.params;
+  const trade = (await getScoredTrades()).find((t) => t.id === id);
+  if (!trade) return { title: "Trade not found — Trade Score" };
+  const name = (t: (typeof trade.teams)[number]) => t.team.short_name ?? t.team.name;
+  const scores = trade.teams.map((t) => `${name(t)} ${t.score}`).join(" · ");
+  const title = trade.winner ? `${name(trade.winner)} win the trade (${scores})` : `Even trade (${scores})`;
+  const description = trade.teams.map((t) => `${name(t)} get ${t.receives.join(", ") || "nothing counted"}.`).join(" ");
+  return {
+    title: `${title} — Trade Score`,
+    description,
+    openGraph: { title, description, type: "article" },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
 export default function TradeResultPage(props: PageProps<"/trade/[id]">) {
   return (
