@@ -54,7 +54,7 @@ export const SCORE_CONFIG = {
     pick11to20: 0.15,
     pick21to30: 0.08,
     futureFirst: 0.18, // 1st round pick that is NOT in this year's draft
-    second: 0.02,
+    second: 0.05, // raised from 0.02 on 2026-11-07 after calibration (5/15 -> 7/15), reference trades unchanged
   },
   protectedPickMultiplier: 0.7,
 

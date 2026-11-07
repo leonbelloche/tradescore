@@ -78,7 +78,7 @@ rebuild:   [0.6, 0.8, 1.0, 1.1, 1.1]
 ```
 
 ### 5. Choix de draft
-Valeur de base : top3 0.50 · 4-10 0.30 · 11-20 0.15 · 21-30 0.08 · 1er tour futur (≥ 2 ans) 0.18 · 2e tour 0.02
+Valeur de base : top3 0.50 · 4-10 0.30 · 11-20 0.15 · 21-30 0.08 · 1er tour futur (≥ 2 ans) 0.18 · 2e tour 0.05 (0.02 avant le calibrage du 2026-11-07 : 5/15 → 7/15 bons gagnants, trades de référence inchangés)
 - Rang estimé d'après le classement actuel de l'équipe qui cède le pick.
 - Protégé → ×0.7. Pas de swaps en V1.
 ```
