@@ -1,13 +1,6 @@
--- TradeLab database schema.
--- Run this once in the Supabase SQL Editor (it is safe to re-run: it drops and recreates everything).
+-- TradeLab database schema (real data version). Run once in the Supabase SQL Editor on an EMPTY project.
+-- Data is then loaded with: node scripts/import-db.mjs
 
-drop table if exists trades cascade;
-drop table if exists contracts cascade;
-drop table if exists players cascade;
-drop table if exists teams cascade;
-drop table if exists leagues cascade;
-
--- One row per league (NBA now, NHL/NFL/MLB later).
 create table leagues (
   id text primary key,                 -- 'nba'
   name text not null,
@@ -19,12 +12,14 @@ create table leagues (
 create table teams (
   id uuid primary key default gen_random_uuid(),
   league_id text not null references leagues(id),
-  name text not null,
+  name text not null,                  -- "Los Angeles Lakers"
   slug text not null unique,
-  abbreviation text not null,
+  abbreviation text not null,          -- "LAL"
   logo_url text,
-  wins int not null default 0,         -- current season record (used later for contender/rebuild mode)
-  losses int not null default 0
+  wins int not null default 0,         -- current season record
+  losses int not null default 0,
+  espn_id text unique,
+  short_name text                      -- "Lakers"
 );
 
 create table players (
@@ -34,7 +29,9 @@ create table players (
   slug text not null unique,
   position text not null,
   age int not null,
-  stats_json jsonb not null default '{}'::jsonb  -- per-game stats, keyed by season
+  stats_json jsonb not null default '{}'::jsonb,  -- per-game stats, keyed by season
+  espn_id text unique,
+  headshot_url text
 );
 
 -- One row per remaining season of a player's contract.
@@ -43,22 +40,26 @@ create table contracts (
   player_id uuid not null references players(id) on delete cascade,
   season text not null,
   salary bigint not null,
+  source text not null default 'manual',  -- 'espn' or 'manual' (data/contracts.csv)
   unique (player_id, season)
 );
 
 create table trades (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  teams_json jsonb not null,
-  assets_json jsonb not null,
-  scores_json jsonb
+  teams_json jsonb not null,           -- team abbreviations
+  assets_json jsonb not null,          -- see data/trades.json
+  scores_json jsonb,
+  slug text unique,
+  trade_date date,
+  source_text text                     -- ESPN wording
 );
 
 create index on teams (league_id);
 create index on players (team_id);
 create index on contracts (player_id);
 
--- Security: anyone can READ the public data, nobody can write with the public key.
+-- Security: anyone can READ, only the secret key (import script) can write.
 alter table leagues enable row level security;
 alter table teams enable row level security;
 alter table players enable row level security;

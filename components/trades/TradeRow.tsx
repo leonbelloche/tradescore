@@ -37,7 +37,7 @@ export default function TradeRow({ trade }: { trade: ScoredTrade }) {
               >
                 {t.team.short_name ?? t.team.name}
               </span>
-              <span className="block truncate text-[11px] text-muted">Gets {t.receives.join(", ")}</span>
+              <span className="block truncate text-[11px] text-muted">Gets {t.receives.join(", ") || "nothing counted (cash)"}</span>
             </span>
             <TierLabel score={t.score} className="hidden text-xs sm:inline" />
             <ScoreBadge score={t.score} />

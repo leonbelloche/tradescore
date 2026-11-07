@@ -100,7 +100,7 @@ async function Season() {
               <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
               <span className="min-w-0 flex-1">
                 <span className="display block truncate font-semibold">{t.team.name}</span>
-                <span className="block truncate text-xs text-muted">Got {t.receives.join(", ")}</span>
+                <span className="block truncate text-xs text-muted">Got {t.receives.join(", ") || "nothing counted (cash)"}</span>
               </span>
               <TierLabel score={t.score} className="hidden text-sm sm:inline" />
               <ScoreBadge score={t.score} size="md" />

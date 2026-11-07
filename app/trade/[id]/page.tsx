@@ -79,12 +79,15 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
             <div>
               <p className="display text-xs font-semibold tracking-[0.08em] text-muted">Gets</p>
               <ul className="mt-1 space-y-0.5">
-                {t.receives.map((name) => (
-                  <li key={name} className="display text-lg font-semibold">
+                {t.receives.map((name, i) => (
+                  <li key={`${name}-${i}`} className="display text-lg font-semibold">
                     {name}
                   </li>
                 ))}
               </ul>
+              {t.receives.length === 0 && (
+                <p className="text-sm text-muted">Nothing counted: cash, or a player who is no longer in the NBA.</p>
+              )}
             </div>
           </Card>
         ))}
