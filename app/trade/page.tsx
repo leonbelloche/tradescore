@@ -7,9 +7,12 @@ import { toPlayerAsset } from "@/lib/trades/assets";
 export default function TradeSimulatorPage() {
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="display text-4xl font-bold leading-none">Build a trade</h1>
-        <p className="text-sm text-muted">Pick 2 or 3 teams, tap the players to move, and check the salaries live.</p>
+      <header className="space-y-2">
+        <p className="display text-sm font-bold text-accent">Your front office</p>
+        <h1 className="display text-6xl font-black leading-[0.85] sm:text-7xl">
+          Build a <span className="text-accent">trade</span>
+        </h1>
+        <p className="max-w-xl text-muted">Pick 2 or 3 teams, tap the players and picks to move. Salaries are checked and the score updates live.</p>
       </header>
       <Suspense fallback={<LoadingBlock />}>
         <Simulator />
@@ -25,7 +28,9 @@ async function Simulator() {
   const builderTeams: BuilderTeam[] = teams.map((t) => ({
     id: t.id,
     name: t.name,
+    shortName: t.short_name ?? t.name,
     abbreviation: t.abbreviation,
+    logoUrl: t.logo_url,
     wins: t.wins,
     losses: t.losses,
     payroll: t.payroll,

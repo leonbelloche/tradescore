@@ -10,18 +10,17 @@ export function scoreTone(score: number) {
 }
 
 const SIZES = {
-  sm: "h-6 w-6 rounded-[5px] border text-xs",
-  md: "h-9 w-9 rounded-md border-[1.5px] text-base",
-  lg: "h-12 w-12 rounded-lg border-2 text-2xl",
-  xl: "h-16 w-16 rounded-xl border-2 text-4xl",
+  sm: "h-7 min-w-7 rounded-[5px] text-base",
+  md: "h-10 min-w-10 rounded-md text-2xl",
+  lg: "h-14 min-w-14 rounded-lg text-4xl",
+  xl: "h-20 min-w-20 rounded-xl text-6xl",
 };
 
-// Trade Score /100 in an outlined box.
+// Trade Score /100 on a solid scoreboard tile (tier color, dark digits, LED-dot texture).
 export default function ScoreBadge({ score, size = "sm" }: { score: number; size?: keyof typeof SIZES }) {
-  const tone = scoreTone(score);
   return (
     <span
-      className={`display inline-flex shrink-0 items-center justify-center font-bold tabular-nums leading-none ${tone.border} ${tone.text} ${SIZES[size]}`}
+      className={`display led inline-flex shrink-0 items-center justify-center px-1 font-black leading-none tabular-nums text-black ${scoreTone(score).bg} ${SIZES[size]}`}
       aria-label={`Trade Score ${score} out of 100`}
     >
       {score}
@@ -31,5 +30,5 @@ export default function ScoreBadge({ score, size = "sm" }: { score: number; size
 
 // Tier name in its color, e.g. "Heist!".
 export function TierLabel({ score, className = "" }: { score: number; className?: string }) {
-  return <span className={`display font-semibold normal-case ${scoreTone(score).text} ${className}`}>{tierFor(score)}</span>;
+  return <span className={`display font-extrabold ${scoreTone(score).text} ${className}`}>{tierFor(score)}</span>;
 }

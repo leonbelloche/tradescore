@@ -1,15 +1,28 @@
-// "LATEST TRADES  2026-27 ———————"
-export default function SectionTitle({ title, sub, live }: { title: string; sub?: string; live?: boolean }) {
+// "01  LATEST TRADES  2026-27" with an amber index and a thin rule under it.
+export default function SectionTitle({
+  title,
+  sub,
+  live,
+  index,
+  action,
+}: {
+  title: string;
+  sub?: string;
+  live?: boolean;
+  index?: number;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="mb-3 flex items-center gap-3">
-      <h2 className="display text-xl font-bold tracking-[0.06em] sm:text-2xl">{title}</h2>
-      {sub && <span className="display text-sm font-medium text-muted">{sub}</span>}
+    <div className="mb-4 flex items-end gap-3 border-b border-border pb-2">
+      {index !== undefined && <span className="num text-sm text-accent">{String(index).padStart(2, "0")}</span>}
+      <h2 className="display text-2xl font-extrabold leading-none sm:text-3xl">{title}</h2>
+      {sub && <span className="display pb-0.5 text-sm font-bold text-muted">{sub}</span>}
       {live && (
-        <span className="display flex items-center gap-1 text-xs font-semibold">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground" aria-hidden /> Live
+        <span className="display flex items-center gap-1 pb-0.5 text-xs font-bold text-accent">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" aria-hidden /> Live
         </span>
       )}
-      <span className="h-px flex-1 bg-border-strong" aria-hidden />
+      {action && <span className="ml-auto pb-0.5">{action}</span>}
     </div>
   );
 }

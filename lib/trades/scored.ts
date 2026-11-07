@@ -113,22 +113,34 @@ export type TeamTradeStats = {
   team: TeamSummary;
   trades: number;
   average: number; // average Trade Score over the team's trades
+  wins: number; // verdict "Win"
+  losses: number; // verdict "Loss"
+  best: { tradeId: string; score: number };
+  worst: { tradeId: string; score: number };
 };
 
+// Per-team summary of the season's trades, best average first.
 export function teamStats(trades: ScoredTrade[]): TeamTradeStats[] {
-  const byTeam = new Map<string, { team: TeamSummary; scores: number[] }>();
+  const byTeam = new Map<string, { team: TeamSummary; results: { tradeId: string; score: number; verdict: Verdict }[] }>();
   for (const trade of trades) {
     for (const t of trade.teams) {
-      const entry = byTeam.get(t.team.id) ?? { team: t.team, scores: [] };
-      entry.scores.push(t.score);
+      const entry = byTeam.get(t.team.id) ?? { team: t.team, results: [] };
+      entry.results.push({ tradeId: trade.id, score: t.score, verdict: t.verdict });
       byTeam.set(t.team.id, entry);
     }
   }
   return [...byTeam.values()]
-    .map(({ team, scores }) => ({
-      team,
-      trades: scores.length,
-      average: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
-    }))
+    .map(({ team, results }) => {
+      const sorted = [...results].sort((x, y) => y.score - x.score);
+      return {
+        team,
+        trades: results.length,
+        average: Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length),
+        wins: results.filter((r) => r.verdict === "Win").length,
+        losses: results.filter((r) => r.verdict === "Loss").length,
+        best: { tradeId: sorted[0].tradeId, score: sorted[0].score },
+        worst: { tradeId: sorted[sorted.length - 1].tradeId, score: sorted[sorted.length - 1].score },
+      };
+    })
     .sort((a, b) => b.average - a.average || b.trades - a.trades);
 }
