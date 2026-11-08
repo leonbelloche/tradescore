@@ -6,10 +6,10 @@ export const metadata: Metadata = { title: "Admin — Trade Score", robots: { in
 
 export default function AdminLoginPage() {
   return (
-    <div className="mx-auto max-w-sm space-y-6 pt-8">
-      <header className="space-y-1 text-center">
-        <p className="display text-sm font-bold text-accent">Staff only</p>
-        <h1 className="display text-4xl font-extrabold leading-[1.02]">Admin</h1>
+    <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center space-y-6 px-4">
+      <header className="space-y-3 text-center">
+        <p className="display pen-underline text-2xl font-extrabold lowercase tracking-[-0.04em]">trade score</p>
+        <p className="num text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Admin panel</p>
       </header>
       <Card className="p-5">
         <LoginForm />

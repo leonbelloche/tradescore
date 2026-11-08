@@ -36,7 +36,7 @@ async function Calibration() {
 
   return (
     <div className="space-y-8">
-      <AdminHeader title="Calibration" current="/admin/calibration" sub="Does our Trade Score pick the same winner as the analysts (ESPN, SI, Yahoo…)?" />
+      <AdminHeader title="Calibration" sub="Does our Trade Score pick the same winner as the analysts (ESPN, SI, Yahoo…)?" />
 
       <Card className="flex flex-wrap items-center gap-6 p-5">
         <div>

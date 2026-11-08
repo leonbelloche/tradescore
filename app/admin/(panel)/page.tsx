@@ -5,6 +5,7 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import { RefreshButton } from "@/components/admin/forms";
 import LoadingBlock from "@/components/LoadingBlock";
 import { Card, SectionTitle } from "@/components/ui";
+import { claudeConfigured } from "@/lib/admin/claude";
 import { detectedTrades } from "@/lib/admin/detected";
 import type { SiteSettings } from "@/lib/admin/refresh";
 import { requireAdmin } from "@/lib/admin/session";
@@ -43,6 +44,7 @@ async function Dashboard() {
 
   // What needs attention, most important first.
   const todo: { text: string; href: string; level: "high" | "mid" }[] = [];
+  if (!claudeConfigured()) todo.push({ text: "Claude is not connected: add ANTHROPIC_API_KEY to write posts, replies and videos", href: "/admin/x", level: "mid" });
   if (!process.env.SUPABASE_SECRET_KEY || !process.env.CRON_SECRET) todo.push({ text: "Some server keys are missing", href: "/admin/settings", level: "high" });
   if (stats === null) todo.push({ text: "Visit and sign-up counters are not set up (run supabase/migrations/003_admin.sql)", href: "/admin", level: "high" });
   if (site.lastRefreshError && (!site.lastRefresh || site.lastRefreshError.at > site.lastRefresh)) todo.push({ text: `Last data refresh failed: ${site.lastRefreshError.message}`, href: "/admin", level: "high" });
@@ -54,7 +56,7 @@ async function Dashboard() {
 
   return (
     <div className="space-y-10">
-      <AdminHeader title="Dashboard" current="/admin" sub="Everything you need to run Trade Score, on one page." />
+      <AdminHeader title="Dashboard" sub="Everything you need to run Trade Score, on one page." />
 
       {/* KPIs */}
       <section className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
@@ -134,14 +136,14 @@ async function Dashboard() {
         <SectionTitle title="Shortcuts" />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {[
+            ["✦ Write a post", "/admin/x"],
+            ["↩ Reply on X", "/admin/x"],
+            ["● Make a video", "/admin/video"],
             ["Add a trade", "/admin/trades#add"],
             ["Fill contracts", "/admin/contracts"],
             ["Trade of the week", "/admin/settings"],
-            ["Calibration", "/admin/calibration"],
-            ["See the site", "/"],
-            ["Today's News", "/news"],
           ].map(([label, href]) => (
-            <Link key={href} href={href} className="display flex min-h-14 items-center justify-center rounded-xl border border-border bg-surface px-3 text-center text-sm font-bold hover:border-accent">
+            <Link key={label} href={href} className="display flex min-h-14 items-center justify-center rounded-xl border border-border bg-surface px-3 text-center text-sm font-bold hover:border-accent">
               {label}
             </Link>
           ))}

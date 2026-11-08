@@ -26,7 +26,7 @@ async function Settings() {
 
   return (
     <div className="space-y-8">
-      <AdminHeader title="Settings" current="/admin/settings" sub={`Season ${league.current_season}`} />
+      <AdminHeader title="Settings" sub={`Season ${league.current_season}`} />
       <Card className="p-4 sm:p-5">
         <SettingsForm
           capMillions={league.salary_cap / 1_000_000}
@@ -41,6 +41,7 @@ async function Settings() {
             ["ADMIN_PASSWORD", !!process.env.ADMIN_PASSWORD, "your admin password (12+ characters)"],
             ["SUPABASE_SECRET_KEY", !!process.env.SUPABASE_SECRET_KEY, "lets the admin and the daily refresh write to the database"],
             ["CRON_SECRET", !!process.env.CRON_SECRET, "protects the daily refresh (any long random text)"],
+            ["ANTHROPIC_API_KEY", !!process.env.ANTHROPIC_API_KEY, "lets Claude Opus 5.5 write posts, replies and video scripts (console.anthropic.com)"],
           ].map(([name, ok, what]) => (
             <div key={String(name)} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <span className={ok ? "text-score-5" : "text-score-1"}>{ok ? "✓" : "✕"}</span>
