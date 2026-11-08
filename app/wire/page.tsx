@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
 import { formatDay } from "@/components/trades/TradeRow";
-import { Card, TeamMark } from "@/components/ui";
+import { Card, Record, TeamMark } from "@/components/ui";
 import { reasonsFor } from "@/lib/score";
 import { getScoredTrades, type ScoredTrade } from "@/lib/trades/scored";
 
@@ -71,9 +71,12 @@ async function Wire() {
                         <li key={x.team.id} className="flex min-w-0 items-start gap-2.5 rounded-lg bg-surface-2 p-2.5">
                           <TeamMark abbreviation={x.team.abbreviation} logoUrl={x.team.logo_url} />
                           <span className="min-w-0 flex-1 text-sm">
-                            <span className="display font-bold">{x.team.short_name ?? x.team.name}</span>{" "}
-                            <TierLabel score={x.score} className="text-xs" />
-                            <span className="block truncate text-xs text-muted">Gets {x.receives.join(", ") || "nothing"}</span>
+                            <span className="flex flex-wrap items-center gap-1.5">
+                              <span className="display font-bold">{x.team.short_name ?? x.team.name}</span>
+                              <Record wins={x.team.wins} losses={x.team.losses} />
+                              <TierLabel score={x.score} className="text-xs" />
+                            </span>
+                            <span className="block truncate text-xs text-muted">Gets {x.receives.join(", ") || "nothing counted (cash)"}</span>
                           </span>
                           <ScoreBadge score={x.score} size="md" />
                         </li>

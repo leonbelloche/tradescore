@@ -89,6 +89,7 @@ ValeurPick = 0.9^annéesAvantDraft × Base × moyenne(Contexte[mode][y+1..y+4])
 ```
 Score = round(50 + 50 × tanh((Σ reçues − Σ cédées) / 0.25))
 ```
+- Score borné entre 1 et 99 (décidé le 2026-11-08 : pas de 0 ni de 100).
 - Chaque équipe notée séparément (gagnant-gagnant possible). Écart < 5 = "Even trade".
 - Trade invalide (salaires) → pas de score.
 - **Affichage : seulement le score /100 par équipe.** Le détail (valeur de chaque actif) est quand même retourné par la fonction pour la page Méthode et le debug.
@@ -97,7 +98,7 @@ Score = round(50 + 50 × tanh((Σ reçues − Σ cédées) / 0.25))
 | Trade | A | B | (avant correctif) |
 |---|---|---|---|
 | A contender reçoit All-Star 27 ans GmSc 21, 0.30×3 ans ; B rebuild reçoit jeune 22 ans GmSc 13, 0.06×2 ans + 1er tour futur (dans 1 an) | 87 | 66 | 54 / 92 |
-| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 100 | 0 | 100 / 0 |
+| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 99 | 1 | 100 / 0 |
 | Deux joueurs (GmSc 15, 26 ans, 0.15×3) vs (GmSc 14.5, 25 ans, 0.14×3), milieu | 49 | 51 (Even) | 50 / 50 |
 | A contender cède 32 ans GmSc 9, 0.25×2 + pick 4-10 (cette année) à B rebuild contre 28 ans GmSc 11, 0.08×1 | 50 | 56 | 73 / 31 |
 

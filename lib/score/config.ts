@@ -60,6 +60,9 @@ export const SCORE_CONFIG = {
 
   // 6. Score = round(50 + 50 x tanh((received - given) / scoreScale))
   scoreScale: 0.25,
+  // Nobody is perfect: scores are kept between 1 and 99 (decided 2026-11-08, no 0 and no 100).
+  scoreMin: 1,
+  scoreMax: 99,
   evenTradeMaxGap: 5, // score gap below this = "Even trade"
 
   // Display tiers, from worst to best (score <= max).
@@ -68,6 +71,19 @@ export const SCORE_CONFIG = {
     { max: 40, label: "Lost It" },
     { max: 59, label: "Fair Deal" },
     { max: 79, label: "Won It" },
-    { max: 100, label: "Heist!" },
+    { max: 99, label: "Heist!" },
+  ],
+
+  // Letter grades (report-card style), from worst to best (score <= max).
+  grades: [
+    { max: 20, grade: "F" },
+    { max: 30, grade: "D" },
+    { max: 40, grade: "C-" },
+    { max: 49, grade: "C" },
+    { max: 59, grade: "C+" },
+    { max: 69, grade: "B" },
+    { max: 79, grade: "B+" },
+    { max: 89, grade: "A" },
+    { max: 99, grade: "A+" },
   ],
 } as const;

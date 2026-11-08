@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import LoadingBlock from "@/components/LoadingBlock";
 import { MODE_INFO } from "@/components/ModeBadge";
 import PlayerAvatar from "@/components/players/PlayerAvatar";
-import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
+import ScoreBadge, { GradeChip, TierLabel } from "@/components/ScoreBadge";
 import TradeRow from "@/components/trades/TradeRow";
 import { Card, SectionTitle, TeamMark } from "@/components/ui";
 import type { SeasonStats } from "@/lib/db/types";
@@ -20,7 +20,7 @@ export async function generateMetadata(props: PageProps<"/player/[slug]">): Prom
   const { players } = await getValuedPlayers();
   const p = players.find((x) => x.slug === slug);
   return p
-    ? { title: `${p.name}: Trade Value ${p.score} — Trade Score`, description: `${p.name} (${p.team.name}) is worth ${p.score}/100 in a trade.` }
+    ? { title: `${p.name}: Trade Value ${p.score} — Trade Score`, description: `${p.name} (${p.team.name}) is worth ${p.score} (1-99 scale) in a trade.` }
     : { title: "Player not found — Trade Score" };
 }
 
@@ -65,7 +65,10 @@ async function Player({ params }: { params: Promise<{ slug: string }> }) {
           <ScoreBadge score={p.score} size="xl" />
           <div>
             <p className="display text-xs font-bold text-muted">Trade Value</p>
-            <TierLabel score={p.score} className="text-lg" />
+            <span className="flex items-center gap-2">
+              <TierLabel score={p.score} className="text-lg" />
+              <GradeChip score={p.score} />
+            </span>
           </div>
         </div>
       </header>

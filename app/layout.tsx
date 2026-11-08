@@ -19,7 +19,7 @@ const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Trade Score — who won the NBA trade?",
-  description: "Every NBA trade gets a Trade Score out of 100 for each team. See who won, who got fleeced, and build your own.",
+  description: "Every NBA trade gets a Trade Score from 1 to 99 for each team. See who won, who got fleeced, and build your own.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

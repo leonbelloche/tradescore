@@ -4,13 +4,14 @@ import Link from "next/link";
 import PlayerAvatar from "@/components/players/PlayerAvatar";
 import PlayersExplorer from "@/components/players/PlayersExplorer";
 import ScoreBadge from "@/components/ScoreBadge";
+import ScoreScale from "@/components/ScoreScale";
 import { Card, SectionTitle } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import { getValuedPlayers, type ValuedPlayer } from "@/lib/players/values";
 
 export const metadata: Metadata = {
   title: "Players — Trade Score",
-  description: "Every NBA player's Trade Value /100: what he would be worth in a trade, contract included.",
+  description: "Every NBA player's Trade Value (1-99): what he would be worth in a trade, contract included.",
 };
 
 export default function PlayersPage() {
@@ -20,10 +21,13 @@ export default function PlayersPage() {
         <p className="display text-sm font-bold text-accent">2026-27 season</p>
         <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">Player values</h1>
         <p className="max-w-xl text-muted">
-          Trade Value /100 = the Trade Score a team would get for acquiring the player for nothing. 50 = fair contract,
+          Trade Value (1-99) = the Trade Score a team would get for acquiring the player for nothing. 50 = fair contract,
           above = worth more than he is paid, below = overpaid.{" "}
           <Link href="/method" className="text-accent underline-offset-2 hover:underline">How it works</Link>
         </p>
+        <div className="max-w-xl pt-2">
+          <ScoreScale compact />
+        </div>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>
         <Players />

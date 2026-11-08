@@ -1,6 +1,7 @@
 // Player value: talent, age projection and net value over the contract (max 5 seasons).
 import { SCORE_CONFIG as C } from "./config";
 import { contextAt } from "./context";
+import { toScore } from "./scale";
 import type { PlayerAsset, TeamMode } from "./types";
 
 export function talent(gmsc: number, availability = 1): number {
@@ -45,5 +46,5 @@ export function playerValue(p: PlayerAsset, mode: TeamMode): { value: number; br
 // 50 = neutral (fair contract), above = surplus value, below = overpaid.
 export function playerTradeValue(p: PlayerAsset, mode: TeamMode = "middle"): { value: number; score: number } {
   const { value } = playerValue(p, mode);
-  return { value, score: Math.round(50 + 50 * Math.tanh(value / C.scoreScale)) };
+  return { value, score: toScore(value) };
 }

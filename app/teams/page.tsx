@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import ModeBadge from "@/components/ModeBadge";
 import ScoreBadge from "@/components/ScoreBadge";
-import { SectionTitle, TeamMark } from "@/components/ui";
+import { Record, SectionTitle, TeamMark } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import { conferenceOf, standings, type Conference } from "@/lib/nba/conferences";
 import { getValuedPlayers, teamMode } from "@/lib/players/values";
@@ -39,7 +39,7 @@ async function Teams() {
     <>
       {(["East", "West"] as Conference[]).map((c, i) => (
         <section key={c}>
-          <SectionTitle index={i + 1} title={`${c}ern Conference`} sub="by record" />
+          <SectionTitle index={i + 1} title={`${c}ern Conference`} sub="by record · top 6 in amber = playoff spots" />
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {standings(teams.filter((t) => conferenceOf(t.abbreviation) === c)).map((t, rank) => {
               const s = stats.get(t.id);
@@ -49,22 +49,25 @@ async function Teams() {
                 <li key={t.id} className="min-w-0">
                   <Link href={`/team/${t.slug}`} className="block h-full rounded-[14px] border border-border bg-surface p-4 transition hover:border-accent/60 hover:bg-surface-2">
                     <div className="flex items-center gap-3">
-                      <span className="num w-5 text-xs text-muted">{rank + 1}</span>
+                      <span className={`num w-5 text-xs ${rank < 6 ? "text-accent" : "text-muted"}`}>{rank + 1}</span>
                       <TeamMark abbreviation={t.abbreviation} logoUrl={t.logo_url} size="lg" />
                       <span className="min-w-0 flex-1">
                         <span className="display block truncate text-lg font-extrabold leading-tight">{t.name}</span>
-                        <span className="flex items-center gap-2">
-                          <span className="num text-xs text-muted">{t.wins}-{t.losses}</span>
-                          <ModeBadge mode={teamMode(t)} />
-                        </span>
+                        <ModeBadge mode={teamMode(t)} />
                       </span>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <Record wins={t.wins} losses={t.losses} size="lg" />
                       {s ? (
-                        <span className="text-center" title={`Average Trade Score over ${s.trades} trade(s)`}>
-                          <ScoreBadge score={s.average} size="md" />
-                          <span className="num block text-[10px] text-muted">{s.trades} trade{s.trades > 1 ? "s" : ""}</span>
+                        <span className="flex items-center gap-2" title={`Average Trade Score over ${s.trades} trade(s)`}>
+                          <span className="text-right">
+                            <span className="display block text-[10px] font-bold text-muted">Trade Score</span>
+                            <span className="num block text-[10px] text-muted">{s.trades} trade{s.trades > 1 ? "s" : ""} · {s.wins}-{s.losses}</span>
+                          </span>
+                          <ScoreBadge score={s.average} size="lg" />
                         </span>
                       ) : (
-                        <span className="display text-[11px] font-bold text-muted">No trade</span>
+                        <span className="display text-[11px] font-bold text-muted">No trade yet</span>
                       )}
                     </div>
                     <dl className="mt-3 grid grid-cols-2 gap-2 border-t border-border pt-3 text-xs">

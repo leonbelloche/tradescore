@@ -444,7 +444,7 @@ export default function TradeBuilder({ currentSeason, salaryCap, rules, teams }:
                 return (
                   <ResultCard
                     key={t.teamId}
-                    team={{ name: team.name, abbreviation: team.abbreviation, logoUrl: team.logoUrl, record: `${team.wins}-${team.losses}` }}
+                    team={{ name: team.name, abbreviation: team.abbreviation, logoUrl: team.logoUrl, record: { wins: team.wins, losses: team.losses } }}
                     result={t}
                     showSent
                   />

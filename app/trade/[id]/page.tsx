@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import LoadingBlock from "@/components/LoadingBlock";
 import { formatDay } from "@/components/trades/TradeRow";
 import ResultCard from "@/components/trades/ResultCard";
+import ScoreScale from "@/components/ScoreScale";
 import { Button } from "@/components/ui";
 import { getScoredTrades } from "@/lib/trades/scored";
 
@@ -73,11 +74,18 @@ async function TradeResult({ params }: { params: Promise<{ id: string }> }) {
               abbreviation: t.team.abbreviation,
               logoUrl: t.team.logo_url,
               href: `/team/${t.team.slug}`,
-              record: `${t.team.wins}-${t.team.losses}`,
+              record: { wins: t.team.wins, losses: t.team.losses },
             }}
             result={t.result}
           />
         ))}
+      </div>
+
+      <div className="rounded-[14px] border border-border bg-surface p-3">
+        <p className="display mb-2 text-xs font-bold text-muted">
+          Score scale · <Link href="/method" className="text-accent hover:underline">what it means</Link>
+        </p>
+        <ScoreScale compact />
       </div>
 
       {trade.warnings.length > 0 && (

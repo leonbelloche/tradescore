@@ -3,10 +3,15 @@ import { validateTrade } from "@/lib/rules";
 import { SCORE_CONFIG as C } from "./config";
 import { pickValue } from "./pickValue";
 import { playerValue } from "./playerValue";
+import { toScore } from "./scale";
 import type { Asset, AssetDetail, TeamMode, TeamResult, Trade, TradeResult, Verdict } from "./types";
 
 export function tierFor(score: number): string {
   return C.tiers.find((t) => score <= t.max)!.label;
+}
+
+export function gradeFor(score: number): string {
+  return C.grades.find((g) => score <= g.max)!.grade;
 }
 
 export function assetDetail(asset: Asset, mode: TeamMode): AssetDetail {
@@ -28,7 +33,7 @@ export function scoreTrade(trade: Trade): TradeResult {
     const receivedTotal = sum(received);
     const sentTotal = sum(sent);
     const net = receivedTotal - sentTotal;
-    const score = Math.round(50 + 50 * Math.tanh(net / C.scoreScale));
+    const score = toScore(net);
     return { teamId: id, mode, received, sent, score, details: { receivedTotal, sentTotal, net } };
   });
 

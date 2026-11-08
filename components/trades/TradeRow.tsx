@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
-import { TeamMark } from "@/components/ui";
+import { Record, TeamMark } from "@/components/ui";
 import type { ScoredTeam, ScoredTrade } from "@/lib/trades/scored";
 
 export function formatDay(isoDate: string): string {
@@ -46,7 +46,10 @@ export default function TradeRow({ trade }: { trade: ScoredTrade }) {
             <li key={t.team.id} className="flex items-center gap-2.5">
               <TeamMark abbreviation={t.team.abbreviation} logoUrl={t.team.logo_url} />
               <span className="min-w-0 flex-1">
-                <span className="display block truncate text-base font-bold leading-tight">{shortName(t)}</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="display truncate text-base font-bold leading-tight">{shortName(t)}</span>
+                  <Record wins={t.team.wins} losses={t.team.losses} />
+                </span>
                 <span className="block truncate text-xs text-muted">Gets {gets(t)}</span>
               </span>
               <TierLabel score={t.score} className="hidden text-sm sm:inline" />
@@ -67,6 +70,7 @@ function Side({ team, align }: { team: ScoredTeam; align: "left" | "right" }) {
         <TeamMark abbreviation={team.team.abbreviation} logoUrl={team.team.logo_url} />
         <span className="display truncate text-base font-bold leading-tight">{shortName(team)}</span>
       </div>
+      <Record wins={team.team.wins} losses={team.team.losses} className="mt-1" />
       <TierLabel score={team.score} className="mt-0.5 block text-xs" />
       <p className="mt-0.5 line-clamp-2 text-xs text-muted">Gets {gets(team)}</p>
     </div>

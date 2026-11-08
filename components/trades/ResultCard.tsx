@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ModeBadge from "@/components/ModeBadge";
-import ScoreBadge, { TierLabel, scoreTone } from "@/components/ScoreBadge";
-import { Badge, Card, TeamMark } from "@/components/ui";
+import ScoreBadge, { GradeChip, TierLabel, scoreTone } from "@/components/ScoreBadge";
+import { Badge, Card, Record, TeamMark } from "@/components/ui";
 import { reasonsFor, type TeamResult } from "@/lib/score";
 
 export type ResultTeam = {
@@ -9,7 +9,7 @@ export type ResultTeam = {
   abbreviation: string;
   logoUrl?: string | null;
   href?: string; // team page
-  record?: string; // "7-1"
+  record?: { wins: number; losses: number };
 };
 
 // One team's Trade Score: score, verdict in words, tier, mode, why, and what it gets.
@@ -31,16 +31,19 @@ export default function ResultCard({ team, result, showSent = false }: { team: R
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <Badge verdict={result.verdict} />
             <ModeBadge mode={result.mode} />
-            {team.record && <span className="num text-[11px] text-muted">{team.record}</span>}
+            {team.record && <Record wins={team.record.wins} losses={team.record.losses} />}
           </div>
         </div>
         <div className="flex flex-col items-end gap-0.5">
-          <ScoreBadge score={result.score} size="lg" />
+          <span className="flex items-center gap-1.5">
+            <GradeChip score={result.score} />
+            <ScoreBadge score={result.score} size="lg" />
+          </span>
           <TierLabel score={result.score} className="text-xs" />
         </div>
       </div>
 
-      {/* 0-100 bar with the 50 mark */}
+      {/* 1-99 bar with the 50 mark */}
       <div className="relative h-1 rounded-full bg-background" aria-hidden>
         <div className={`h-1 rounded-full ${scoreTone(result.score).bg}`} style={{ width: `${result.score}%` }} />
         <div className="absolute -inset-y-1 left-1/2 w-px bg-muted/60" />

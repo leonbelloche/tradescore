@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import ScoreBadge from "@/components/ScoreBadge";
+import ScoreBadge, { GradeChip } from "@/components/ScoreBadge";
 import { Card, TeamMark } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import type { ValuedPlayer } from "@/lib/players/values";
 import PlayerAvatar from "./PlayerAvatar";
 
-type Sort = "value" | "salary" | "gmsc" | "age";
+type Sort = "value" | "overpaid" | "salary" | "gmsc" | "age";
 const SORTS: { id: Sort; label: string }[] = [
-  { id: "value", label: "Trade Value" },
+  { id: "value", label: "Best value" },
+  { id: "overpaid", label: "Most overpaid" },
   { id: "salary", label: "Salary" },
   { id: "gmsc", label: "Game Score" },
   { id: "age", label: "Youngest" },
@@ -32,10 +33,12 @@ export default function PlayersExplorer({ players, teams }: { players: ValuedPla
       (p) =>
         (!q || p.name.toLowerCase().includes(q)) &&
         (team === "All" || p.team.abbreviation === team) &&
-        (pos === "All" || p.position.includes(pos)),
+        (pos === "All" || p.position.includes(pos)) &&
+        (sort !== "overpaid" || p.hasContract),
     );
     const by: Record<Sort, (a: ValuedPlayer, b: ValuedPlayer) => number> = {
       value: (a, b) => b.value - a.value,
+      overpaid: (a, b) => a.value - b.value,
       salary: (a, b) => b.salary - a.salary,
       gmsc: (a, b) => b.gameScore - a.gameScore,
       age: (a, b) => a.age - b.age,
@@ -125,7 +128,10 @@ export default function PlayersExplorer({ players, teams }: { players: ValuedPla
                   {p.hasContract ? formatMoney(p.salary) : <span className="text-muted" title="No contract data yet">—</span>}
                 </td>
                 <td className="px-3 py-2.5 text-right">
-                  <ScoreBadge score={p.score} size="md" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <GradeChip score={p.score} className="hidden sm:inline-flex" />
+                    <ScoreBadge score={p.score} size="md" />
+                  </span>
                 </td>
               </tr>
             ))}

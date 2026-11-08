@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
+import ScoreScale from "@/components/ScoreScale";
 import { formatDay } from "@/components/trades/TradeRow";
 import { Card, SectionTitle } from "@/components/ui";
-import { TIERS } from "@/lib/score";
 import { getScoredTrades } from "@/lib/trades/scored";
 
 export default function MethodPage() {
@@ -13,7 +12,7 @@ export default function MethodPage() {
         <h1 className="display text-3xl font-extrabold leading-tight sm:text-4xl">
           How the <span className="text-accent">Trade Score</span> works
         </h1>
-        <p className="text-muted">Every team in a trade gets its own score out of 100. 50 means it broke even.</p>
+        <p className="text-muted">Every team in a trade gets its own score from 1 to 99. 50 means it broke even.</p>
       </header>
 
       <section className="space-y-3">
@@ -66,21 +65,13 @@ export default function MethodPage() {
         <SectionTitle title="4. The score" />
         <Card className="space-y-3 p-4 text-sm leading-relaxed">
           <p>
-            We add up what a team gets, subtract what it gives, and turn the difference into a score from 0 to 100. Two teams
+            We add up what a team gets, subtract what it gives, and turn the difference into a score from 1 to 99 (no trade is perfect, so nobody gets 0 or 100). Two teams
             within 5 points of each other make an <b>even trade</b>. Both teams can win.
           </p>
-          <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {TIERS.map((t, i) => {
-              const min = i === 0 ? 0 : TIERS[i - 1].max + 1;
-              return (
-                <li key={t.label} className="flex items-center gap-2">
-                  <ScoreBadge score={t.max} /> <TierLabel score={t.max} /> <span className="text-muted">{min}–{t.max}</span>
-                </li>
-              );
-            })}
-          </ul>
         </Card>
       </section>
+
+      <ScoreScale title="The grading scale" />
 
       <section className="space-y-3">
         <SectionTitle title="See it on a real trade" />

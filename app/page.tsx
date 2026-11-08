@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
+import ScoreScale from "@/components/ScoreScale";
 import FeaturedTrade from "@/components/trades/FeaturedTrade";
 import TierBar from "@/components/trades/TierBar";
 import TradeRow from "@/components/trades/TradeRow";
@@ -31,7 +32,7 @@ async function Home() {
         <br />
         the <span className="text-accent">trade?</span>
       </h1>
-      <p className="max-w-md text-muted">Every NBA trade gets a score out of 100 for each team. Win, lose, or get fleeced.</p>
+      <p className="max-w-md text-muted">Every NBA trade gets a score from 1 to 99 for each team. Win, lose, or get fleeced.</p>
       <div className="flex flex-wrap gap-3">
         <Button href="/trade">Build a trade ▸</Button>
         <Button href="/method" variant="ghost">
@@ -62,6 +63,8 @@ async function Home() {
         {hero}
         <FeaturedTrade trade={lopsided(trades)} label="Trade of the season" />
       </section>
+
+      <ScoreScale />
 
       <section>
         <SectionTitle index={1} title="Latest trades" sub={`${trades.length} scored`} />

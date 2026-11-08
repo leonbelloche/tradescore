@@ -4,7 +4,7 @@ import { modeFromRecord } from "./context";
 import { pickValue } from "./pickValue";
 import { ageGrowth, playerTradeValue, playerValue, talent } from "./playerValue";
 import { reasonsFor } from "./reasons";
-import { scoreTrade, tierFor } from "./tradeScore";
+import { gradeFor, scoreTrade, tierFor } from "./tradeScore";
 import type { PickAsset, PlayerAsset, TeamMode, Trade, TradeLeg, TradeResult } from "./types";
 
 // Test helpers: Availability = 1, no cap growth (as stated in CLAUDE.md).
@@ -57,14 +57,14 @@ describe("Trade Score — reference trades from CLAUDE.md", () => {
     expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Win"]);
   });
 
-  it("2. middle team gets an MVP for a declining player -> 100 / 0", () => {
+  it("2. middle team gets an MVP for a declining player -> 99 / 1 (capped)", () => {
     const result = scoreTrade(
       trade([["A", "middle"], ["B", "middle"]], [
         leg(player("MVP", 26, 28, 0.32, 4), "B", "A"),
         leg(player("Vet", 29, 11, 0.15, 2), "A", "B"),
       ]),
     );
-    expect(scoresOf(result)).toEqual({ A: 100, B: 0 });
+    expect(scoresOf(result)).toEqual({ A: 99, B: 1 });
     expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Loss"]);
   });
 
@@ -224,7 +224,11 @@ describe("Trade Score — building blocks", () => {
   });
 
   it("maps scores to tiers", () => {
-    expect([0, 31, 50, 73, 92].map(tierFor)).toEqual(["Fleeced", "Lost It", "Fair Deal", "Won It", "Heist!"]);
+    expect([1, 31, 50, 73, 92].map(tierFor)).toEqual(["Fleeced", "Lost It", "Fair Deal", "Won It", "Heist!"]);
+  });
+
+  it("maps scores to letter grades", () => {
+    expect([1, 25, 45, 55, 65, 75, 85, 99].map(gradeFor)).toEqual(["F", "D", "C", "C+", "B", "B+", "A", "A+"]);
   });
 });
 

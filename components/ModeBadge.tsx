@@ -3,7 +3,7 @@ import type { TeamMode } from "@/lib/score";
 // How a team is judged: its context (CLAUDE.md, "Contexte de l'équipe qui REÇOIT").
 export const MODE_INFO: Record<TeamMode, { label: string; hint: string; className: string }> = {
   contender: { label: "Win-now", hint: "Wins 60%+ of its games: this season counts the most", className: "border-accent/60 text-accent" },
-  middle: { label: "In the mix", hint: "Between 40% and 60% wins: every season counts the same", className: "border-score-3/50 text-score-3" },
+  middle: { label: "In the mix", hint: "Between 40% and 60% wins: every season counts the same", className: "border-sky-400/60 text-sky-300" },
   rebuild: { label: "Rebuilding", hint: "Wins 40% or less: the future counts more than this season", className: "border-violet-400/60 text-violet-300" },
 };
 

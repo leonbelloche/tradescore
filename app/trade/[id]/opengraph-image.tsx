@@ -14,7 +14,7 @@ const shoulders = readFile(join(process.cwd(), "assets/fonts/BigShoulders-ExtraB
 function scoreColor(score: number): string {
   if (score > 79) return "#2ee6a6";
   if (score > 59) return "#9be15d";
-  if (score > 40) return "#b8c4d6";
+  if (score > 40) return "#ffe14a";
   if (score > 20) return "#ff8a3d";
   return "#ff4d5e";
 }
