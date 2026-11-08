@@ -11,6 +11,7 @@ export type ValuedPlayer = {
   position: string;
   age: number;
   headshotUrl: string | null;
+  espnId: string | null;
   team: Pick<TeamWithRoster, "id" | "name" | "short_name" | "slug" | "abbreviation" | "logo_url">;
   salary: number; // current season, dollars (0 = contract unknown)
   yearsLeft: number;
@@ -33,6 +34,7 @@ export function valuePlayer(p: RosterPlayer, team: TeamWithRoster, league: Leagu
     position: p.position,
     age: p.age,
     headshotUrl: p.headshot_url,
+    espnId: p.espn_id,
     team: { id: team.id, name: team.name, short_name: team.short_name, slug: team.slug, abbreviation: team.abbreviation, logo_url: team.logo_url },
     salary: p.currentSalary,
     yearsLeft: p.yearsLeft,
