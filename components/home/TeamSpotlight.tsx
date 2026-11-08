@@ -4,14 +4,23 @@ import ModeBadge from "@/components/ModeBadge";
 import ScoreBadge, { GradeChip, TierLabel, scoreTone } from "@/components/ScoreBadge";
 import { Record, TeamMark } from "@/components/ui";
 import { modeFromRecord } from "@/lib/score";
-import type { TeamTradeStats } from "@/lib/trades/scored";
+import { formatDay } from "@/components/trades/TradeRow";
+import type { ScoredTrade, TeamTradeStats } from "@/lib/trades/scored";
 
 // The best trading team of the season, presented as a trophy card, with the next two below.
-export default function TeamSpotlight({ stats }: { stats: TeamTradeStats[] }) {
+export default function TeamSpotlight({ stats, trades }: { stats: TeamTradeStats[]; trades: ScoredTrade[] }) {
   const [top, ...rest] = stats;
   if (!top) return null;
   const tone = scoreTone(top.average);
   const t = top.team;
+  // What the team brought in and sent out, trade by trade.
+  const moves = trades
+    .filter((tr) => tr.teams.some((x) => x.team.id === t.id))
+    .map((tr) => {
+      const me = tr.teams.find((x) => x.team.id === t.id)!;
+      const partners = tr.teams.filter((x) => x.team.id !== t.id);
+      return { trade: tr, me, partners, sent: me.result.sent.map((d) => d.label) };
+    });
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-accent/50 bg-surface">
@@ -58,6 +67,35 @@ export default function TeamSpotlight({ stats }: { stats: TeamTradeStats[] }) {
         </dl>
         <Record wins={t.wins} losses={t.losses} size="lg" />
       </Link>
+
+      {moves.length > 0 && (
+        <div className="relative space-y-2 border-t border-border px-5 py-4">
+          <p className="display text-xs font-bold text-accent">Their trades</p>
+          {moves.map(({ trade, me, partners, sent }) => (
+            <Link key={trade.id} href={`/trade/${trade.id}`} className="block rounded-lg border border-border bg-background/60 p-3 text-sm hover:border-accent/60">
+              <span className="flex items-center gap-2">
+                <span className="num text-[11px] text-muted">{formatDay(trade.date)}</span>
+                <span className="text-[11px] text-muted">with</span>
+                {partners.map((p) => (
+                  <span key={p.team.id} className="flex items-center gap-1">
+                    <TeamMark abbreviation={p.team.abbreviation} logoUrl={p.team.logo_url} />
+                    <span className="display text-xs font-bold">{p.team.short_name ?? p.team.name}</span>
+                  </span>
+                ))}
+                <span className="ml-auto"><ScoreBadge score={me.score} /></span>
+              </span>
+              <span className="mt-2 flex gap-2">
+                <span className="display w-9 shrink-0 text-[11px] font-extrabold text-score-5">In</span>
+                <span className="min-w-0">{me.receives.join(", ") || "Cash"}</span>
+              </span>
+              <span className="mt-1 flex gap-2">
+                <span className="display w-9 shrink-0 text-[11px] font-extrabold text-score-1">Out</span>
+                <span className="min-w-0 text-muted">{sent.join(", ") || "Cash"}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {rest.length > 0 && (
         <ol className="relative divide-y divide-border border-t border-border">

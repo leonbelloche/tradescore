@@ -61,7 +61,7 @@ async function Home() {
         {hero}
         <section aria-label="This week" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.35fr_1fr]">
           {week && <TradeOfTheWeek trade={week.trade} weekOf={week.weekOf} players={players} />}
-          <TeamSpotlight stats={stats} />
+          <TeamSpotlight stats={stats} trades={trades} />
         </section>
       </div>
 
