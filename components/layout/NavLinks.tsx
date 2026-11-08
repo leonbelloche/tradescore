@@ -5,8 +5,12 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/", label: "Trades" },
-  { href: "/trade", label: "Build a trade" },
+  { href: "/wire", label: "Wire" },
+  { href: "/players", label: "Players" },
+  { href: "/teams", label: "Teams" },
   { href: "/rankings", label: "Rankings" },
+  { href: "/compare", label: "H2H" },
+  { href: "/trade", label: "Build a trade" },
   { href: "/method", label: "How it works" },
 ];
 
@@ -15,13 +19,14 @@ const isActive = (href: string, path: string | null) => {
   if (path === null) return false;
   if (href === "/") return path === "/" || path.startsWith("/trade/");
   if (href === "/trade") return path === "/trade";
-  return path.startsWith(href);
+  // "/teams" also covers "/team/<slug>", "/players" covers "/player/<slug>".
+  return path.startsWith(href) || path.startsWith(`${href.slice(0, -1)}/`);
 };
 
 // The nav itself; `path` = current URL, or null while it is not known yet (no tab highlighted).
 export function NavLinksView({ path }: { path: string | null }) {
   return (
-    <ul className="flex items-center gap-1 overflow-x-auto">
+    <ul className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]">
       {LINKS.map((l) => {
         const active = isActive(l.href, path);
         return (

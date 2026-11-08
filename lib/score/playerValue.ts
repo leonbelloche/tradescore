@@ -40,3 +40,10 @@ export function playerValue(p: PlayerAsset, mode: TeamMode): { value: number; br
   breakdown.value = value;
   return { value, breakdown };
 }
+
+// Trade Value /100: the Trade Score a team in `mode` would get for receiving this player for nothing.
+// 50 = neutral (fair contract), above = surplus value, below = overpaid.
+export function playerTradeValue(p: PlayerAsset, mode: TeamMode = "middle"): { value: number; score: number } {
+  const { value } = playerValue(p, mode);
+  return { value, score: Math.round(50 + 50 * Math.tanh(value / C.scoreScale)) };
+}

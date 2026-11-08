@@ -7,7 +7,7 @@ export { reasonsFor } from "./reasons";
 export { validateTrade, rulesFor } from "@/lib/rules";
 export { modeFromRecord } from "./context";
 export { blendGameScore, type SeasonLine } from "./gameScore";
-export { salariesAsCapFraction } from "./playerValue";
+export { salariesAsCapFraction, playerTradeValue } from "./playerValue";
 
 // Display tiers, worst to best: { max, label }.
 export const TIERS = SCORE_CONFIG.tiers;

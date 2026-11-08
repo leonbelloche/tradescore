@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { blendGameScore } from "./gameScore";
 import { modeFromRecord } from "./context";
 import { pickValue } from "./pickValue";
-import { ageGrowth, playerValue, talent } from "./playerValue";
+import { ageGrowth, playerTradeValue, playerValue, talent } from "./playerValue";
 import { reasonsFor } from "./reasons";
 import { scoreTrade, tierFor } from "./tradeScore";
 import type { PickAsset, PlayerAsset, TeamMode, Trade, TradeLeg, TradeResult } from "./types";
@@ -225,5 +225,16 @@ describe("Trade Score — building blocks", () => {
 
   it("maps scores to tiers", () => {
     expect([0, 31, 50, 73, 92].map(tierFor)).toEqual(["Fleeced", "Lost It", "Fair Deal", "Won It", "Heist!"]);
+  });
+});
+
+describe("Trade Value (player /100)", () => {
+  const p = (gameScore: number, salary: number, years: number, age = 26) => ({
+    kind: "player" as const, id: "x", name: "x", age, gameScore, availability: 1, salaries: Array(years).fill(salary),
+  });
+  it("a star on a fair deal is well above 50, a bad contract below, a min bench player ~50", () => {
+    expect(playerTradeValue(p(25, 0.3, 4)).score).toBeGreaterThan(75);
+    expect(playerTradeValue(p(9, 0.25, 3)).score).toBeLessThan(25);
+    expect(Math.abs(playerTradeValue(p(7, 0.013, 1)).score - 50)).toBeLessThanOrEqual(2);
   });
 });
