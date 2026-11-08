@@ -11,13 +11,20 @@ export async function bump(kind: StatKind): Promise<void> {
   } catch {}
 }
 
-// The last `days` days, oldest first, with zeros for empty days. null = table not created yet.
+// The last `days` days, oldest first, with zeros for empty days.
+// null = not available yet (table not created, or SUPABASE_SECRET_KEY missing): the dashboard shows how to set it up.
 export async function lastDays(days: number, today: string): Promise<DayStats[] | null> {
   const start = new Date(`${today}T12:00:00Z`);
   start.setUTCDate(start.getUTCDate() - (days - 1));
   const from = start.toISOString().slice(0, 10);
-  const { data, error } = await adminDb().from("daily_stats").select("day, kind, count").gte("day", from);
-  if (error) return null;
+  let data: unknown;
+  try {
+    const res = await adminDb().from("daily_stats").select("day, kind, count").gte("day", from);
+    if (res.error) return null;
+    data = res.data;
+  } catch {
+    return null;
+  }
   const out: DayStats[] = Array.from({ length: days }, (_, i) => {
     const d = new Date(start);
     d.setUTCDate(d.getUTCDate() + i);

@@ -203,8 +203,9 @@ function SetupCounters() {
   return (
     <div className="space-y-2 text-sm">
       <p className="font-bold">The counters are not set up yet.</p>
+      <p className="text-muted">1. Add SUPABASE_SECRET_KEY in Vercel (Settings → Environment Variables), then redeploy.</p>
       <p className="text-muted">
-        Open Supabase → SQL Editor, paste the content of <code className="num">supabase/migrations/003_admin.sql</code>, click Run. Visitors and sign-ups will then
+        2. Open Supabase → SQL Editor, paste the content of <code className="num">supabase/migrations/003_admin.sql</code>, click Run. Visitors and sign-ups will then
         show up here, day by day (numbers only, no personal data).
       </p>
     </div>
