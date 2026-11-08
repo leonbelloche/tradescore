@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SignupForm from "@/components/auth/SignupForm";
+import { TAGLINE } from "@/components/layout/Logo";
 import { Card } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Sign up — Trade Score" };
@@ -14,10 +15,13 @@ export default function SignupPage() {
   return (
     <div className="mx-auto grid max-w-4xl items-center gap-8 pt-4 md:grid-cols-2">
       <div className="space-y-4">
-        <p className="display text-sm font-bold text-accent">Join the front office</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">
+        <div>
+          <p className="display pen-underline text-2xl font-extrabold lowercase tracking-[-0.04em]">trade score</p>
+          <p className="num mt-3 text-sm text-muted">{TAGLINE}</p>
+        </div>
+        <h1 className="display text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-5xl">
           Become
-          <br />a <span className="text-accent">GM</span>
+          <br />a <span className="pen-underline">GM</span>
         </h1>
         <ul className="space-y-2">
           {PERKS.map((p) => (

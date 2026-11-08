@@ -14,7 +14,7 @@ export default function ComparePage() {
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="display text-sm font-bold text-accent">Head to head</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">Compare</h1>
+        <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">Compare</h1>
         <p className="max-w-xl text-muted">Two teams or two players, side by side. The amber dot marks who wins each line.</p>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>

@@ -6,6 +6,7 @@ import TeamSpotlight from "@/components/home/TeamSpotlight";
 import TradeOfTheWeek, { pickTradeOfTheWeek } from "@/components/home/TradeOfTheWeek";
 import TierBar from "@/components/trades/TierBar";
 import TradeRow from "@/components/trades/TradeRow";
+import { TAGLINE } from "@/components/layout/Logo";
 import { Button, Card, SectionTitle, TeamMark } from "@/components/ui";
 import { getValuedPlayers } from "@/lib/players/values";
 import { getScoredTrades, teamStats, type TeamTradeStats } from "@/lib/trades/scored";
@@ -23,12 +24,13 @@ async function Home() {
 
   const hero = (
     <div className="space-y-4">
-      <p className="display text-sm font-bold text-accent">NBA · 2026-27 season</p>
-      <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl lg:text-6xl">
+      <p className="num text-xs font-semibold text-accent">NBA · {league.current_season} · updated every day</p>
+      <h1 className="display text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
         Who won
         <br />
-        the <span className="text-accent">trade?</span>
+        the <span className="pen-underline">trade?</span>
       </h1>
+      <p className="display text-xl font-semibold sm:text-2xl">{TAGLINE}</p>
       <p className="max-w-md text-muted">Every NBA trade gets a score from 1 to 99 for each team. Win, lose, or get fleeced.</p>
       <div className="flex flex-wrap gap-3">
         <Button href="/trade">Build a trade ▸</Button>

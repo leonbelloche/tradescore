@@ -9,7 +9,7 @@ export default function TradeSimulatorPage() {
     <div className="space-y-6">
       <header className="space-y-2">
         <p className="display text-sm font-bold text-accent">Your front office</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">
+        <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
           Build a <span className="text-accent">trade</span>
         </h1>
         <p className="max-w-xl text-muted">Pick 2 or 3 teams, tap the players and picks to move. Salaries are checked and the score updates live.</p>

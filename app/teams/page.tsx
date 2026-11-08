@@ -20,7 +20,7 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <header className="space-y-2">
         <p className="display text-sm font-bold text-accent">2026-27 season</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">Teams</h1>
+        <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">Teams</h1>
         <p className="max-w-xl text-muted">East and West side by side: record, how well they trade, and who they could trade away.</p>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>

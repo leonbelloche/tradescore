@@ -17,7 +17,7 @@ export default function AdminHeader({ title, current, sub }: { title: string; cu
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="space-y-1">
           <p className="display text-sm font-bold text-accent">Admin</p>
-          <h1 className="display text-4xl font-extrabold leading-[0.9]">{title}</h1>
+          <h1 className="display text-4xl font-extrabold leading-[1.02]">{title}</h1>
           {sub && <p className="text-sm text-muted">{sub}</p>}
         </div>
         <form action={logout}>
@@ -33,7 +33,7 @@ export default function AdminHeader({ title, current, sub }: { title: string; cu
             href={s.href}
             aria-current={s.href === current ? "page" : undefined}
             className={`display shrink-0 border-b-2 px-3 py-2 text-sm font-bold ${
-              s.href === current ? "border-accent text-foreground" : "border-transparent text-muted hover:text-foreground"
+              s.href === current ? "border-pen text-foreground" : "border-transparent text-muted hover:text-foreground"
             }`}
           >
             {s.label}

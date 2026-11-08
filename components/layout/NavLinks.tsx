@@ -35,8 +35,8 @@ export function NavLinksView({ path }: { path: string | null }) {
             <Link
               href={l.href}
               aria-current={active ? "page" : undefined}
-              className={`display flex min-h-11 items-center whitespace-nowrap border-b-2 px-3 text-sm font-bold ${
-                active ? "border-accent text-foreground" : "border-transparent text-muted hover:text-foreground"
+              className={`display flex min-h-11 items-center whitespace-nowrap border-b-2 px-3 text-sm font-semibold ${
+                active ? "border-pen text-foreground" : "border-transparent text-muted hover:text-foreground"
               }`}
             >
               {l.label}
@@ -48,7 +48,7 @@ export function NavLinksView({ path }: { path: string | null }) {
   );
 }
 
-// Main navigation; the current page is underlined in amber. Render inside <Suspense>.
+// Main navigation; the current page is underlined with the red pen. Render inside <Suspense>.
 export default function NavLinks() {
   return <NavLinksView path={usePathname()} />;
 }

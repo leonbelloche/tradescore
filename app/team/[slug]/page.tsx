@@ -58,7 +58,7 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
             {confRank}
             {confRank === 1 ? "st" : confRank === 2 ? "nd" : confRank === 3 ? "rd" : "th"} in the {conf} · {team.league.current_season}
           </p>
-          <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">{team.name}</h1>
+          <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">{team.name}</h1>
           <ModeBadge mode={teamMode(team)} className="mt-2" />
         </div>
         <Record wins={team.wins} losses={team.losses} size="lg" />

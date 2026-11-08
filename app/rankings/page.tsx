@@ -21,7 +21,7 @@ export default function RankingsPage() {
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="display text-sm font-bold text-accent">2026-27 season</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">Rankings</h1>
+        <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">Rankings</h1>
         <p className="max-w-xl text-muted">Who trades best, and who wins on the court.</p>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>

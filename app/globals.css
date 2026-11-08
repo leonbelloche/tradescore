@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
-/* "Arena scoreboard" theme: ink background, amber scoreboard accent. Always dark. */
+/* Trade Score identity (2026-11-08): deep navy night, amber accent, red "pen" mark, circled scores. Always dark. */
 :root {
-  --background: #0b0c10;
-  --surface: #14161c;
-  --surface-2: #1b1e26;
-  --border: #242833;
-  --border-strong: #363b48;
-  --foreground: #eef0f4;
-  --muted: #9aa1b0;
-  --accent: #ffb020; /* scoreboard bulb amber */
+  --background: #0b1426; /* very dark navy, not black */
+  --surface: #111d33;
+  --surface-2: #172640;
+  --border: #22324d;
+  --border-strong: #31466a;
+  --foreground: #eaf0f7;
+  --muted: #8d9db6;
+  --accent: #ffb020; /* amber: buttons, links, highlights */
+  --pen: #ff4545; /* red pen: logo stroke, underlines, active tab */
 
   /* Score scale, worst -> best: Fleeced, Lost It, Fair Deal, Won It, Heist! */
   --score-1: #ff4d5e;
@@ -28,13 +29,14 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-pen: var(--pen);
   --color-score-1: var(--score-1);
   --color-score-2: var(--score-2);
   --color-score-3: var(--score-3);
   --color-score-4: var(--score-4);
   --color-score-5: var(--score-5);
   --font-sans: var(--font-inter);
-  --font-display: var(--font-shoulders);
+  --font-display: var(--font-sora);
   --font-mono: var(--font-jetbrains);
 }
 
@@ -50,23 +52,34 @@ body {
   border-radius: 4px;
 }
 
-/* Condensed sporty headings: titles, team names, labels, scores. */
+/* Headings, team names, labels: Sora, sentence case, tight tracking (no condensed all-caps). */
 .display {
-  font-family: var(--font-shoulders);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  font-family: var(--font-sora);
+  letter-spacing: -0.02em;
+}
+
+/* Red pen stroke under a word (logo, hero), slightly tilted like a hand-drawn line. */
+.pen-underline {
+  position: relative;
+  display: inline-block;
+}
+.pen-underline::after {
+  content: "";
+  position: absolute;
+  left: -0.04em;
+  right: -0.06em;
+  bottom: -0.08em;
+  height: max(3px, 0.12em);
+  border-radius: 999px;
+  background: var(--pen);
+  transform: rotate(-1.5deg);
+  pointer-events: none;
 }
 
 /* Numbers that must line up (salaries, stats). */
 .num {
   font-family: var(--font-jetbrains);
   font-variant-numeric: tabular-nums;
-}
-
-/* Faint LED-dot texture used behind scoreboard numbers. */
-.led {
-  background-image: radial-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1.2px);
-  background-size: 6px 6px;
 }
 
 /* Scrolling results ticker. */
@@ -82,28 +95,4 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .ticker-track { animation: none; }
-}
-
-/* Score tile: split-flap scoreboard digit (top highlight, middle seam, dot texture, soft glow in its tier color). */
-.score-tile {
-  position: relative;
-  background-image:
-    linear-gradient(180deg, rgb(255 255 255 / 0.28) 0%, rgb(255 255 255 / 0.04) 49%, rgb(0 0 0 / 0.12) 50%, rgb(0 0 0 / 0.02) 100%),
-    radial-gradient(rgb(0 0 0 / 0.12) 1px, transparent 1.2px);
-  background-size: 100% 100%, 5px 5px;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.45),
-    inset 0 -2px 0 rgb(0 0 0 / 0.22),
-    0 0 16px -6px var(--tone, transparent);
-  text-shadow: 0 1px 0 rgb(255 255 255 / 0.35);
-}
-.score-tile::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: rgb(0 0 0 / 0.22);
-  pointer-events: none;
 }

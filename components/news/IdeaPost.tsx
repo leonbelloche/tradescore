@@ -109,7 +109,7 @@ export default async function IdeaPost({
   const titleBlock = (
     <div className="min-w-0 space-y-3">
       <p className="display text-xs font-bold text-accent">NBA · {day ? "Trade ideas of the day" : "Suggested move"}</p>
-      <h3 className={`display font-extrabold leading-[0.95] ${featured ? "text-3xl sm:text-4xl lg:text-5xl" : "text-2xl sm:text-3xl"}`}>{headline(idea)}</h3>
+      <h3 className={`display font-extrabold leading-[1.05] ${featured ? "text-3xl sm:text-4xl lg:text-5xl" : "text-2xl sm:text-3xl"}`}>{headline(idea)}</h3>
       <p className="flex items-center gap-2 text-xs text-muted">
         <span className="led flex h-6 w-6 items-center justify-center rounded bg-accent text-[10px] font-extrabold text-black">TS</span>
         <span>

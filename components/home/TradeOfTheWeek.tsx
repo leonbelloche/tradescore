@@ -61,7 +61,7 @@ export default function TradeOfTheWeek({ trade, weekOf, players }: { trade: Scor
           )}
           <div className="min-w-0 flex-1">
             <p className="display text-xs font-bold text-muted">{star ? (star.score >= 60 ? "Player of the week" : "Key player") : "The winner"}</p>
-            <h3 className="display truncate text-3xl font-extrabold leading-[0.95] sm:text-4xl">{star?.name ?? winner.team.name}</h3>
+            <h3 className="display truncate text-3xl font-extrabold leading-[1.05] sm:text-4xl">{star?.name ?? winner.team.name}</h3>
             <p className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-muted">
               {star && from && to ? (
                 <>

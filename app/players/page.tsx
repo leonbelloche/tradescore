@@ -19,7 +19,7 @@ export default function PlayersPage() {
     <div className="space-y-10">
       <header className="space-y-2">
         <p className="display text-sm font-bold text-accent">2026-27 season</p>
-        <h1 className="display text-4xl font-extrabold leading-[0.9] sm:text-5xl">Player values</h1>
+        <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">Player values</h1>
         <p className="max-w-xl text-muted">
           Trade Value (1-99) = the Trade Score a team would get for acquiring the player for nothing. 50 = fair contract,
           above = worth more than he is paid, below = overpaid.{" "}

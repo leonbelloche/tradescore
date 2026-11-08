@@ -56,7 +56,7 @@ async function Player({ params }: { params: Promise<{ slug: string }> }) {
           <Link href={`/team/${p.team.slug}`} className="display flex items-center gap-2 text-sm font-bold text-muted hover:text-foreground">
             <TeamMark abbreviation={p.team.abbreviation} logoUrl={p.team.logo_url} /> {p.team.name}
           </Link>
-          <h1 className="display mt-1 text-4xl font-extrabold leading-[0.9] sm:text-5xl">{p.name}</h1>
+          <h1 className="display mt-1 text-4xl font-extrabold leading-[1.02] sm:text-5xl">{p.name}</h1>
           <p className="num mt-2 text-sm text-muted">
             {p.position} · {p.age} yrs · #{rank} of {players.length} by Trade Value
           </p>
