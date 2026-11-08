@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui";
+import { trackSignup } from "@/app/track";
 import { signUp, useFakeUser } from "@/lib/fakeAuth";
 
 // TEMPORARY: accepts anything, even empty fields (see lib/fakeAuth.ts). The password is never stored or sent.
@@ -14,6 +15,7 @@ export default function SignupForm() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     signUp(name, email);
+    trackSignup().catch(() => {}); // +1 on today's sign-up counter, nothing else is sent
     setPassword(""); // dropped immediately, never kept
   }
 
@@ -52,7 +54,7 @@ export default function SignupForm() {
         Create my GM account
       </Button>
       <p className="text-center text-xs text-muted">
-        Preview: accounts aren&apos;t real yet. Nothing leaves your browser, and your password is never saved.
+        Preview: accounts aren&apos;t real yet. Your name and email stay in your browser (we only count sign-ups), and your password is never saved.
       </p>
     </form>
   );

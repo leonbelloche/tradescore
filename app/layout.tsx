@@ -5,16 +5,14 @@ import Logo from "@/components/layout/Logo";
 import NavLinks, { NavLinksView } from "@/components/layout/NavLinks";
 import Ticker from "@/components/layout/Ticker";
 import UserBadge from "@/components/layout/UserBadge";
+import VisitTracker from "@/components/layout/VisitTracker";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const shoulders = Big_Shoulders({ variable: "--font-shoulders", subsets: ["latin"], weight: ["600", "700", "800", "900"] });
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const jetbrains = JetBrains_Mono({ variable: "--font-jetbrains", subsets: ["latin"], weight: ["400", "600"] });
 
-// Absolute base for share links and images (Vercel sets the production domain).
-const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,6 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${shoulders.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
+        <VisitTracker />
         <div className="sticky top-0 z-40">
           <Suspense fallback={<div className="h-8 border-b border-border bg-black" />}>
             <Ticker />

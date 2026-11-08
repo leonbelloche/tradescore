@@ -1,4 +1,8 @@
 // STEP 3 — Replaces the database content with data/espn.json + data/contracts.csv + data/trades.json.
+// Since the admin exists (2026-11-08) this is a FULL RESET tool: day-to-day updates happen in /admin
+// (daily ESPN refresh, trades, contracts). It keeps what you did in the admin:
+//   - contracts typed in /admin (source = manual) are re-applied after the reset
+//   - trades are never wiped: trades.json rows are added/updated by slug, admin trades stay.
 // Run: node scripts/import-db.mjs
 // Needs SUPABASE_SECRET_KEY in .env.local (node scripts/set-secret.mjs).
 import { readFileSync } from "node:fs";
@@ -31,8 +35,24 @@ const { teams, players, fetchedAt } = JSON.parse(read("espn.json"));
 const contractRows = parseCsv(read("contracts.csv"));
 const trades = JSON.parse(read("trades.json"));
 
-// 1. Wipe old data (demo teams included). Order matters because of foreign keys.
-for (const table of ["trades", "contracts", "players", "teams"]) {
+// 0. Remember contracts typed in the admin (by ESPN id), to re-apply them after the wipe.
+const manualRows = await run("manual contracts", db.from("contracts").select("season, salary, players(espn_id)").eq("source", "manual"));
+const manualByEspn = new Map();
+for (const c of manualRows) {
+  const id = c.players?.espn_id;
+  if (!id) continue;
+  if (!manualByEspn.has(id)) manualByEspn.set(id, { espn_id: id, source: "manual" });
+  manualByEspn.get(id)[c.season] = c.salary;
+}
+for (const [id, row] of manualByEspn) {
+  const i = contractRows.findIndex((r) => r.espn_id === id);
+  if (i >= 0) contractRows[i] = { ...contractRows[i], ...Object.fromEntries(SEASONS.map((s) => [s, row[s] ?? ""])), source: "manual" };
+  else contractRows.push(row);
+}
+console.log(`✓ kept ${manualByEspn.size} contracts typed in the admin`);
+
+// 1. Wipe old data (demo teams included). Order matters because of foreign keys. Trades are kept.
+for (const table of ["contracts", "players", "teams"]) {
   await run(`clear ${table}`, db.from(table).delete().not("id", "is", null));
 }
 console.log("✓ cleared old data");
@@ -100,6 +120,6 @@ const tradeRows = trades.map((t) => {
     assets_json: t.assets.map((a) => (a.name ? { ...a, espn_id: espnIdBySlug.get(slugify(a.name)) ?? null } : a)),
   };
 });
-await run("trades", db.from("trades").insert(tradeRows));
-console.log(`✓ ${tradeRows.length} trades`);
+await run("trades", db.from("trades").upsert(tradeRows, { onConflict: "slug" }));
+console.log(`✓ ${tradeRows.length} trades from trades.json (trades added in the admin are kept)`);
 console.log(`Done. ESPN data fetched at ${fetchedAt}.`);

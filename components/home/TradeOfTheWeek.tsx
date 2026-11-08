@@ -15,10 +15,13 @@ function starOf(trade: ScoredTrade, players: ValuedPlayer[]): ValuedPlayer | und
   return players.filter((p) => ids.has(p.id) && p.hasContract).sort((a, b) => b.score - a.score)[0];
 }
 
-// The week's standout deal: among trades from the 7 days before the latest one, the one that moved
+// The week's standout deal (unless the admin chose one): among trades from the 7 days before the latest one, the one that moved
 // the best player (by Trade Value); ties go to the biggest winning score.
-export function pickTradeOfTheWeek(trades: ScoredTrade[], players: ValuedPlayer[]): { trade: ScoredTrade; weekOf: string } | null {
+// `chosen` = trade slug picked by the admin (Settings), used when it still exists.
+export function pickTradeOfTheWeek(trades: ScoredTrade[], players: ValuedPlayer[], chosen?: string | null): { trade: ScoredTrade; weekOf: string } | null {
   if (trades.length === 0) return null;
+  const picked = chosen ? trades.find((t) => t.id === chosen) : undefined;
+  if (picked) return { trade: picked, weekOf: formatDay(new Date(Date.parse(picked.date) - 6 * DAY).toISOString().slice(0, 10)) };
   const latest = Math.max(...trades.map((t) => Date.parse(t.date)));
   const week = trades.filter((t) => latest - Date.parse(t.date) < 7 * DAY);
   const rank = (t: ScoredTrade) => (starOf(t, players)?.score ?? 0) * 100 + t.teams[0].score;

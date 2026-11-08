@@ -19,7 +19,7 @@ export default function HomePage() {
 }
 
 async function Home() {
-  const [trades, { players }] = await Promise.all([getScoredTrades(), getValuedPlayers()]);
+  const [trades, { league, players }] = await Promise.all([getScoredTrades(), getValuedPlayers()]);
 
   const hero = (
     <div className="space-y-4">
@@ -49,7 +49,8 @@ async function Home() {
   }
 
   const stats = teamStats(trades);
-  const week = pickTradeOfTheWeek(trades, players);
+  const chosen = (league.rules_json.site as { tradeOfTheWeek?: string | null } | undefined)?.tradeOfTheWeek;
+  const week = pickTradeOfTheWeek(trades, players, chosen);
   const heists = trades
     .flatMap((trade) => trade.teams.map((t) => ({ trade, t })))
     .sort((a, b) => b.t.score - a.t.score)

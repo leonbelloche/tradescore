@@ -17,7 +17,7 @@ export type TradeIdea = {
 };
 
 // Small deterministic random generator (mulberry32) seeded from a string.
-function rng(seed: string) {
+export function rng(seed: string) {
   let a = [...seed].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 2654435761), 1779033703) >>> 0;
   return () => {
     a = (a + 0x6d2b79f5) >>> 0;
@@ -27,7 +27,7 @@ function rng(seed: string) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-function shuffle<T>(list: T[], rand: () => number): T[] {
+export function shuffle<T>(list: T[], rand: () => number): T[] {
   const out = [...list];
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
