@@ -63,3 +63,17 @@ export async function getValuedPlayers() {
 }
 
 export const teamMode = (t: { wins: number; losses: number }) => modeFromRecord(t.wins, t.losses);
+
+// Roster Score (1-99): how good a team's contracts are = average Trade Value of its 8 best-valued players.
+// Every team has one, traded or not. 50 = contracts worth exactly what they cost.
+export const ROSTER_CORE = 8;
+export function rosterScores(players: ValuedPlayer[]): Map<string, number> {
+  const byTeam = new Map<string, number[]>();
+  for (const p of players) byTeam.set(p.team.id, [...(byTeam.get(p.team.id) ?? []), p.score]); // players come sorted best first
+  return new Map(
+    [...byTeam].map(([id, scores]) => {
+      const core = scores.slice(0, ROSTER_CORE);
+      return [id, Math.min(99, Math.max(1, Math.round(core.reduce((a, b) => a + b, 0) / core.length)))];
+    }),
+  );
+}

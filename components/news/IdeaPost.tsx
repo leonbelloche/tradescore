@@ -35,7 +35,7 @@ export default async function IdeaPost({
   featured = false,
 }: {
   idea: TradeIdea;
-  day: string;
+  day?: string; // shown in the byline; omitted for evergreen suggestions
   stats: SeasonStats | undefined;
   byName: Map<string, ValuedPlayer>;
   featured?: boolean;
@@ -43,7 +43,7 @@ export default async function IdeaPost({
   const { buyer, seller, target } = idea;
   const media = target.espnId ? await getAthleteMedia(target.espnId, target.name) : null;
   const short = (t: typeof buyer) => t.short_name ?? t.name;
-  const date = new Date(`${day}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const date = day ? new Date(`${day}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }) : null;
   const sides = [
     { team: buyer, result: idea.buyerResult, title: `Why it works for the ${short(buyer)}` },
     { team: seller, result: idea.sellerResult, title: `What the ${short(seller)} get out of it` },
@@ -52,7 +52,10 @@ export default async function IdeaPost({
   const lede = (
     <p className="text-[15px] leading-relaxed text-foreground/90">
       The {short(buyer)} ({buyer.wins}-{buyer.losses}) {MODE_SENTENCE[modeFromRecord(buyer.wins, buyer.losses)]}. The {short(seller)} ({seller.wins}-{seller.losses}){" "}
-      {MODE_SENTENCE[modeFromRecord(seller.wins, seller.losses)]}. {target.name}, {target.age},{" "}
+      {modeFromRecord(seller.wins, seller.losses) === modeFromRecord(buyer.wins, buyer.losses)
+        ? "are in the same spot"
+        : MODE_SENTENCE[modeFromRecord(seller.wins, seller.losses)]}
+      . {target.name}, {target.age},{" "}
       {stats && stats.gp > 0 ? (
         <>
           is averaging {one(stats.pts)} points, {one(stats.orb + stats.drb)} rebounds and {one(stats.ast)} assists
@@ -105,12 +108,12 @@ export default async function IdeaPost({
 
   const titleBlock = (
     <div className="min-w-0 space-y-3">
-      <p className="display text-xs font-bold text-accent">NBA · Trade ideas of the day</p>
+      <p className="display text-xs font-bold text-accent">NBA · {day ? "Trade ideas of the day" : "Suggested move"}</p>
       <h3 className={`display font-extrabold leading-[0.95] ${featured ? "text-3xl sm:text-4xl lg:text-5xl" : "text-2xl sm:text-3xl"}`}>{headline(idea)}</h3>
       <p className="flex items-center gap-2 text-xs text-muted">
         <span className="led flex h-6 w-6 items-center justify-center rounded bg-accent text-[10px] font-extrabold text-black">TS</span>
         <span>
-          <b className="text-foreground">Trade Score Desk</b> · {date} · 2 min read
+          <b className="text-foreground">Trade Score Desk</b> {date && `· ${date} `}· 2 min read
         </span>
       </p>
       {lede}

@@ -11,7 +11,9 @@ import { Card, Record, SectionTitle, TeamMark } from "@/components/ui";
 import { getTeamBySlug } from "@/lib/db/teams";
 import { formatMoney } from "@/lib/format";
 import { conferenceOf, standings } from "@/lib/nba/conferences";
-import { getValuedPlayers, teamMode } from "@/lib/players/values";
+import IdeaPost from "@/components/news/IdeaPost";
+import { getValuedPlayers, rosterScores, teamMode } from "@/lib/players/values";
+import { suggestedTrade } from "@/lib/trades/ideas";
 import { getScoredTrades, teamStats } from "@/lib/trades/scored";
 
 export async function generateMetadata(props: PageProps<"/team/[slug]">): Promise<Metadata> {
@@ -32,7 +34,7 @@ export default function TeamPage(props: PageProps<"/team/[slug]">) {
 
 async function Team({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [team, { teams, players }, trades] = await Promise.all([getTeamBySlug(slug), getValuedPlayers(), getScoredTrades()]);
+  const [team, { league, teams, players }, trades] = await Promise.all([getTeamBySlug(slug), getValuedPlayers(), getScoredTrades()]);
   if (!team) notFound();
 
   const conf = conferenceOf(team.abbreviation);
@@ -42,6 +44,10 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
   const stat = teamStats(trades).find((s) => s.team.id === team.id);
   const overCap = team.capSpace < 0;
   const missingSalary = roster.filter((p) => !p.hasContract);
+  const rosterScore = rosterScores(players).get(team.id) ?? 50;
+  const full = teams.find((t) => t.id === team.id)!;
+  const suggestion = myTrades.length === 0 ? suggestedTrade(full, league, teams, players) : null;
+  const byName = new Map(players.map((p) => [p.name, p]));
 
   return (
     <div className="space-y-10">
@@ -58,8 +64,9 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
         <Record wins={team.wins} losses={team.losses} size="lg" />
       </header>
 
-      <section className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
         <Stat label="Trade Score" value={stat ? <ScoreBadge score={stat.average} size="lg" /> : "—"} sub={stat ? <TierLabel score={stat.average} className="text-xs" /> : "No trade yet"} />
+        <Stat label="Roster Score" value={<ScoreBadge score={rosterScore} size="lg" />} sub={<TierLabel score={rosterScore} className="text-xs" />} />
         <Stat label="Trades won-lost" value={stat ? `${stat.wins}-${stat.losses}` : "0-0"} sub={`${myTrades.length} trade${myTrades.length === 1 ? "" : "s"}`} />
         <Stat label="Payroll" value={formatMoney(team.payroll)} sub={`cap ${formatMoney(team.league.salary_cap)}`} />
         <Stat
@@ -67,6 +74,24 @@ async function Team({ params }: { params: Promise<{ slug: string }> }) {
           value={<span className={overCap ? "text-score-1" : "text-score-5"}>{formatMoney(Math.abs(team.capSpace))}</span>}
         />
       </section>
+
+      {suggestion && (
+        <section>
+          <SectionTitle index={1} title={`The trade the ${team.short_name ?? team.name} should make`} sub="no trade yet this season" />
+          <p className="-mt-2 mb-4 max-w-2xl text-sm text-muted">
+            {suggestion.role === "buy"
+              ? `They are winning: here is the player they could go get, the deal that grades best for them.`
+              : `They are losing: here is the player they could sell, to the team that would pay the most.`}{" "}
+            Built from real rosters and salaries, graded by our engine. Our idea, not a rumor.
+          </p>
+          <IdeaPost
+            idea={suggestion.idea}
+            stats={teams.flatMap((t) => t.roster).find((p) => p.id === suggestion.idea.target.id)?.stats_json[league.current_season]}
+            byName={byName}
+            featured
+          />
+        </section>
+      )}
 
       {myTrades.length > 0 && (
         <section>

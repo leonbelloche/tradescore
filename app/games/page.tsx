@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import ScoreBadge from "@/components/ScoreBadge";
 import { Card, TeamMark } from "@/components/ui";
-import { getTeams } from "@/lib/db/teams";
 import { getScoreboard, shiftDay, type Game, type GameTeam } from "@/lib/nba/scoreboard";
+import { getValuedPlayers, rosterScores } from "@/lib/players/values";
 import { getScoredTrades, teamStats, type TeamTradeStats } from "@/lib/trades/scored";
 
 export const metadata: Metadata = {
@@ -38,13 +38,14 @@ const shortDay = (yyyymmdd: string) =>
 async function Games({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { date } = await searchParams;
   const asked = typeof date === "string" && /^\d{8}$/.test(date) ? date : undefined;
-  const [{ day, games }, trades, teams] = await Promise.all([getScoreboard(asked), getScoredTrades(), getTeams()]);
+  const [{ day, games }, trades, { teams, players }] = await Promise.all([getScoreboard(asked), getScoredTrades(), getValuedPlayers()]);
   const stats = new Map(teamStats(trades).map((s) => [s.team.abbreviation, s]));
-  const info = new Map(teams.map((t) => [t.abbreviation, { slug: t.slug, logo: t.logo_url }]));
+  const rs = rosterScores(players);
+  const info: TeamInfo = new Map(teams.map((t) => [t.abbreviation, { slug: t.slug, logo: t.logo_url, roster: rs.get(t.id) ?? 50 }]));
 
-  // Finished games where both teams have a Trade Score: did the better trader win?
-  const judged = games.filter((g) => g.state === "post" && stats.has(g.away.abbreviation) && stats.has(g.home.abbreviation) && stats.get(g.away.abbreviation)!.average !== stats.get(g.home.abbreviation)!.average);
-  const right = judged.filter((g) => betterTrader(g, stats)?.winner).length;
+  // Finished games with a favorite (better Trade Score, or better Roster Score): did it win?
+  const judged = games.filter((g) => g.state === "post" && edge(g, stats, info));
+  const right = judged.filter((g) => edge(g, stats, info)!.team.winner).length;
   const prev = shiftDay(day, -1), next = shiftDay(day, 1);
 
   return (
@@ -69,7 +70,7 @@ async function Games({ searchParams }: { searchParams: Promise<Record<string, st
             {right}/{judged.length}
           </span>
           <span className="text-sm text-muted">
-            times the team with the <b className="text-foreground">better Trade Score</b> won tonight (games where both teams have traded).
+            times the team with the <b className="text-foreground">better score</b> won (Trade Score when both teams have traded, Roster Score otherwise).
           </span>
         </Card>
       )}
@@ -85,37 +86,40 @@ async function Games({ searchParams }: { searchParams: Promise<Record<string, st
           ))}
         </ul>
       )}
-      <p className="text-xs text-muted">Scores: ESPN, refreshed every few minutes. Trade Score: average grade of the team&apos;s 2026-27 trades (1-99).</p>
+      <p className="text-xs text-muted">Scores: ESPN, refreshed every few minutes. TS = Trade Score, average grade of the team&apos;s 2026-27 trades. RS = Roster Score, how good its contracts are. Both 1-99.</p>
     </div>
   );
 }
 
-// The team with the higher Trade Score (null if either has no trade, or they are tied).
-function betterTrader(g: Game, stats: Map<string, TeamTradeStats>): GameTeam | null {
-  const a = stats.get(g.away.abbreviation)?.average, h = stats.get(g.home.abbreviation)?.average;
-  if (a === undefined || h === undefined || a === h) return null;
-  return a > h ? g.away : g.home;
+type TeamInfo = Map<string, { slug: string; logo: string | null; roster: number }>;
+
+// The favorite on paper: better Trade Score when both teams have traded, else better Roster Score (null if tied).
+function edge(g: Game, stats: Map<string, TeamTradeStats>, info: TeamInfo): { team: GameTeam; metric: "TS" | "RS" } | null {
+  const ta = stats.get(g.away.abbreviation)?.average, th = stats.get(g.home.abbreviation)?.average;
+  if (ta !== undefined && th !== undefined && ta !== th) return { team: ta > th ? g.away : g.home, metric: "TS" };
+  const ra = info.get(g.away.abbreviation)?.roster, rh = info.get(g.home.abbreviation)?.roster;
+  if (ra !== undefined && rh !== undefined && ra !== rh) return { team: ra > rh ? g.away : g.home, metric: "RS" };
+  return null;
 }
 
-type TeamInfo = Map<string, { slug: string; logo: string | null }>;
-
 function GameCard({ game, stats, info }: { game: Game; stats: Map<string, TeamTradeStats>; info: TeamInfo }) {
-  const better = betterTrader(game, stats);
+  const fav = edge(game, stats, info);
   const time =
     game.state === "pre"
       ? new Date(game.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET"
       : game.detail;
 
-  let verdict: React.ReactNode = <span className="text-muted">Trade Score: at least one team has not traded yet.</span>;
-  if (better) {
-    const name = better.name.split(" ").slice(-1)[0];
+  let verdict: React.ReactNode = <span className="text-muted">Same score on paper: no favorite.</span>;
+  if (fav) {
+    const name = fav.team.name.split(" ").slice(-1)[0];
+    const what = fav.metric === "TS" ? "better trader" : "better roster";
     verdict =
       game.state !== "post" ? (
-        <span>Better trader: <b className="text-foreground">{name}</b></span>
-      ) : better.winner ? (
-        <span className="text-score-5">✓ The better trader won: <b>{name}</b></span>
+        <span>Favorite on paper ({what}): <b className="text-foreground">{name}</b></span>
+      ) : fav.team.winner ? (
+        <span className="text-score-5">✓ The {what} won: <b>{name}</b></span>
       ) : (
-        <span className="text-score-2">✗ Upset: the better trader ({name}) lost</span>
+        <span className="text-score-2">✗ Upset: the {what} ({name}) lost</span>
       );
   }
 
@@ -127,12 +131,23 @@ function GameCard({ game, stats, info }: { game: Game; stats: Map<string, TeamTr
           {time}
         </span>
         <span className="display text-[10px] font-bold text-muted">
-          Score <span className="mx-2">·</span> Trade Score
+          <span className="inline-block w-14 text-right">Score</span>
+          <span className="inline-block w-9 text-center" title="Trade Score: average grade of the team's trades">TS</span>
+          <span className="inline-block w-9 text-center" title="Roster Score: how good the team's contracts are">RS</span>
         </span>
       </div>
       <div className="divide-y divide-border/60">
         {[game.away, game.home].map((t) => (
-          <TeamLine key={t.abbreviation} team={t} game={game} stat={stats.get(t.abbreviation)} slug={info.get(t.abbreviation)?.slug} logoUrl={info.get(t.abbreviation)?.logo ?? null} better={better?.abbreviation === t.abbreviation} />
+          <TeamLine
+            key={t.abbreviation}
+            team={t}
+            game={game}
+            stat={stats.get(t.abbreviation)}
+            roster={info.get(t.abbreviation)?.roster ?? 50}
+            slug={info.get(t.abbreviation)?.slug}
+            logoUrl={info.get(t.abbreviation)?.logo ?? null}
+            ring={fav?.team.abbreviation === t.abbreviation ? fav.metric : null}
+          />
         ))}
       </div>
       <p className="border-t border-border px-4 py-2 text-xs">{verdict}</p>
@@ -140,7 +155,24 @@ function GameCard({ game, stats, info }: { game: Game; stats: Map<string, TeamTr
   );
 }
 
-function TeamLine({ team, game, stat, slug, logoUrl, better }: { team: GameTeam; game: Game; stat?: TeamTradeStats; slug?: string; logoUrl: string | null; better: boolean }) {
+function TeamLine({
+  team,
+  game,
+  stat,
+  roster,
+  slug,
+  logoUrl,
+  ring,
+}: {
+  team: GameTeam;
+  game: Game;
+  stat?: TeamTradeStats;
+  roster: number;
+  slug?: string;
+  logoUrl: string | null;
+  ring: "TS" | "RS" | null; // which score makes this team the favorite
+}) {
+  const ringed = (on: boolean) => `rounded ${on ? "ring-2 ring-accent ring-offset-2 ring-offset-surface" : ""}`;
   const lost = game.state === "post" && !team.winner;
   const logo = logoUrl ? <Image src={logoUrl} alt="" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" /> : <TeamMark abbreviation={team.abbreviation} />;
   const name = (
@@ -150,7 +182,7 @@ function TeamLine({ team, game, stat, slug, logoUrl, better }: { team: GameTeam;
     </span>
   );
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5">
+    <div className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4">
       {slug ? (
         <Link href={`/team/${slug}`} className="flex min-w-0 flex-1 items-center gap-3 hover:text-accent">
           {logo}
@@ -163,14 +195,19 @@ function TeamLine({ team, game, stat, slug, logoUrl, better }: { team: GameTeam;
         {team.score ?? "–"}
         {team.winner && <span className="ml-0.5 align-middle text-sm text-accent" aria-label="winner">◂</span>}
       </span>
-      <span className="flex w-14 justify-end">
+      <span className="flex w-9 justify-center">
         {stat ? (
-          <span className={`rounded-md ${better ? "ring-2 ring-accent ring-offset-2 ring-offset-surface" : ""}`} title={`${stat.trades} trade(s) this season`}>
-            <ScoreBadge score={stat.average} size="md" />
+          <span className={ringed(ring === "TS")} title={`Trade Score · ${stat.trades} trade(s) this season`}>
+            <ScoreBadge score={stat.average} />
           </span>
         ) : (
-          <span className="display text-[10px] font-bold text-muted">No trade</span>
+          <span className="text-xs text-muted" title="No trade yet">–</span>
         )}
+      </span>
+      <span className="flex w-9 justify-center">
+        <span className={ringed(ring === "RS")} title="Roster Score">
+          <ScoreBadge score={roster} />
+        </span>
       </span>
     </div>
   );

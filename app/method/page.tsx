@@ -74,6 +74,21 @@ export default function MethodPage() {
       <ScoreScale title="The grading scale" />
 
       <section className="space-y-3">
+        <SectionTitle title="Two more scores" />
+        <Card className="space-y-3 p-4 text-sm leading-relaxed">
+          <p>
+            <b>Trade Value</b> (players): the Trade Score a team would get for acquiring the player for nothing. 50 = his contract is worth exactly
+            what he is paid, above = a bargain, below = overpaid.
+          </p>
+          <p>
+            <b>Roster Score</b> (teams): the average Trade Value of a team&apos;s 8 most valuable players. It tells how well the front office has
+            built its roster, so every team has one, even if it has not traded this season. Teams with no trade also get a{" "}
+            <b>suggested move</b>: the deal our engine likes best for them.
+          </p>
+        </Card>
+      </section>
+
+      <section className="space-y-3">
         <SectionTitle title="See it on a real trade" />
         <Suspense fallback={<div className="h-40 animate-pulse rounded-[14px] bg-surface" />}>
           <TradeLinks />
