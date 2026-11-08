@@ -2,11 +2,13 @@ import { Suspense } from "react";
 import Link from "next/link";
 import ScoreBadge, { TierLabel } from "@/components/ScoreBadge";
 import ScoreScale from "@/components/ScoreScale";
-import FeaturedTrade from "@/components/trades/FeaturedTrade";
+import TeamSpotlight from "@/components/home/TeamSpotlight";
+import TradeOfTheWeek, { pickTradeOfTheWeek } from "@/components/home/TradeOfTheWeek";
 import TierBar from "@/components/trades/TierBar";
 import TradeRow from "@/components/trades/TradeRow";
 import { Button, Card, SectionTitle, TeamMark } from "@/components/ui";
-import { getScoredTrades, teamStats, type ScoredTrade, type TeamTradeStats } from "@/lib/trades/scored";
+import { getValuedPlayers } from "@/lib/players/values";
+import { getScoredTrades, teamStats, type TeamTradeStats } from "@/lib/trades/scored";
 
 export default function HomePage() {
   return (
@@ -16,13 +18,8 @@ export default function HomePage() {
   );
 }
 
-// The trade with the widest gap between the best and worst score.
-const lopsided = (trades: ScoredTrade[]) =>
-  [...trades].sort((a, b) => spread(b) - spread(a))[0];
-const spread = (t: ScoredTrade) => t.teams[0].score - t.teams[t.teams.length - 1].score;
-
 async function Home() {
-  const trades = await getScoredTrades();
+  const [trades, { players }] = await Promise.all([getScoredTrades(), getValuedPlayers()]);
 
   const hero = (
     <div className="space-y-4">
@@ -52,6 +49,7 @@ async function Home() {
   }
 
   const stats = teamStats(trades);
+  const week = pickTradeOfTheWeek(trades, players);
   const heists = trades
     .flatMap((trade) => trade.teams.map((t) => ({ trade, t })))
     .sort((a, b) => b.t.score - a.t.score)
@@ -59,10 +57,13 @@ async function Home() {
 
   return (
     <div className="space-y-16">
-      <section className="grid items-center gap-8 pt-2 lg:grid-cols-[1.1fr_1fr]">
+      <div className="space-y-8 pt-2">
         {hero}
-        <FeaturedTrade trade={lopsided(trades)} label="Trade of the season" />
-      </section>
+        <section aria-label="This week" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.35fr_1fr]">
+          {week && <TradeOfTheWeek trade={week.trade} weekOf={week.weekOf} players={players} />}
+          <TeamSpotlight stats={stats} />
+        </section>
+      </div>
 
       <ScoreScale />
 
