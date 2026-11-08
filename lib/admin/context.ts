@@ -29,9 +29,9 @@ export async function siteContext(focus = ""): Promise<string> {
 
   const lines: string[] = [];
   lines.push(`Season ${league.current_season}. Salary cap ${formatMoney(league.salary_cap)}.`);
-  lines.push("", "TRADES GRADED THIS SEASON (newest first; score per team, 1-99):");
+  lines.push("", "TRADES GRADED THIS SEASON (newest first; [trade id] date: score per team, 1-99):");
   for (const t of trades.slice(0, 20)) {
-    lines.push(`- ${t.date}: ` + t.teams.map((x) => `${x.team.short_name ?? x.team.name} ${x.score} (${x.tier}) gets ${x.receives.join(", ") || "nothing counted"}`).join(" | "));
+    lines.push(`- [${t.id}] ${t.date}: ` + t.teams.map((x) => `${x.team.short_name ?? x.team.name} ${x.score} (${x.tier}) gets ${x.receives.join(", ") || "nothing counted"}`).join(" | "));
   }
   if (mentionedTeams.length) {
     lines.push("", "TEAMS MENTIONED:");

@@ -9,6 +9,7 @@ import { claudeConfigured } from "@/lib/admin/claude";
 import { requireAdmin } from "@/lib/admin/session";
 import { postsForToday } from "@/lib/admin/today";
 import { SITE_URL } from "@/lib/site";
+import { getScoredTrades } from "@/lib/trades/scored";
 
 export const metadata: Metadata = { title: "X studio — Admin", robots: { index: false } };
 
@@ -32,7 +33,8 @@ function Panel({ title, sub, children }: { title: string; sub: string; children:
 
 async function Studio() {
   await requireAdmin();
-  const { today, posts } = await postsForToday();
+  const [{ today, posts }, trades] = await Promise.all([postsForToday(), getScoredTrades()]);
+  const tradeOptions = trades.map((t) => ({ id: t.id, label: `${t.date} · ${t.teams.map((x) => `${x.team.short_name ?? x.team.name} ${x.score}`).join(" / ")}` }));
   const date = new Date(`${today}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
 
   return (
@@ -47,11 +49,11 @@ async function Studio() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="✦ Write a post" sub="Say what it's about, Claude writes 3 versions with our real numbers.">
-          <ComposeWithClaude siteUrl={SITE_URL} />
+        <Panel title="✦ Write a post" sub="Say what it's about: Claude writes 3 versions with our real numbers and picks the trade card image to attach.">
+          <ComposeWithClaude siteUrl={SITE_URL} trades={tradeOptions} />
         </Panel>
-        <Panel title="↩ Reply to a post" sub="Paste the link of any post (a fan, a journalist, a comment). Claude reads it and drafts 3 replies.">
-          <ReplyWithClaude />
+        <Panel title="↩ Reply to a post" sub="Paste the link of any post (a fan, a journalist, a comment). Claude reads it, drafts 3 replies and picks the trade card image.">
+          <ReplyWithClaude trades={tradeOptions} />
         </Panel>
       </div>
 
