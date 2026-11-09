@@ -11,6 +11,11 @@ import { rng, shuffle } from "@/lib/trades/ideas";
 import type { ScoredTrade, TeamTradeStats } from "@/lib/trades/scored";
 import { formatMoney } from "@/lib/format";
 
+// The image that goes with a post: a trade card, or a generic "stat" card (see lib/cards).
+export type CardSpec =
+  | { type: "trade"; id: string; line?: string }
+  | { type: "stat"; kicker: string; title: string; big?: number; bigLabel?: string; photo?: string | null; lines?: string[] };
+
 export type XPost = {
   id: string; // stable for the day (used to remember "posted")
   time: string; // suggested time, Eastern
@@ -18,6 +23,7 @@ export type XPost = {
   text: string;
   url: string | null; // link to the site page, added by X as a card
   length: number; // as X counts it (a link = 23 characters)
+  card: CardSpec;
 };
 
 export type XPostInput = {
@@ -59,7 +65,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   const byAbbr = new Map(stats.map((s) => [s.team.abbreviation, s]));
   const teamByAbbr = new Map(teams.map((t) => [t.abbreviation, t]));
   const posts: Omit<XPost, "time" | "length">[] = [];
-  const add = (id: string, kind: string, text: string, url: string | null) => posts.push({ id: `${today}-${id}`, kind, text, url });
+  const add = (id: string, kind: string, text: string, url: string | null, card: CardSpec) => posts.push({ id: `${today}-${id}`, kind, text, url, card });
 
   // 1. Morning: last night, did the better trader / better roster win?
   const finals = lastNight.filter((g) => g.state === "post");
@@ -80,6 +86,12 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
         (upset ? `\n\nBiggest upset on paper: ${upset.away.name.split(" ").slice(-1)[0]} at ${upset.home.name.split(" ").slice(-1)[0]}.` : "") +
         `\n\nEvery score, graded 👇 #NBA`,
       link("/games"),
+      {
+        type: "stat",
+        kicker: "Last night",
+        title: `The better front office won ${right} of ${judged}`,
+        lines: finals.slice(0, 5).map((g) => `${g.away.abbreviation} ${g.away.score ?? ""} - ${g.home.score ?? ""} ${g.home.abbreviation}${favorite(g, byAbbr, teamByAbbr, rosters)?.winner === false ? "  (upset)" : ""}`),
+      },
     );
   }
 
@@ -91,6 +103,15 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Trade idea",
       `TRADE IDEA 🔁\n\n${idea.target.name} to the ${b}?\n\n${b}: ${idea.buyerResult.score}/99 (${idea.buyerResult.tier})\n${s}: ${idea.sellerResult.score}/99 (${idea.sellerResult.tier})\n\nWould you do it? ${tag(idea.buyer)} ${tag(idea.seller)} #NBA`,
       link("/news"),
+      {
+        type: "stat",
+        kicker: "Trade idea",
+        title: `${idea.target.name} to the ${b}?`,
+        big: idea.buyerResult.score,
+        bigLabel: `${b}: ${idea.buyerResult.tier}`,
+        photo: idea.target.headshotUrl,
+        lines: [`${b} get ${idea.target.name}: ${idea.buyerResult.score}/99`, `${s} get a package: ${idea.sellerResult.score}/99`, "Would you do it?"],
+      },
     );
   }
 
@@ -103,6 +124,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Latest trade",
       `WHO WON THE TRADE? 🧾\n\n${lines}\n\n${latest.winner ? `Our verdict: the ${short(latest.winner.team)} won it.` : "Our verdict: even trade."} Agree? #NBA`,
       link(`/trade/${latest.id}`),
+      { type: "trade", id: latest.id, line: latest.winner ? `Advantage ${short(latest.winner.team)}.` : "Dead even." },
     );
   }
   const sides = trades.flatMap((trade) => trade.teams.map((t) => ({ trade, t })));
@@ -113,6 +135,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Best trade",
       `${heist.t.score}/99. ${tierFor(heist.t.score).toUpperCase()}\n\nThe ${short(heist.t.team)} got ${heist.t.receives.slice(0, 3).join(", ")} — one of the best trades of the season so far.\n\n${tag(heist.t.team)} #NBA`,
       link(`/trade/${heist.trade.id}`),
+      { type: "trade", id: heist.trade.id, line: `${short(heist.t.team)}: ${heist.t.score}/99. Robbery.` },
     );
   }
   const fleeced = pickOne(sides.filter((x) => x.t.score <= 35).sort((a, b) => a.t.score - b.t.score).slice(0, 5));
@@ -122,6 +145,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Worst trade",
       `Ouch. ${fleeced.t.score}/99 😬\n\nThe ${short(fleeced.t.team)} have one of the worst trade grades of the season. Did they get fleeced, or are we missing something?\n\n${tag(fleeced.t.team)} #NBA`,
       link(`/trade/${fleeced.trade.id}`),
+      { type: "trade", id: fleeced.trade.id, line: `${short(fleeced.t.team)}: ${fleeced.t.score}/99. Ouch.` },
     );
   }
 
@@ -134,6 +158,15 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Bargain",
       `BEST VALUE CONTRACTS 💰\n\n${bargain.name} (${bargain.team.abbreviation}) makes ${formatMoney(bargain.salary)} this season. His Trade Value: ${bargain.score}/99.\n\nOne of the best deals in the league. ${tag(bargain.team)} #NBA`,
       link(`/player/${bargain.slug}`),
+      {
+        type: "stat",
+        kicker: "Best value contracts",
+        title: bargain.name,
+        big: bargain.score,
+        bigLabel: "Trade Value",
+        photo: bargain.headshotUrl,
+        lines: [`${bargain.team.short_name ?? bargain.team.name}, ${bargain.position}, ${bargain.age} yrs`, `${formatMoney(bargain.salary)} this season`, `${bargain.yearsLeft} year${bargain.yearsLeft > 1 ? "s" : ""} left on the deal`],
+      },
     );
   }
   const overpaid = pickOne(
@@ -145,6 +178,15 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Overpaid",
       `Hot take 🌶️\n\n${overpaid.name} is owed ${formatMoney(overpaid.totalRemaining)} over ${overpaid.yearsLeft} year${overpaid.yearsLeft > 1 ? "s" : ""}. Trade Value: ${overpaid.score}/99.\n\nWould anyone take that contract? ${tag(overpaid.team)} #NBA`,
       link(`/player/${overpaid.slug}`),
+      {
+        type: "stat",
+        kicker: "Hot take",
+        title: `${overpaid.name}: worth it?`,
+        big: overpaid.score,
+        bigLabel: "Trade Value",
+        photo: overpaid.headshotUrl,
+        lines: [`${overpaid.team.short_name ?? overpaid.team.name}, ${overpaid.age} yrs`, `Owed ${formatMoney(overpaid.totalRemaining)}`, `${overpaid.yearsLeft} year${overpaid.yearsLeft > 1 ? "s" : ""} left`],
+      },
     );
   }
 
@@ -152,7 +194,12 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   const ranked = [...teams].sort((a, b) => (rosters.get(b.id) ?? 50) - (rosters.get(a.id) ?? 50));
   if (ranked.length >= 3) {
     const top = ranked.slice(0, 3).map((t, i) => `${i + 1}. ${short(t)} — ${rosters.get(t.id)}`).join("\n");
-    add("rosters", "Rankings", `BEST-BUILT ROSTERS IN THE NBA 🏗️\n\n${top}\n\nRoster Score = how good their contracts are, from 1 to 99. Where's your team? #NBA`, link("/teams"));
+    add("rosters", "Rankings", `BEST-BUILT ROSTERS IN THE NBA 🏗️\n\n${top}\n\nRoster Score = how good their contracts are, from 1 to 99. Where's your team? #NBA`, link("/teams"), {
+      type: "stat",
+      kicker: "Roster Score rankings",
+      title: "The best-built rosters in the NBA",
+      lines: ranked.slice(0, 5).map((t, i) => `${i + 1}.  ${short(t)}  -  ${rosters.get(t.id)}/99`),
+    });
   }
 
   // 6. ESPN trade talk with our angle (a tagged player we can value).
@@ -168,6 +215,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Trade talk",
       `${n.headline.length > 110 ? `${n.headline.slice(0, 107)}…` : n.headline}\n\nOur number on ${p.name}: Trade Value ${p.score}/99 on ${formatMoney(p.salary)}.\n\n${tag(p.team)} #NBA`,
       link(`/player/${p.slug}`),
+      { type: "stat", kicker: "Trade talk", title: n.headline.length > 80 ? `${n.headline.slice(0, 77)}...` : n.headline, big: p.score, bigLabel: `${last(p.name)}: Trade Value`, photo: p.headshotUrl, lines: [] },
     );
   }
 
@@ -185,6 +233,12 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Tonight",
       `TONIGHT 🏀 ${a} at ${h} (${g.detail})\n\n${fav ? `The better front office on paper: ${last(fav.team.name)} (${fav.metric === "TS" ? "Trade Score" : "Roster Score"}).` : "Dead even on paper."}\n\nWho you got? ${tag(teamByAbbr.get(g.away.abbreviation))} ${tag(teamByAbbr.get(g.home.abbreviation))} #NBA`,
       link("/games"),
+      {
+        type: "stat",
+        kicker: "Tonight",
+        title: `${a} at ${h}`,
+        lines: [g.detail, fav ? `Better front office: ${last(fav.team.name)}` : "Dead even on paper", fav ? `(by ${fav.metric === "TS" ? "Trade Score" : "Roster Score"})` : "Who you got?"],
+      },
     );
   }
 
@@ -197,6 +251,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Debate",
       `Be honest: who won this one? 🤔\n\n${short(a.team)} ${a.score} — ${b ? `${b.score} ${short(b.team)}` : ""}\n\nReply with your grade 👇 #NBA`,
       link(`/trade/${debate.id}`),
+      { type: "trade", id: debate.id, line: "Who won this one?" },
     );
   }
 

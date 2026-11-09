@@ -8,6 +8,7 @@ import { logout } from "@/app/admin/actions";
 const ICONS: Record<string, React.ReactNode> = {
   dashboard: <path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 4v4h6V4z" />,
   x: <path d="M4 4l16 16M20 4L4 20" />,
+  instagram: <path d="M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4zM12 8a4 4 0 100 8 4 4 0 000-8zM17.5 6.5h.01" />,
   video: <path d="M4 6h11v12H4zM15 10l5-3v10l-5-3" />,
   trades: <path d="M4 8h13l-3-3M20 16H7l3 3" />,
   contracts: <path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5" />,
@@ -27,9 +28,10 @@ function Icon({ name }: { name: string }) {
 const GROUPS = [
   { title: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: "dashboard" }] },
   {
-    title: "Content",
+    title: "Social",
     items: [
-      { href: "/admin/x", label: "X studio", icon: "x" },
+      { href: "/admin/x", label: "X", icon: "x" },
+      { href: "/admin/instagram", label: "Instagram", icon: "instagram" },
       { href: "/admin/video", label: "Video studio", icon: "video" },
       { href: "/admin/trades", label: "Trades", icon: "trades" },
       { href: "/admin/contracts", label: "Contracts", icon: "contracts" },

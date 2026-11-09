@@ -42,6 +42,8 @@ async function Settings() {
             ["SUPABASE_SECRET_KEY", !!process.env.SUPABASE_SECRET_KEY, "lets the admin and the daily refresh write to the database"],
             ["CRON_SECRET", !!process.env.CRON_SECRET, "protects the daily refresh (any long random text)"],
             ["ANTHROPIC_API_KEY", !!process.env.ANTHROPIC_API_KEY, "lets Claude Opus 5.5 write posts, replies and video scripts (console.anthropic.com)"],
+            ["X_API_KEY + 3 others", !!(process.env.X_API_KEY && process.env.X_API_SECRET && process.env.X_ACCESS_TOKEN && process.env.X_ACCESS_TOKEN_SECRET), "publish on X in one click (developer.x.com)"],
+            ["INSTAGRAM_USER_ID + INSTAGRAM_ACCESS_TOKEN", !!(process.env.INSTAGRAM_USER_ID && process.env.INSTAGRAM_ACCESS_TOKEN), "publish on Instagram in one click (developers.facebook.com)"],
           ].map(([name, ok, what]) => (
             <div key={String(name)} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <span className={ok ? "text-score-5" : "text-score-1"}>{ok ? "✓" : "✕"}</span>

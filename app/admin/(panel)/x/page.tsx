@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
+import ChannelQueue from "@/components/admin/ChannelQueue";
+import ConnectBox from "@/components/admin/ConnectBox";
 import { ComposeWithClaude, ReplyWithClaude } from "@/components/admin/XStudio";
-import XPostList from "@/components/admin/XPostList";
 import LoadingBlock from "@/components/LoadingBlock";
-import { Card } from "@/components/ui";
-import { claudeConfigured } from "@/lib/admin/claude";
 import { requireAdmin } from "@/lib/admin/session";
 import { postsForToday } from "@/lib/admin/today";
 import { SITE_URL } from "@/lib/site";
+import { forChannel } from "@/lib/social/channels";
+import { publishedOn } from "@/lib/social/history";
+import { xConnected } from "@/lib/social/x";
 import { getScoredTrades } from "@/lib/trades/scored";
 
-export const metadata: Metadata = { title: "X studio — Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "X — Admin", robots: { index: false } };
 
-export default function XStudioPage() {
+export default function XPage() {
   return (
     <Suspense fallback={<LoadingBlock />}>
-      <Studio />
+      <XChannel />
     </Suspense>
   );
 }
@@ -31,35 +33,32 @@ function Panel({ title, sub, children }: { title: string; sub: string; children:
   );
 }
 
-async function Studio() {
+async function XChannel() {
   await requireAdmin();
   const [{ today, posts }, trades] = await Promise.all([postsForToday(), getScoredTrades()]);
+  const queue = forChannel(posts, "x");
+  const published = await publishedOn(today);
+  const connected = xConnected();
   const tradeOptions = trades.map((t) => ({ id: t.id, label: `${t.date} · ${t.teams.map((x) => `${x.team.short_name ?? x.team.name} ${x.score}`).join(" / ")}` }));
-  const date = new Date(`${today}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
 
   return (
     <div className="space-y-6">
-      <AdminHeader title="X studio" sub="Write posts and replies with Claude Opus 5.5. Every button opens X with the text ready: you press Post." />
-
-      {!claudeConfigured() && (
-        <Card className="border-score-3/40 bg-score-3/10 p-4 text-sm">
-          Claude is not connected yet: add <code className="num">ANTHROPIC_API_KEY</code> to <code className="num">.env.local</code> and to Vercel (key from console.anthropic.com). The
-          posts of the day below work without it.
-        </Card>
-      )}
+      <AdminHeader
+        title="𝕏"
+        sub={`Today's ${queue.length} posts, each with its image. ${connected ? "Connected: one click publishes on your account." : ""}`}
+        action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connected" : "○ Not connected"}</span>}
+      />
+      {!connected && <ConnectBox channel="x" />}
+      <ChannelQueue posts={queue} connected={connected} published={published} />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="✦ Write a post" sub="Say what it's about: Claude writes 3 versions with our real numbers and picks the trade card image to attach.">
+        <Panel title="✦ Write a post with Claude" sub="Say what it's about: Claude writes 3 versions with our real numbers and picks the image.">
           <ComposeWithClaude siteUrl={SITE_URL} trades={tradeOptions} />
         </Panel>
-        <Panel title="↩ Reply to a post" sub="Paste the link of any post (a fan, a journalist, a comment). Claude reads it, drafts 3 replies and picks the trade card image.">
+        <Panel title="↩ Reply to a post" sub="Paste the link of any post. Claude reads it, drafts 3 replies and picks the image.">
           <ReplyWithClaude trades={tradeOptions} />
         </Panel>
       </div>
-
-      <Panel title="Posts of the day" sub={`${date} · ${posts.length} ready-made posts from the site's data, about one an hour (Eastern time). Free, no Claude needed.`}>
-        {posts.length ? <XPostList posts={posts} /> : <p className="text-sm text-muted">No posts today: no data yet.</p>}
-      </Panel>
     </div>
   );
 }

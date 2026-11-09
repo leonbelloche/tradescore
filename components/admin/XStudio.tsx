@@ -2,7 +2,8 @@
 // X studio tools: write a post with Claude, or reply to someone's post with Claude.
 // Claude also picks a trade card image to attach. Nothing is posted automatically:
 // each button opens X with the text ready, you press Post.
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { tradeCardUrl } from "@/app/admin/social";
 import { draftPosts, draftReplies, type Card, type Tweet } from "@/app/admin/studio";
 import { X_LIMIT } from "@/lib/admin/xPosts";
 import { field } from "./forms";
@@ -22,7 +23,15 @@ function TradeCard({ card, trades }: { card: Card; trades: TradeOption[] }) {
   const [line, setLine] = useState(card?.line ?? "");
   const [shown, setShown] = useState(card?.line ?? ""); // the image reloads when you leave the field
   const [copied, setCopied] = useState(false);
-  const src = trade ? `/api/cards/trade/${encodeURIComponent(trade)}?line=${encodeURIComponent(shown)}` : "";
+  const [src, setSrc] = useState("");
+  // Card URLs are signed by the server (nobody else can print text on our cards).
+  useEffect(() => {
+    let live = true;
+    if (trade) tradeCardUrl(trade, shown).then((u) => live && setSrc(u));
+    return () => {
+      live = false;
+    };
+  }, [trade, shown]);
 
   const blob = () => fetch(src).then((r) => r.blob());
   async function download() {
@@ -59,7 +68,7 @@ function TradeCard({ card, trades }: { card: Card; trades: TradeOption[] }) {
       {trade ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt="Trade card" className="aspect-[16/9] w-full rounded-lg border border-border bg-surface-2" />
+          <img src={src || undefined} alt="Trade card" className="aspect-[16/9] w-full rounded-lg border border-border bg-surface-2" />
           <input
             value={line}
             onChange={(e) => setLine(e.target.value)}

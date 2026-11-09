@@ -9,7 +9,7 @@ const soraBold = readFile(join(process.cwd(), "assets/fonts/Sora-ExtraBold.ttf")
 const soraMedium = readFile(join(process.cwd(), "assets/fonts/Sora-Medium.ttf"));
 
 // Same 5-step scale as the site (app/globals.css), worst -> best.
-function scoreColor(score: number): string {
+export function scoreColor(score: number): string {
   if (score > 79) return "#2ee6a6";
   if (score > 59) return "#9be15d";
   if (score > 40) return "#ffe14a";
@@ -17,14 +17,14 @@ function scoreColor(score: number): string {
   return "#ff4d5e";
 }
 
-const BG = "#0b1426";
-const CARD = "#111d33";
-const BORDER = "#22324d";
-const MUTED = "#8d9db6";
-const PEN = "#ff4545";
+export const BG = "#0b1426";
+export const CARD = "#111d33";
+export const BORDER = "#22324d";
+export const MUTED = "#8d9db6";
+export const PEN = "#ff4545";
 export const TAGLINE = "Who got robbed? We do the math.";
 
-function Logo({ fontSize }: { fontSize: number }) {
+export function Logo({ fontSize }: { fontSize: number }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
       <div style={{ display: "flex", fontSize, fontWeight: 800, letterSpacing: -fontSize * 0.04 }}>trade score</div>
@@ -41,12 +41,17 @@ type Options = {
   site?: string; // domain shown at the bottom
 };
 
-export async function tradeCardImage(trade: ScoredTrade | undefined, { width, height, line, detailed = false, site }: Options) {
-  const k = width / 1200; // everything is designed at 1200 px wide, then scaled
-  const fonts = [
+export async function cardFonts() {
+  return [
     { name: "Sora", data: await soraBold, style: "normal" as const, weight: 800 as const },
     { name: "Sora", data: await soraMedium, style: "normal" as const, weight: 500 as const },
   ];
+}
+
+export async function tradeCardImage(trade: ScoredTrade | undefined, { width, height, line, detailed = false, site }: Options) {
+  const portrait = height > width; // Instagram 4:5: teams stacked instead of side by side
+  const k = portrait ? width / 1000 : width / 1200; // designed at 1200 px wide (1000 in portrait), then scaled
+  const fonts = await cardFonts();
 
   if (!trade) {
     return new ImageResponse(
@@ -64,7 +69,7 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
   const headline = trade.winner ? `${name(trade.winner)} win the trade` : "Even trade";
   const date = new Date(`${trade.date}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   const three = trade.teams.length === 3;
-  const circle = (three ? 150 : 168) * k;
+  const circle = (three || portrait ? 150 : 168) * k;
 
   return new ImageResponse(
     (
@@ -76,7 +81,7 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 22 * k, fontSize: (three ? 56 : 64) * k, fontWeight: 800, letterSpacing: -2 * k }}>{headline}</div>
 
-        <div style={{ display: "flex", flex: 1, gap: 28 * k, marginTop: 24 * k }}>
+        <div style={{ display: "flex", flexDirection: portrait ? "column" : "row", flex: 1, gap: 28 * k, marginTop: 24 * k }}>
           {trade.teams.map((t) => {
             const color = scoreColor(t.score);
             const gets = t.receives.join(", ");
