@@ -14,12 +14,12 @@ export default function ConnectBox({ channel }: { channel: "x" | "instagram" }) 
           "On developers.facebook.com, create an app with the “Instagram” product (API setup with Instagram login) and add your account.",
           "Generate an access token for the account (long-lived, 60 days) and note the Instagram user id shown next to it.",
           "In Vercel, add INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN, then redeploy. Publishing is free.",
-          "Publish from the live site: Instagram downloads the image from tradescore-two.vercel.app (not from localhost).",
+          "In Supabase → SQL Editor, run supabase/migrations/005_reels.sql (storage for the videos), then publish from the live site.",
         ];
   return (
     <details className="rounded-2xl border border-score-3/40 bg-score-3/10 p-4 text-sm">
       <summary className="cursor-pointer font-bold">
-        {channel === "x" ? "𝕏" : "Instagram"} is not connected yet: for now the buttons open {channel === "x" ? "X with the text ready" : "a copy of the caption and the image"}. Connect it to publish in one click ▸
+        {channel === "x" ? "𝕏" : "Instagram"} is not connected yet: for now Send {channel === "x" ? "opens X with the text ready" : "saves the video and opens Instagram"}. Connect it to publish in one click ▸
       </summary>
       <ol className="mt-3 list-decimal space-y-1 pl-5 text-muted">
         {steps.map((s) => (

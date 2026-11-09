@@ -137,8 +137,8 @@ async function Dashboard() {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {[
             ["✦ Write a post", "/admin/x"],
-            ["↩ Reply on X", "/admin/x"],
-            ["● Make a video", "/admin/video"],
+            ["𝕏 Next post", "/admin/x"],
+            ["● Weekly Reel", "/admin/instagram"],
             ["Add a trade", "/admin/trades#add"],
             ["Fill contracts", "/admin/contracts"],
             ["Trade of the week", "/admin/settings"],

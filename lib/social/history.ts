@@ -23,6 +23,16 @@ export async function recordPublished(row: { id: string; channel: string; day: s
   }
 }
 
+// How many posts a channel published since `day` (YYYY-MM-DD). 0 when the table is missing.
+export async function countSince(channel: string, day: string): Promise<number> {
+  try {
+    const { count, error } = await adminDb().from("social_posts").select("id", { count: "exact", head: true }).eq("channel", channel).gte("day", day);
+    return error ? 0 : (count ?? 0);
+  } catch {
+    return 0;
+  }
+}
+
 export async function alreadyPublished(id: string): Promise<boolean> {
   try {
     const { data } = await adminDb().from("social_posts").select("id").eq("id", id).maybeSingle();

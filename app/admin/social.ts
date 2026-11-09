@@ -6,7 +6,8 @@ import { signedCardUrl, verifyCardUrl, type CardFormat } from "@/lib/cards/sign"
 import { SITE_URL } from "@/lib/site";
 import type { Channel } from "@/lib/social/channels";
 import { alreadyPublished, recordPublished } from "@/lib/social/history";
-import { publishOnInstagram } from "@/lib/social/instagram";
+import { publishOnInstagram, publishReelOnInstagram } from "@/lib/social/instagram";
+import { adminDb } from "@/lib/db/admin";
 import { publishOnX } from "@/lib/social/x";
 
 const CARD_LIMITS = { x: 280, instagram: 2200 };
@@ -52,4 +53,39 @@ export async function publishPost(input: { id: string; channel: Channel; text: s
 export async function tradeCardUrl(trade: string, line: string, format: CardFormat = "x"): Promise<string> {
   await requireAdmin();
   return signedCardUrl(`/api/cards/trade/${trade}`, { f: format, line: line.slice(0, 80) || undefined, jpg: format === "ig" ? "1" : undefined });
+}
+
+// "Send to X" without the API: X opened with the text, the post is counted as sent.
+export async function markSent(input: { id: string; channel: Channel; text: string; image: string }): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  const ok = await recordPublished({ id: input.id, channel: input.channel, day: await todayEastern(), text: input.text, image: input.image, remote_id: "", remote_url: "" });
+  return { ok };
+}
+
+// ---------- Weekly Reel ----------
+// 1) the browser asks for an upload slot, 2) uploads the .mp4 straight to Supabase Storage (bucket "reels"),
+// 3) asks the server to publish it on Instagram from its public address.
+export async function reelUploadSlot(weekKey: string): Promise<{ ok: true; path: string; token: string } | { ok: false; message: string }> {
+  await requireAdmin();
+  try {
+    const path = `${weekKey}-${Date.now()}.mp4`;
+    const { data, error } = await adminDb().storage.from("reels").createSignedUploadUrl(path);
+    if (error || !data) throw new Error(`Storage: ${error?.message ?? "no upload slot"} (run supabase/migrations/005_reels.sql)`);
+    return { ok: true, path: data.path, token: data.token };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function publishReel(input: { id: string; path: string; caption: string }): Promise<PublishResult> {
+  await requireAdmin();
+  try {
+    if (await alreadyPublished(input.id)) throw new Error("This week's Reel is already published.");
+    const { data } = adminDb().storage.from("reels").getPublicUrl(input.path);
+    const result = await publishReelOnInstagram(input.caption.trim(), data.publicUrl);
+    await recordPublished({ id: input.id, channel: "instagram", day: await todayEastern(), text: input.caption, image: data.publicUrl, remote_id: result.id, remote_url: result.url });
+    return { ok: true, url: result.url };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
 }

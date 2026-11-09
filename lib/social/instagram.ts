@@ -35,3 +35,25 @@ export async function publishOnInstagram(caption: string, publicImageUrl: string
   const info = await get<{ permalink?: string }>(`/${media.id}`, "permalink").catch(() => ({ permalink: undefined }));
   return { id: media.id, url: info.permalink ?? "https://www.instagram.com/" };
 }
+
+// Publishes a Reel. The video must be at a public https address (we put it in Supabase Storage first).
+export async function publishReelOnInstagram(caption: string, publicVideoUrl: string): Promise<{ id: string; url: string }> {
+  if (!instagramConnected()) throw new Error("Instagram is not connected: add INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN.");
+  const { user } = env();
+  const container = await post<{ id: string }>(`/${user}/media`, { media_type: "REELS", video_url: publicVideoUrl, caption, share_to_feed: "true" });
+  // Instagram processes the video (up to a couple of minutes)
+  let ready = false;
+  for (let i = 0; i < 60; i++) {
+    const s = await get<{ status_code?: string }>(`/${container.id}`, "status_code");
+    if (s.status_code === "FINISHED") {
+      ready = true;
+      break;
+    }
+    if (s.status_code === "ERROR") throw new Error("Instagram could not process the video.");
+    await new Promise((r) => setTimeout(r, 3000));
+  }
+  if (!ready) throw new Error("Instagram is still processing the video. Try “Send to Instagram” again in a minute.");
+  const media = await post<{ id: string }>(`/${user}/media_publish`, { creation_id: container.id });
+  const info = await get<{ permalink?: string }>(`/${media.id}`, "permalink").catch(() => ({ permalink: undefined }));
+  return { id: media.id, url: info.permalink ?? "https://www.instagram.com/" };
+}

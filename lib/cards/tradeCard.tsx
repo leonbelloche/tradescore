@@ -73,7 +73,12 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
 
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: BG, color: "#eaf0f7", fontFamily: "Sora", padding: `${40 * k}px ${56 * k}px` }}>
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: `linear-gradient(160deg, #15294b 0%, ${BG} 55%)`, color: "#eaf0f7", fontFamily: "Sora", padding: `${40 * k}px ${56 * k}px`, position: "relative" }}>
+        {/* Winner's logo as a big faded watermark */}
+        {(trade.winner ?? trade.teams[0]).team.logo_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={(trade.winner ?? trade.teams[0]).team.logo_url!} width={560 * k} height={560 * k} style={{ position: "absolute", right: -80 * k, top: 40 * k, opacity: 0.07 }} alt="" />
+        ) : null}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Logo fontSize={40 * k} />
           <div style={{ display: "flex", color: MUTED, fontSize: 24 * k, fontWeight: 500 }}>{date}</div>
