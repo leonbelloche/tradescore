@@ -5,7 +5,8 @@ import { todayEastern } from "@/lib/admin/today";
 import { signedCardUrl, verifyCardUrl, type CardFormat } from "@/lib/cards/sign";
 import { SITE_URL } from "@/lib/site";
 import type { Channel } from "@/lib/social/channels";
-import { alreadyPublished, recordPublished } from "@/lib/social/history";
+import { alreadyPublished, lastPublishedAt, recordPublished } from "@/lib/social/history";
+import { X_GAP_MINUTES } from "@/lib/social/limits";
 import { publishOnInstagram, publishReelOnInstagram } from "@/lib/social/instagram";
 import { adminDb } from "@/lib/db/admin";
 import { publishOnX } from "@/lib/social/x";
@@ -21,12 +22,18 @@ function checkImage(path: string): string {
   return `${SITE_URL}${u.pathname}${u.search}`;
 }
 
-export async function publishPost(input: { id: string; channel: Channel; text: string; url: string | null; image: string; force?: boolean }): Promise<PublishResult> {
+export async function publishPost(input: { id: string; channel: Channel; text: string; url: string | null; image: string }): Promise<PublishResult> {
   await requireAdmin();
   try {
     const text = input.text.trim();
     if (!text) throw new Error("The text is empty.");
-    if (!input.force && (await alreadyPublished(input.id))) throw new Error("Already published today. Use “Publish again” if you really want a second one.");
+    if (await alreadyPublished(input.id)) throw new Error("Already published today.");
+    if (input.channel === "x") {
+      // Anti-spam spacing (X limits bursts and bans accounts that post too fast): at least X_GAP_MINUTES between posts.
+      const last = await lastPublishedAt("x");
+      const wait = last ? X_GAP_MINUTES - Math.floor((Date.now() - Date.parse(last)) / 60_000) : 0;
+      if (wait > 0) throw new Error(`Too soon: wait ${wait} more minute${wait > 1 ? "s" : ""} before the next post (anti-spam spacing).`);
+    }
     const image = checkImage(input.image);
 
     let result: { id: string; url: string };

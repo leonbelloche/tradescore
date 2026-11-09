@@ -1,7 +1,7 @@
 "use client";
 // X: one post at a time. Three counters (left today, late, left this week), the next post in a big card
 // with its image, then: Copy image → Send to X (publishes directly when X is connected).
-import { useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { markSent, publishPost } from "@/app/admin/social";
 import type { SocialPost } from "@/lib/social/channels";
 
@@ -22,13 +22,34 @@ const subscribe = (cb: () => void) => {
     window.removeEventListener("storage", cb);
   };
 };
+const LAST_KEY = "tradescore:x-last-sent";
 function rememberSent(id: string) {
   const ids = new Set<string>(JSON.parse(readRaw()));
   ids.add(id);
   try {
     localStorage.setItem(KEY, JSON.stringify([...ids].slice(-300)));
+    localStorage.setItem(LAST_KEY, new Date().toISOString());
   } catch {}
   window.dispatchEvent(new Event(EVENT));
+}
+const readLast = () => {
+  try {
+    return localStorage.getItem(LAST_KEY) ?? "";
+  } catch {
+    return "";
+  }
+};
+
+// Minutes left before the next post is allowed (anti-spam spacing), re-checked every 20 s.
+function useCooldown(serverLast: string | null, gapMinutes: number): number {
+  const localLast = useSyncExternalStore(subscribe, readLast, () => "");
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 20_000);
+    return () => clearInterval(t);
+  }, []);
+  const last = Math.max(serverLast ? Date.parse(serverLast) : 0, localLast ? Date.parse(localLast) : 0);
+  return last ? Math.max(0, Math.ceil(gapMinutes - (now - last) / 60_000)) : 0;
 }
 
 // Copies an image to the clipboard (PNG), so you can paste it in the X composer with Ctrl+V.
@@ -53,7 +74,8 @@ function Counter({ label, value, tone }: { label: string; value: number; tone?: 
   );
 }
 
-export default function XQueue({ posts, publishedIds, connected, nowHour, perDay, daysLeftAfterToday }: { posts: SocialPost[]; publishedIds: string[]; connected: boolean; nowHour: number; perDay: number; daysLeftAfterToday: number }) {
+export default function XQueue({ posts, publishedIds, connected, nowHour, perDay, daysLeftAfterToday, lastSentAt, gapMinutes }: { posts: SocialPost[]; publishedIds: string[]; connected: boolean; nowHour: number; perDay: number; daysLeftAfterToday: number; lastSentAt: string | null; gapMinutes: number }) {
+  const wait = useCooldown(lastSentAt, gapMinutes);
   const raw = useSyncExternalStore(subscribe, readRaw, () => "[]");
   const sent = new Set<string>([...publishedIds, ...JSON.parse(raw)]);
   const [skipped, setSkipped] = useState<string[]>([]);
@@ -75,6 +97,7 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
           post={current}
           late={current.hour < nowHour}
           connected={connected}
+          wait={wait}
           onDone={() => rememberSent(current.id)}
           onSkip={() => setSkipped((s) => [...s, current.id])}
         />
@@ -88,7 +111,7 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
   );
 }
 
-function PostCard({ post, late, connected, onDone, onSkip }: { post: SocialPost; late: boolean; connected: boolean; onDone: () => void; onSkip: () => void }) {
+function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: SocialPost; late: boolean; connected: boolean; wait: number; onDone: () => void; onSkip: () => void }) {
   const [text, setText] = useState(post.text);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,6 +130,7 @@ function PostCard({ post, late, connected, onDone, onSkip }: { post: SocialPost;
 
   function send() {
     setError(null);
+    if (wait > 0) return;
     if (connected) {
       start(async () => {
         const r = await publishPost({ id: post.id, channel: "x", text, url: post.url, image: post.image });
@@ -142,11 +166,16 @@ function PostCard({ post, late, connected, onDone, onSkip }: { post: SocialPost;
             <button type="button" onClick={copy} className={`display min-h-12 rounded-xl border-2 px-4 text-sm font-bold ${copied ? "border-score-5 text-score-5" : "border-border-strong hover:border-accent"}`}>
               {copied ? "Image copied ✓" : "1. Copy image"}
             </button>
-            <button type="button" onClick={send} disabled={pending || tooLong} className="display min-h-12 rounded-xl bg-foreground px-4 text-sm font-bold text-background hover:brightness-90 disabled:opacity-50">
-              {pending ? "Sending…" : connected ? "2. Send to 𝕏" : "2. Send to 𝕏 ▸"}
+            <button type="button" onClick={send} disabled={pending || tooLong || wait > 0} className="display min-h-12 rounded-xl bg-foreground px-4 text-sm font-bold text-background hover:brightness-90 disabled:opacity-50">
+              {pending ? "Sending…" : wait > 0 ? `Wait ${wait} min` : connected ? "2. Send to 𝕏" : "2. Send to 𝕏 ▸"}
             </button>
           </div>
           <p className="text-xs text-muted">{connected ? "Send to 𝕏 publishes the text and the image directly on your account." : "X opens with the text: paste the image with Ctrl+V, press Post. The next post shows up here."}</p>
+          {wait > 0 && (
+            <p className="rounded-lg bg-score-3/10 px-3 py-2 text-xs text-score-3">
+              Anti-spam pause: X bans accounts that post in bursts, so posts are spaced at least 45 minutes apart. Next one in {wait} min. You can already copy the image.
+            </p>
+          )}
           {error && <p className="text-sm text-score-1">✕ {error}</p>}
           <button type="button" onClick={onSkip} className="self-start text-xs text-muted underline-offset-2 hover:text-foreground hover:underline">
             Skip this one for now

@@ -9,6 +9,7 @@ import type { TradeIdea } from "@/lib/trades/ideas";
 import { rng, shuffle } from "@/lib/trades/ideas";
 import type { ScoredTrade, TeamTradeStats } from "@/lib/trades/scored";
 import { formatMoney } from "@/lib/format";
+import { X_POSTS_PER_DAY } from "@/lib/social/limits";
 
 // The image that goes with a post: a trade card, or a "stat" card (see lib/cards).
 export type CardSpec =
@@ -41,10 +42,10 @@ export type XPostInput = {
 };
 
 export const X_LIMIT = 280;
-export const POSTS_PER_DAY = 15;
+export const POSTS_PER_DAY = X_POSTS_PER_DAY; // see lib/social/limits.ts (anti-spam)
 const LINK = 23;
-// 15 slots, roughly one an hour from 9 AM to 11 PM Eastern (US fans).
-const HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+// 10 slots from 9 AM to 10 PM Eastern (US fans), always at least an hour apart.
+const HOURS = [9, 10, 12, 13, 15, 16, 18, 19, 21, 22];
 const label = (h: number) => `${h % 12 || 12}:00 ${h < 12 ? "AM" : "PM"}`;
 
 const short = (t: { short_name: string | null; name: string }) => t.short_name ?? t.name;
@@ -101,7 +102,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
     add(
       `idea-${idea.target.id}`,
       "Trade idea",
-      `What if the ${b} called about ${idea.target.name}? 📞\n\nWe ran the numbers:\n${b} ${idea.buyerResult.score} · ${idea.buyerResult.tier}\n${s} ${idea.sellerResult.score} · ${idea.sellerResult.tier}\n\nDo you make that deal? ${tag(idea.buyer)} ${tag(idea.seller)} #NBA`,
+      `What if the ${b} called about ${idea.target.name}? 📞\n\nWe ran the numbers:\n${b} ${idea.buyerResult.score} · ${idea.buyerResult.tier}\n${s} ${idea.sellerResult.score} · ${idea.sellerResult.tier}\n\nDo you make that deal? ${tag(idea.buyer)} #NBA`,
       link("/news"),
       {
         type: "stat",
@@ -246,7 +247,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
     add(
       `tonight-${g.id}`,
       "Tonight",
-      `Tonight: ${a} at ${h} 🏀 (${g.detail})\n\n${fav ? `On paper, the ${last(fav.team.name)} have the better front office.` : "Dead even on paper."} Upset alert?\n\n${tag(teamByAbbr.get(g.away.abbreviation))} ${tag(teamByAbbr.get(g.home.abbreviation))} #NBA`,
+      `Tonight: ${a} at ${h} 🏀 (${g.detail})\n\n${fav ? `On paper, the ${last(fav.team.name)} have the better front office.` : "Dead even on paper."} Upset alert?\n\n${tag(teamByAbbr.get(g.home.abbreviation))} #NBA`,
       link("/games"),
       {
         type: "stat",
@@ -275,7 +276,8 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   }
 
   // Order of the day: recap in the morning, ideas and grades during the day, tonight's games before tip-off.
-  const order = ["Last night", "Trade idea", "Latest trade", "Bargain", "Best trade", "Trade talk", "Rankings", "Trade idea", "Overpaid", "Worst trade", "Tonight", "Trade talk", "Trade idea", "Tonight", "Debate"];
+  // (10 a day max: the less useful ones are dropped first)
+  const order = ["Last night", "Trade idea", "Latest trade", "Bargain", "Best trade", "Trade talk", "Overpaid", "Worst trade", "Tonight", "Debate", "Rankings", "Trade idea", "Trade talk", "Tonight", "Trade idea"];
   const sorted: typeof posts = [];
   const pool = [...posts];
   for (const kind of order) {

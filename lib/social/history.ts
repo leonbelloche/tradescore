@@ -33,6 +33,16 @@ export async function countSince(channel: string, day: string): Promise<number> 
   }
 }
 
+// When the channel last published (ISO), or null. Used to space out posts on X.
+export async function lastPublishedAt(channel: string): Promise<string | null> {
+  try {
+    const { data } = await adminDb().from("social_posts").select("posted_at").eq("channel", channel).order("posted_at", { ascending: false }).limit(1).maybeSingle();
+    return (data as { posted_at?: string } | null)?.posted_at ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function alreadyPublished(id: string): Promise<boolean> {
   try {
     const { data } = await adminDb().from("social_posts").select("id").eq("id", id).maybeSingle();

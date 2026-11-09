@@ -11,7 +11,8 @@ import { postsForToday } from "@/lib/admin/today";
 import { POSTS_PER_DAY } from "@/lib/admin/xPosts";
 import { SITE_URL } from "@/lib/site";
 import { forChannel } from "@/lib/social/channels";
-import { publishedOn } from "@/lib/social/history";
+import { lastPublishedAt, publishedOn } from "@/lib/social/history";
+import { X_GAP_MINUTES } from "@/lib/social/limits";
 import { weekOf } from "@/lib/social/reels";
 import { xConnected } from "@/lib/social/x";
 import { getScoredTrades } from "@/lib/trades/scored";
@@ -35,7 +36,7 @@ async function XChannel() {
   await requireAdmin();
   const [{ today, posts }, trades] = await Promise.all([postsForToday(), getScoredTrades()]);
   const queue = forChannel(posts, "x");
-  const published = await publishedOn(today);
+  const [published, lastSentAt] = await Promise.all([publishedOn(today), lastPublishedAt("x")]);
   const connected = xConnected();
   const tradeOptions = trades.map((t) => ({ id: t.id, label: `${t.date} · ${t.teams.map((x) => `${x.team.short_name ?? x.team.name} ${x.score}`).join(" / ")}` }));
 
@@ -46,7 +47,7 @@ async function XChannel() {
         sub="One post at a time: copy the image, send to X, the next one shows up."
         action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connected" : "○ Not connected"}</span>}
       />
-      <XQueue posts={queue} publishedIds={Object.keys(published)} connected={connected} nowHour={easternHour()} perDay={POSTS_PER_DAY} daysLeftAfterToday={weekOf(today).daysLeft} />
+      <XQueue posts={queue} publishedIds={Object.keys(published)} connected={connected} nowHour={easternHour()} perDay={POSTS_PER_DAY} daysLeftAfterToday={weekOf(today).daysLeft} lastSentAt={lastSentAt} gapMinutes={X_GAP_MINUTES} />
       {!connected && <ConnectBox channel="x" />}
 
       <details className="rounded-2xl border border-border bg-surface p-4">
