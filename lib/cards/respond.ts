@@ -2,7 +2,8 @@
 import sharp from "sharp";
 
 export async function cardResponse(image: Response, jpeg: boolean): Promise<Response> {
-  const headers = { "Cache-Control": "public, max-age=3600, s-maxage=86400" };
+  // No cache on your computer, so a design change shows up at once.
+  const headers = { "Cache-Control": process.env.NODE_ENV === "development" ? "no-store" : "public, max-age=3600, s-maxage=86400" };
   if (!jpeg) return new Response(image.body, { headers: { ...headers, "Content-Type": "image/png" } });
   const png = Buffer.from(await image.arrayBuffer());
   const jpg = await sharp(png).jpeg({ quality: 90 }).toBuffer();

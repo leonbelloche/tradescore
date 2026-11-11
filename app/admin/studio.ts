@@ -28,7 +28,7 @@ const PostDrafts = z.object({ posts: z.array(z.string()).describe("3 different p
 export async function draftPosts(topic: string): Promise<Result<{ posts: string[]; card: Card }>> {
   await requireAdmin();
   try {
-    if (!topic.trim()) throw new Error("Type what the post should be about.");
+    if (!topic.trim()) throw new Error("Tape le sujet du post.");
     const context = await siteContext(topic);
     const out = await writeJson(
       PostDrafts,
@@ -60,10 +60,10 @@ const decode = (s: string) =>
 // Reads a public post with X's free embed endpoint (no API key). Only x.com / twitter.com links are accepted.
 async function readTweet(url: string): Promise<Tweet> {
   const m = url.trim().match(/^https?:\/\/(?:www\.|mobile\.)?(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status\/(\d+)/);
-  if (!m) throw new Error("Paste the link of an X post, like https://x.com/name/status/123…");
+  if (!m) throw new Error("Colle le lien d'un post X, comme https://x.com/nom/status/123…");
   const clean = `https://x.com/${m[1]}/status/${m[2]}`;
   const res = await fetch(`https://publish.twitter.com/oembed?omit_script=1&dnt=true&url=${encodeURIComponent(clean)}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("X did not return this post (deleted, private, or X is blocking embeds). Paste its text in the box instead.");
+  if (!res.ok) throw new Error("X n'a pas renvoyé ce post (supprimé, privé, ou X bloque la lecture). Colle plutôt son texte dans la case.");
   const json = (await res.json()) as { html?: string; author_name?: string };
   const p = json.html?.match(/<p[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? "";
   return { id: m[2], url: clean, author: json.author_name ?? `@${m[1]}`, text: decode(p).trim() };
@@ -83,7 +83,7 @@ export async function draftReplies(url: string, pastedText: string, angle: strin
       tweet = { id, url, author: "", text: "" };
     }
     if (pastedText.trim()) tweet.text = pastedText.trim();
-    if (!tweet.text) throw new Error("Could not read the post's text. Paste it in the box.");
+    if (!tweet.text) throw new Error("Impossible de lire le texte du post. Colle-le dans la case.");
     const context = await siteContext(tweet.text);
     const out = await writeJson(
       ReplyDrafts,

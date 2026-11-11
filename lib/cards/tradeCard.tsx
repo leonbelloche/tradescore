@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import type { ScoredTrade } from "@/lib/trades/scored";
+import { teamColor } from "@/lib/nba/teamColors";
 
 const soraBold = readFile(join(process.cwd(), "assets/fonts/Sora-ExtraBold.ttf"));
 const soraMedium = readFile(join(process.cwd(), "assets/fonts/Sora-Medium.ttf"));
@@ -39,6 +40,7 @@ type Options = {
   line?: string; // punchline shown at the bottom (X studio cards)
   detailed?: boolean; // list what each team gets
   site?: string; // domain shown at the bottom
+  faces?: Record<string, string>; // team id -> headshot of the best player that team gets
 };
 
 export async function cardFonts() {
@@ -48,7 +50,8 @@ export async function cardFonts() {
   ];
 }
 
-export async function tradeCardImage(trade: ScoredTrade | undefined, { width, height, line, detailed = false, site }: Options) {
+export async function tradeCardImage(trade: ScoredTrade | undefined, { width, height, line, detailed = false, site: siteIn, faces = {} }: Options) {
+  const site = siteIn && !siteIn.startsWith("localhost") ? siteIn : undefined;
   const portrait = height > width; // Instagram 4:5: teams stacked instead of side by side
   const k = portrait ? width / 1000 : width / 1200; // designed at 1200 px wide (1000 in portrait), then scaled
   const fonts = await cardFonts();
@@ -69,7 +72,8 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
   const headline = trade.winner ? `${name(trade.winner)} win the trade` : "Even trade";
   const date = new Date(`${trade.date}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
   const three = trade.teams.length === 3;
-  const circle = (three || portrait ? 150 : 168) * k;
+  const hasFaces = Object.keys(faces).length > 0;
+  const circle = (hasFaces ? (three ? 110 : 128) : three || portrait ? 150 : 168) * k;
 
   return new ImageResponse(
     (
@@ -84,14 +88,14 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
           <div style={{ display: "flex", color: MUTED, fontSize: 24 * k, fontWeight: 500 }}>{date}</div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 22 * k, fontSize: (three ? 56 : 64) * k, fontWeight: 800, letterSpacing: -2 * k }}>{headline}</div>
+        <div style={{ display: "flex", flexShrink: 0, justifyContent: "center", marginTop: 8 * k, fontSize: (three ? 52 : 58) * k, fontWeight: 800, letterSpacing: -2 * k }}>{headline}</div>
 
         <div style={{ display: "flex", flexDirection: portrait ? "column" : "row", flex: 1, gap: 28 * k, marginTop: 24 * k }}>
           {trade.teams.map((t) => {
             const color = scoreColor(t.score);
             const gets = t.receives.join(", ");
             return (
-              <div key={t.team.id} style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center", background: CARD, borderRadius: 24 * k, border: `${2 * k}px solid ${BORDER}`, padding: 18 * k }}>
+              <div key={t.team.id} style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center", background: `linear-gradient(180deg, ${teamColor(t.team.abbreviation)}33 0%, ${CARD} 55%)`, borderRadius: 24 * k, border: `${2 * k}px solid ${BORDER}`, borderTop: `${6 * k}px solid ${teamColor(t.team.abbreviation)}`, padding: 18 * k }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 14 * k }}>
                   {t.team.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -99,28 +103,34 @@ export async function tradeCardImage(trade: ScoredTrade | undefined, { width, he
                   ) : null}
                   <div style={{ display: "flex", fontSize: (three ? 30 : 36) * k, fontWeight: 800, letterSpacing: -1 * k }}>{name(t)}</div>
                 </div>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 10 * k, marginTop: 6 * k }}>
+                  {faces[t.team.id] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={faces[t.team.id]} width={(three ? 90 : 112) * k * 1.37} height={(three ? 90 : 112) * k} style={{ flexShrink: 0 }} alt="" />
+                  ) : null}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexShrink: 0,
                     width: circle,
                     height: circle,
                     borderRadius: 999,
                     border: `${7 * k}px solid ${color}`,
                     color,
-                    fontSize: (three ? 76 : 86) * k,
+                    fontSize: (hasFaces ? (three ? 58 : 68) : three ? 76 : 86) * k,
                     fontWeight: 800,
                     letterSpacing: -3 * k,
-                    marginTop: 16 * k,
                   }}
                 >
                   {t.score}
                 </div>
-                <div style={{ display: "flex", marginTop: 14 * k, fontSize: 28 * k, fontWeight: 800, color }}>{t.tier}</div>
+                </div>
+                <div style={{ display: "flex", flexShrink: 0, marginTop: 8 * k, fontSize: 28 * k, fontWeight: 800, color }}>{t.tier}</div>
                 {detailed && gets && (
-                  <div style={{ display: "flex", marginTop: 10 * k, maxWidth: "90%", textAlign: "center", justifyContent: "center", fontSize: 20 * k, fontWeight: 500, color: MUTED }}>
-                    gets {gets.length > 70 ? `${gets.slice(0, 67)}…` : gets}
+                  <div style={{ display: "flex", marginTop: 4 * k, maxWidth: "92%", textAlign: "center", justifyContent: "center", fontSize: 18 * k, fontWeight: 500, color: MUTED }}>
+                    gets {gets.length > (three ? 40 : 46) ? `${gets.slice(0, three ? 37 : 43)}…` : gets}
                   </div>
                 )}
               </div>

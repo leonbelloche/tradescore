@@ -50,7 +50,15 @@ export async function endSession() {
   (await cookies()).delete(COOKIE);
 }
 
+// On your own computer (npm run dev), no password: you are always the admin.
+// Online (production build), the password is always required.
+const NO_LOGIN_LOCALLY = process.env.NODE_ENV === "development";
+
 export async function isAdmin(): Promise<boolean> {
+  if (NO_LOGIN_LOCALLY) {
+    await connection();
+    return true;
+  }
   const pass = password();
   const raw = (await cookies()).get(COOKIE)?.value;
   if (!pass || !raw) return false;

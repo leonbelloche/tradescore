@@ -31,10 +31,10 @@ async function Trades({ searchParams }: { searchParams: Promise<Record<string, s
 
   return (
     <div className="space-y-10">
-      <AdminHeader title="Trades" sub={`${trades.length} trades on the site. New ones are graded instantly.`} />
+      <AdminHeader title="Trades" sub={`${trades.length} trades sur le site. Les nouveaux sont notés tout de suite.`} />
 
       <section>
-        <SectionTitle title="Spotted on ESPN, not on the site yet" sub={`${detected.length} line${detected.length === 1 ? "" : "s"}, last 30 days`} />
+        <SectionTitle title="Repérés sur ESPN, pas encore sur le site" sub={`${detected.length} ligne${detected.length > 1 ? "s" : ""}, 30 derniers jours`} />
         {detected.length ? (
           <Card className="divide-y divide-border">
             {detected.map((t) => (
@@ -46,19 +46,19 @@ async function Trades({ searchParams }: { searchParams: Promise<Record<string, s
                   href={`/admin/trades?${new URLSearchParams({ date: t.date.slice(0, 10), source: `${t.abbreviation}: ${t.description}` })}#add`}
                   className="display shrink-0 text-sm font-bold text-accent hover:underline"
                 >
-                  Add it ▸
+                  L’ajouter ▸
                 </Link>
               </div>
             ))}
           </Card>
         ) : (
-          <Card className="p-4 text-sm text-muted">Nothing new: every trade ESPN reported in the last 30 days is on the site.</Card>
+          <Card className="p-4 text-sm text-muted">Rien de nouveau : tous les trades annoncés par ESPN ces 30 derniers jours sont sur le site.</Card>
         )}
-        <p className="mt-2 text-xs text-muted">ESPN often lists the same trade once per team: add it once, with all the players and picks.</p>
+        <p className="mt-2 text-xs text-muted">ESPN liste souvent le même trade une fois par équipe : ajoute-le une seule fois, avec tous les joueurs et les choix de draft.</p>
       </section>
 
       <section id="add">
-        <SectionTitle title="Add a trade" />
+        <SectionTitle title="Ajouter un trade" />
         <Card className="p-4">
           <TradeForm
             key={prefill?.source ?? "empty"}
@@ -70,7 +70,7 @@ async function Trades({ searchParams }: { searchParams: Promise<Record<string, s
       </section>
 
       <section>
-        <SectionTitle title="On the site" />
+        <SectionTitle title="Sur le site" />
         <Card className="divide-y divide-border">
           {trades.map((t) => {
             const label = t.teams.map((x) => x.team.short_name ?? x.team.name).join(" · ");

@@ -55,9 +55,9 @@ function TradeCard({ card, trades }: { card: Card; trades: TradeOption[] }) {
   return (
     <div className="rounded-xl border border-border bg-background/60 p-3">
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <p className="display text-sm font-bold">Image to attach</p>
-        <select value={trade} onChange={(e) => setTrade(e.target.value)} className="min-h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-xs" aria-label="Trade on the image">
-          <option value="">No image</option>
+        <p className="display text-sm font-bold">Image à joindre</p>
+        <select value={trade} onChange={(e) => setTrade(e.target.value)} className="min-h-9 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-xs" aria-label="Trade sur l'image">
+          <option value="">Pas d’image</option>
           {trades.map((t) => (
             <option key={t.id} value={t.id}>
               {t.label}
@@ -68,29 +68,29 @@ function TradeCard({ card, trades }: { card: Card; trades: TradeOption[] }) {
       {trade ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src || undefined} alt="Trade card" className="aspect-[16/9] w-full rounded-lg border border-border bg-surface-2" />
+          <img src={src || undefined} alt="Carte du trade" className="aspect-[16/9] w-full rounded-lg border border-border bg-surface-2" />
           <input
             value={line}
             onChange={(e) => setLine(e.target.value)}
             onBlur={() => setShown(line)}
             onKeyDown={(e) => e.key === "Enter" && setShown(line)}
             maxLength={80}
-            placeholder="Punchline on the image (optional)"
+            placeholder="Phrase choc sur l'image (facultatif)"
             className="mt-2 min-h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
-            aria-label="Punchline on the image"
+            aria-label="Phrase choc sur l'image"
           />
           <div className="mt-2 flex flex-wrap gap-2">
             <button type="button" onClick={copy} className={ghost}>
-              {copied ? "Copied ✓ paste it in X" : "Copy image"}
+              {copied ? "Copiée ✓ colle-la dans X" : "Copier l'image"}
             </button>
             <button type="button" onClick={download} className={ghost}>
               ⬇ Download
             </button>
           </div>
-          <p className="mt-1 text-xs text-muted">In X: paste it with Ctrl+V in the post box, or click the image icon and pick the downloaded file.</p>
+          <p className="mt-1 text-xs text-muted">Dans X : colle-la avec Ctrl+V dans la zone du post, ou clique sur l’icône image et choisis le fichier téléchargé.</p>
         </>
       ) : (
-        <p className="text-xs text-muted">No trade fits this text. Pick one above if you want an image.</p>
+        <p className="text-xs text-muted">Aucun trade ne colle à ce texte. Choisis-en un au-dessus si tu veux une image.</p>
       )}
     </div>
   );
@@ -101,7 +101,7 @@ function Draft({ initial, href, label, link }: { initial: string; href: (text: s
   const length = [...text].length + (link ? 24 : 0);
   return (
     <li className="rounded-xl border border-border bg-background/60 p-3">
-      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} className="w-full resize-y rounded-lg border border-border bg-background p-2.5 text-sm leading-relaxed focus:border-accent" aria-label="Draft" />
+      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} className="w-full resize-y rounded-lg border border-border bg-background p-2.5 text-sm leading-relaxed focus:border-accent" aria-label="Brouillon" />
       <div className="mt-2 flex items-center gap-3">
         <a href={href(text)} target="_blank" rel="noopener noreferrer" className={xButton}>
           {label} ▸
@@ -134,9 +134,9 @@ export function ComposeWithClaude({ siteUrl, trades }: { siteUrl: string; trades
           });
         }}
       >
-        <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="The Jazz robbed the Lakers, Hornets-Bulls one month later…" className={field} aria-label="What should the post be about?" />
+        <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Le Jazz a volé les Lakers, Hornets-Bulls un mois après…" className={field} aria-label="Sujet du post" />
         <button type="submit" disabled={pending} className={`${primary} self-start`}>
-          {pending ? "Claude is writing…" : "✦ Write with Claude"}
+          {pending ? "Claude écrit…" : "✦ Écrire avec Claude"}
         </button>
       </form>
       {error && <p className="text-sm text-score-1">✕ {error}</p>}
@@ -144,7 +144,7 @@ export function ComposeWithClaude({ siteUrl, trades }: { siteUrl: string; trades
         <>
           <ul className="space-y-3">
             {result.posts.map((d, i) => (
-              <Draft key={`${result.round}-${i}`} initial={d} href={(t) => postIntent(t, siteUrl)} label="Post on 𝕏" link />
+              <Draft key={`${result.round}-${i}`} initial={d} href={(t) => postIntent(t, siteUrl)} label="Poster sur 𝕏" link />
             ))}
           </ul>
           <TradeCard key={result.round} card={result.card} trades={trades} />
@@ -176,25 +176,25 @@ export function ReplyWithClaude({ trades }: { trades: TradeOption[] }) {
           });
         }}
       >
-        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://x.com/someone/status/1234567890" className={field} aria-label="Link of the post to reply to" required />
+        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://x.com/someone/status/1234567890" className={field} aria-label="Lien du post auquel répondre" required />
         <div className="grid gap-2 sm:grid-cols-2">
-          <textarea value={pasted} onChange={(e) => setPasted(e.target.value)} rows={2} placeholder="(optional) paste the post's text if X can't be read" className={`${field} py-2`} aria-label="Post text" />
-          <textarea value={angle} onChange={(e) => setAngle(e.target.value)} rows={2} placeholder="(optional) your angle: defend the Hornets, be funny…" className={`${field} py-2`} aria-label="Angle" />
+          <textarea value={pasted} onChange={(e) => setPasted(e.target.value)} rows={2} placeholder="(facultatif) colle le texte du post si X ne peut pas être lu" className={`${field} py-2`} aria-label="Texte du post" />
+          <textarea value={angle} onChange={(e) => setAngle(e.target.value)} rows={2} placeholder="(facultatif) ton angle : défendre les Hornets, être drôle…" className={`${field} py-2`} aria-label="Angle" />
         </div>
         <button type="submit" disabled={pending} className={primary}>
-          {pending ? "Claude is reading the post…" : "✦ Draft replies with Claude"}
+          {pending ? "Claude lit le post…" : "✦ Préparer des réponses avec Claude"}
         </button>
       </form>
       {error && <p className="text-sm text-score-1">✕ {error}</p>}
       {result && (
         <div className="space-y-3">
           <blockquote className="rounded-xl border-l-2 border-pen bg-surface-2/60 px-4 py-3 text-sm">
-            <p className="num mb-1 text-xs text-muted">{result.tweet.author || "Original post"}</p>
+            <p className="num mb-1 text-xs text-muted">{result.tweet.author || "Post d'origine"}</p>
             <p className="whitespace-pre-line">{result.tweet.text}</p>
           </blockquote>
           <ul className="space-y-3">
             {result.replies.map((d, i) => (
-              <Draft key={`${result.round}-${i}`} initial={d} href={(t) => replyIntent(result.tweet.id, t)} label="Reply on 𝕏" />
+              <Draft key={`${result.round}-${i}`} initial={d} href={(t) => replyIntent(result.tweet.id, t)} label="Répondre sur 𝕏" />
             ))}
           </ul>
           <TradeCard key={result.round} card={result.card} trades={trades} />

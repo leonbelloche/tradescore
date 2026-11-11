@@ -9,7 +9,7 @@ export const instagramConnected = () => Boolean(env().user && env().token);
 async function post<T>(path: string, params: Record<string, string>): Promise<T> {
   const res = await fetch(`${API}${path}`, { method: "POST", body: new URLSearchParams({ ...params, access_token: env().token! }), cache: "no-store" });
   const json = (await res.json().catch(() => ({}))) as T & { error?: { message?: string } };
-  if (!res.ok || json.error) throw new Error(`Instagram refused the request: ${json.error?.message ?? `HTTP ${res.status}`}`);
+  if (!res.ok || json.error) throw new Error(`Instagram a refusé la demande : ${json.error?.message ?? `HTTP ${res.status}`}`);
   return json;
 }
 async function get<T>(path: string, fields: string): Promise<T> {
@@ -18,7 +18,7 @@ async function get<T>(path: string, fields: string): Promise<T> {
 }
 
 export async function publishOnInstagram(caption: string, publicImageUrl: string): Promise<{ id: string; url: string }> {
-  if (!instagramConnected()) throw new Error("Instagram is not connected: add INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN.");
+  if (!instagramConnected()) throw new Error("Instagram n'est pas connecté : ajoute INSTAGRAM_USER_ID et INSTAGRAM_ACCESS_TOKEN.");
   if (/localhost|127\.0\.0\.1/.test(publicImageUrl)) throw new Error("Instagram needs a public image address: publish from the live site, not from localhost.");
   const { user } = env();
   // 1. Instagram fetches the image and prepares the post ("container")
@@ -38,7 +38,7 @@ export async function publishOnInstagram(caption: string, publicImageUrl: string
 
 // Publishes a Reel. The video must be at a public https address (we put it in Supabase Storage first).
 export async function publishReelOnInstagram(caption: string, publicVideoUrl: string): Promise<{ id: string; url: string }> {
-  if (!instagramConnected()) throw new Error("Instagram is not connected: add INSTAGRAM_USER_ID and INSTAGRAM_ACCESS_TOKEN.");
+  if (!instagramConnected()) throw new Error("Instagram n'est pas connecté : ajoute INSTAGRAM_USER_ID et INSTAGRAM_ACCESS_TOKEN.");
   const { user } = env();
   const container = await post<{ id: string }>(`/${user}/media`, { media_type: "REELS", video_url: publicVideoUrl, caption, share_to_feed: "true" });
   // Instagram processes the video (up to a couple of minutes)

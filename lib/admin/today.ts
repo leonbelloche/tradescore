@@ -5,7 +5,7 @@ import { getValuedPlayers, rosterScores } from "@/lib/players/values";
 import { tradeIdeas } from "@/lib/trades/ideas";
 import { getScoredTrades, teamStats } from "@/lib/trades/scored";
 import { SITE_URL } from "@/lib/site";
-import { xPostsOfTheDay } from "./xPosts";
+import { replyIdeasOfTheDay, xPostsOfTheDay } from "./xPosts";
 
 export { todayEastern };
 
@@ -20,7 +20,7 @@ export async function postsForToday() {
     safe(getScoreboard(shiftDay(today, 0)), { day: "", games: [] }),
     safe(getNews(), []),
   ]);
-  const posts = xPostsOfTheDay({
+  const input = {
     today,
     siteUrl: SITE_URL,
     teams,
@@ -32,6 +32,6 @@ export async function postsForToday() {
     tonight: tonight.games,
     ideas: tradeIdeas(today, league, teams, players),
     news,
-  });
-  return { today, posts };
+  };
+  return { today, posts: xPostsOfTheDay(input), replies: replyIdeasOfTheDay(input) };
 }

@@ -9,7 +9,7 @@ export default function LoginForm() {
   return (
     <form action={action} className="space-y-4">
       <label className="block space-y-1">
-        <span className="display text-sm font-bold">Admin password</span>
+        <span className="display text-sm font-bold">Mot de passe admin</span>
         <input
           type="password"
           name="password"
@@ -20,7 +20,7 @@ export default function LoginForm() {
       </label>
       {state.error && <p className="text-sm text-score-1">{state.error}</p>}
       <Button type="submit" disabled={pending} className="w-full">
-        {pending ? "Checking…" : "Enter the front office"}
+        {pending ? "Vérification…" : "Entrer"}
       </Button>
     </form>
   );

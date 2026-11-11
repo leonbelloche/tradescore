@@ -15,6 +15,12 @@ export const SCORE_CONFIG = {
   minGamesCurrentSeason: 10,
   gamesPerSeason: 82,
 
+  // Injuries: the availability above counts in full for THIS season only. For the following seasons it moves
+  // part of the way back toward a normal season (added 2026-11-11: a star hurt this year was projected as hurt
+  // for his whole contract, e.g. Tatum at 1/99). availability_t = a + (target - a) x recovery, when a < target.
+  futureAvailabilityTarget: 0.85,
+  injuryRecovery: 0.6,
+
   // 2. Talent change applied each following season, by age that season.
   ageGrowth: [
     { maxAge: 22, change: 0.08 },

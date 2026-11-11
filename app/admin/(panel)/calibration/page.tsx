@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/admin/session";
 import { getScoredTrades } from "@/lib/trades/scored";
 import reference from "@/data/calibration_trades.json";
 
-export const metadata: Metadata = { title: "Calibration — Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "Calibrage — Admin", robots: { index: false } };
 
 const GOAL = 0.75; // 15 out of 20
 
@@ -36,11 +36,11 @@ async function Calibration() {
 
   return (
     <div className="space-y-8">
-      <AdminHeader title="Calibration" sub="Does our Trade Score pick the same winner as the analysts (ESPN, SI, Yahoo…)?" />
+      <AdminHeader title="Calibrage" sub="Est-ce que notre Trade Score désigne le même gagnant que les analystes (ESPN, SI, Yahoo…) ?" />
 
       <Card className="flex flex-wrap items-center gap-6 p-5">
         <div>
-          <p className="display text-[11px] font-bold text-muted">Same winner as the analysts</p>
+          <p className="display text-[11px] font-bold text-muted">Même gagnant que les analystes</p>
           <p className={`display text-5xl font-extrabold tabular-nums ${rate >= GOAL ? "text-score-5" : rate >= 0.5 ? "text-score-3" : "text-score-1"}`}>
             {hits}/{rows.length}
           </p>
@@ -48,10 +48,10 @@ async function Calibration() {
         <div className="min-w-48 flex-1 space-y-1">
           <div className="relative h-3 overflow-hidden rounded-full bg-surface-2">
             <div className="h-full bg-accent" style={{ width: `${rate * 100}%` }} />
-            <div className="absolute inset-y-0 w-0.5 bg-foreground" style={{ left: `${GOAL * 100}%` }} title="Goal" />
+            <div className="absolute inset-y-0 w-0.5 bg-foreground" style={{ left: `${GOAL * 100}%` }} title="Objectif" />
           </div>
           <p className="text-xs text-muted">
-            {Math.round(rate * 100)}% · goal {GOAL * 100}% (15 out of 20). To improve it, the formula&apos;s settings live in lib/score/config.ts: ask Claude to try changes and re-run this page.
+            {Math.round(rate * 100)} % · objectif {GOAL * 100} % (15 sur 20). Pour l&apos;améliorer, les réglages de la formule sont dans lib/score/config.ts : demande à Claude d&apos;essayer des changements, puis recharge cette page.
           </p>
         </div>
       </Card>
@@ -61,10 +61,10 @@ async function Calibration() {
           <thead className="display border-b border-border text-left text-[11px] font-bold text-muted">
             <tr>
               <th className="px-4 py-3">Trade</th>
-              <th className="px-2 py-3">Our scores</th>
-              <th className="px-2 py-3">We say</th>
-              <th className="px-2 py-3">Analysts</th>
-              <th className="px-4 py-3 text-right">Match</th>
+              <th className="px-2 py-3">Nos scores</th>
+              <th className="px-2 py-3">Notre gagnant</th>
+              <th className="px-2 py-3">Analystes</th>
+              <th className="px-4 py-3 text-right">Pareil ?</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +76,7 @@ async function Calibration() {
                       {r.trade.date} · {r.trade.teams.map((x) => x.team.short_name ?? x.team.name).join(" · ")}
                     </Link>
                   ) : (
-                    <span className="text-score-1">{r.slug} (not on the site)</span>
+                    <span className="text-score-1">{r.slug} (pas sur le site)</span>
                   )}
                   {r.source && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{r.source}</p>}
                 </td>
@@ -101,7 +101,7 @@ async function Calibration() {
           </tbody>
         </table>
       </Card>
-      <p className="text-xs text-muted">Reference verdicts: data/calibration_trades.json (written from published trade grades).</p>
+      <p className="text-xs text-muted">Verdicts de référence : data/calibration_trades.json (tirés des notes de trades publiées).</p>
     </div>
   );
 }

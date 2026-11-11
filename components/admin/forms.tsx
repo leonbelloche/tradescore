@@ -19,7 +19,7 @@ export function RefreshButton() {
   return (
     <div className="space-y-2">
       <button type="button" disabled={pending} className={primary} onClick={() => start(async () => setResult(await refreshNow()))}>
-        {pending ? "Refreshing… (about 1-2 min)" : "↻ Refresh data now"}
+        {pending ? "Mise à jour… (30 s à 2 min)" : "↻ Mettre à jour maintenant"}
       </button>
       <Result result={result} />
     </div>
@@ -79,48 +79,48 @@ export function TradeForm({ teams, players, prefill }: { teams: Team[]; players:
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={field} />
         </label>
         <label className="space-y-1">
-          <span className="display text-xs font-bold text-muted">ESPN wording (optional, shown on the trade page)</span>
+          <span className="display text-xs font-bold text-muted">Texte ESPN (facultatif, affiché sur la page du trade)</span>
           <input value={source} onChange={(e) => setSource(e.target.value)} placeholder="CHA: Acquired G Rob Dillingham from Chicago…" className={field} />
         </label>
       </div>
 
       <div className="space-y-2">
-        <p className="display text-xs font-bold text-muted">What moves (one line per player or pick)</p>
+        <p className="display text-xs font-bold text-muted">Ce qui bouge (une ligne par joueur ou choix de draft)</p>
         {assets.map((a, i) => (
           <div key={a.key} className="grid grid-cols-2 gap-2 rounded-xl border border-border p-2 sm:grid-cols-[9rem_1fr_9rem_9rem_auto]">
             <select
               value={a.kind}
               onChange={(e) => update(a.key, e.target.value === "player" ? { kind: "player", name: "" } : { kind: e.target.value as "first", year: undefined })}
-              aria-label={`Asset ${i + 1} type`}
+              aria-label={`Élément ${i + 1} : type`}
               className={field}
             >
-              <option value="player">Player</option>
-              <option value="first">1st-round pick</option>
-              <option value="second">2nd-round pick</option>
-              <option value="considerations">Draft considerations</option>
+              <option value="player">Joueur</option>
+              <option value="first">Choix de 1er tour</option>
+              <option value="second">Choix de 2e tour</option>
+              <option value="considerations">Draft considerations (compensation)</option>
             </select>
             {a.kind === "player" ? (
-              <input list="all-players" value={a.name} onChange={(e) => update(a.key, { name: e.target.value })} placeholder="Player name" aria-label={`Asset ${i + 1} player`} className={field} />
+              <input list="all-players" value={a.name} onChange={(e) => update(a.key, { name: e.target.value })} placeholder="Nom du joueur" aria-label={`Élément ${i + 1} : joueur`} className={field} />
             ) : a.kind === "considerations" ? (
-              <span className="flex items-center text-xs text-muted">Counted as a future 2nd</span>
+              <span className="flex items-center text-xs text-muted">Compté comme un futur 2e tour</span>
             ) : (
-              <input type="number" min={2026} max={2034} value={a.year ?? ""} onChange={(e) => update(a.key, { year: e.target.value ? Number(e.target.value) : undefined })} placeholder="Year (e.g. 2028)" aria-label={`Asset ${i + 1} year`} className={field} />
+              <input type="number" min={2026} max={2034} value={a.year ?? ""} onChange={(e) => update(a.key, { year: e.target.value ? Number(e.target.value) : undefined })} placeholder="Année (ex. 2028)" aria-label={`Élément ${i + 1} : année`} className={field} />
             )}
-            {teamSelect(a.from, (v) => update(a.key, { from: v }), "From")}
-            {teamSelect(a.to, (v) => update(a.key, { to: v }), "To")}
-            <button type="button" onClick={() => setAssets((l) => l.filter((x) => x.key !== a.key))} disabled={assets.length <= 2} className={`${ghost} col-span-2 sm:col-span-1`} aria-label={`Remove asset ${i + 1}`}>
+            {teamSelect(a.from, (v) => update(a.key, { from: v }), "De")}
+            {teamSelect(a.to, (v) => update(a.key, { to: v }), "Vers")}
+            <button type="button" onClick={() => setAssets((l) => l.filter((x) => x.key !== a.key))} disabled={assets.length <= 2} className={`${ghost} col-span-2 sm:col-span-1`} aria-label={`Retirer l'élément ${i + 1}`}>
               ✕
             </button>
           </div>
         ))}
         <button type="button" onClick={() => setAssets((l) => [...l, blank(l.at(-1)?.from, l.at(-1)?.to)])} className={ghost}>
-          + Add a player or pick
+          + Ajouter un joueur ou un choix
         </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={pending} className={primary}>
-          {pending ? "Saving…" : "Add and grade this trade"}
+          {pending ? "Enregistrement…" : "Ajouter et noter ce trade"}
         </button>
         <Result result={result} />
       </div>
@@ -138,10 +138,10 @@ export function DeleteTradeButton({ slug, label }: { slug: string; label: string
         disabled={pending}
         className={`${ghost} hover:border-score-1 hover:text-score-1`}
         onClick={() => {
-          if (confirm(`Delete the trade "${label}"? This cannot be undone.`)) start(async () => setResult(await deleteTrade(slug)));
+          if (confirm(`Supprimer le trade « ${label} » ? Impossible d'annuler.`)) start(async () => setResult(await deleteTrade(slug)));
         }}
       >
-        {pending ? "…" : "Delete"}
+        {pending ? "…" : "Supprimer"}
       </button>
       {result && !result.ok && <Result result={result} />}
     </span>
@@ -176,7 +176,7 @@ export function ContractEditor({ playerId, seasons, initial }: { playerId: strin
         </label>
       ))}
       <button type="submit" disabled={pending} className={primary}>
-        {pending ? "…" : "Save"}
+        {pending ? "…" : "Enregistrer"}
       </button>
       <Result result={result} />
     </form>
@@ -198,14 +198,14 @@ export function SettingsForm({ capMillions, tradeOfTheWeek, trades }: { capMilli
       className="space-y-5"
     >
       <label className="block max-w-xs space-y-1">
-        <span className="display text-sm font-bold">Salary cap (millions of $)</span>
+        <span className="display text-sm font-bold">Salary cap (en millions de $)</span>
         <input inputMode="decimal" value={cap} onChange={(e) => setCap(e.target.value)} className={field} />
-        <span className="block text-xs text-muted">Every Trade Score and Trade Value is computed as a share of the cap.</span>
+        <span className="block text-xs text-muted">Tous les Trade Scores et Trade Values sont calculés en part du cap.</span>
       </label>
       <label className="block space-y-1">
-        <span className="display text-sm font-bold">Trade of the day (home page)</span>
+        <span className="display text-sm font-bold">Trade of the day (page d’accueil)</span>
         <select value={totw} onChange={(e) => setTotw(e.target.value)} className={field}>
-          <option value="">Automatic (a different trade every day)</option>
+          <option value="">Automatique (un trade différent chaque jour)</option>
           {trades.map((t) => (
             <option key={t.slug} value={t.slug}>
               {t.label}
@@ -215,7 +215,7 @@ export function SettingsForm({ capMillions, tradeOfTheWeek, trades }: { capMilli
       </label>
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={pending} className={primary}>
-          {pending ? "Saving…" : "Save settings"}
+          {pending ? "Enregistrement…" : "Enregistrer les réglages"}
         </button>
         <Result result={result} />
       </div>

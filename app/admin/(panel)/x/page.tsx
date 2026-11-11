@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConnectBox from "@/components/admin/ConnectBox";
+import ReplyIdeas from "@/components/admin/ReplyIdeas";
 import XQueue from "@/components/admin/XQueue";
 import { ComposeWithClaude, ReplyWithClaude } from "@/components/admin/XStudio";
 import LoadingBlock from "@/components/LoadingBlock";
@@ -34,7 +35,7 @@ function easternHour(): number {
 
 async function XChannel() {
   await requireAdmin();
-  const [{ today, posts }, trades] = await Promise.all([postsForToday(), getScoredTrades()]);
+  const [{ today, posts, replies }, trades] = await Promise.all([postsForToday(), getScoredTrades()]);
   const queue = forChannel(posts, "x");
   const [published, lastSentAt] = await Promise.all([publishedOn(today), lastPublishedAt("x")]);
   const connected = xConnected();
@@ -44,14 +45,15 @@ async function XChannel() {
     <div className="space-y-6">
       <AdminHeader
         title="𝕏"
-        sub="One post at a time: copy the image, send to X, the next one shows up."
-        action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connected" : "○ Not connected"}</span>}
+        sub="Un post à la fois : copie l'image, envoie sur X, le suivant apparaît."
+        action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connecté" : "○ Pas connecté"}</span>}
       />
       <XQueue posts={queue} publishedIds={Object.keys(published)} connected={connected} nowHour={easternHour()} perDay={POSTS_PER_DAY} daysLeftAfterToday={weekOf(today).daysLeft} lastSentAt={lastSentAt} gapMinutes={X_GAP_MINUTES} />
       {!connected && <ConnectBox channel="x" />}
+      <ReplyIdeas ideas={replies} />
 
       <details className="rounded-2xl border border-border bg-surface p-4">
-        <summary className="cursor-pointer text-sm font-bold">✦ Write a post or reply to someone with Claude {claudeConfigured() ? "" : "(needs ANTHROPIC_API_KEY)"}</summary>
+        <summary className="cursor-pointer text-sm font-bold">✦ Écrire un post ou répondre à quelqu’un avec Claude {claudeConfigured() ? "" : "(il faut la clé ANTHROPIC_API_KEY)"}</summary>
         <div className="mt-4 grid gap-6 xl:grid-cols-2">
           <ComposeWithClaude siteUrl={SITE_URL} trades={tradeOptions} />
           <ReplyWithClaude trades={tradeOptions} />

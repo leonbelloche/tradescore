@@ -26,15 +26,20 @@ export function playerValue(p: PlayerAsset, mode: TeamMode): { value: number; br
     talentNow: talent(p.gameScore, p.availability),
   };
   let value = 0;
-  let seasonTalent = breakdown.talentNow;
+  // Talent at full availability; each season then applies its own availability (this season's in full, later ones partly recovered).
+  let fullTalent = talent(p.gameScore, 1);
+  const futureAvailability =
+    p.availability < C.futureAvailabilityTarget ? p.availability + (C.futureAvailabilityTarget - p.availability) * C.injuryRecovery : p.availability;
+  breakdown.futureAvailability = futureAvailability;
   let age = p.age;
   const seasons = Math.min(p.salaries.length, C.maxContractSeasons);
   for (let t = 0; t < seasons; t++) {
     const cost = C.salaryWeight * Math.max(0, p.salaries[t] - C.replacementSalary);
+    const seasonTalent = fullTalent * (t === 0 ? p.availability : futureAvailability);
     const net = Math.pow(C.discountPerSeason, t) * (contextAt(mode, t) * seasonTalent - cost);
     breakdown[`season${t + 1}Net`] = net;
     value += net;
-    seasonTalent *= 1 + ageGrowth(age);
+    fullTalent *= 1 + ageGrowth(age);
     age += 1;
   }
   breakdown.seasons = seasons;

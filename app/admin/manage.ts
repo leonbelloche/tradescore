@@ -22,7 +22,7 @@ export async function refreshNow(): Promise<ActionResult & { summary?: RefreshSu
   await requireAdmin();
   try {
     const summary = await refreshData();
-    return { ...done(`Done in ${summary.seconds}s: ${summary.players} players, ${summary.newPlayers.length} new, ${summary.moved.length} moved, ${summary.contractsAdded} contracts added.`), summary };
+    return { ...done(`Fait en ${summary.seconds} s : ${summary.players} joueurs, ${summary.newPlayers.length} nouveaux, ${summary.moved.length} transferts, ${summary.contractsAdded} contrats ajoutés.`), summary };
   } catch (e) {
     await saveSite({ lastRefreshError: { at: new Date().toISOString(), message: fail(e).message } }).catch(() => {});
     return fail(e);
@@ -39,8 +39,8 @@ export type NewTrade = {
 export async function addTrade(trade: NewTrade): Promise<ActionResult> {
   await requireAdmin();
   try {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(trade.date)) throw new Error("Pick a date.");
-    if (trade.assets.length < 2) throw new Error("A trade needs at least 2 assets.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(trade.date)) throw new Error("Choisis une date.");
+    if (trade.assets.length < 2) throw new Error("Un trade a besoin d'au moins 2 éléments.");
     const db = adminDb();
     const teams = await must<{ abbreviation: string; short_name: string | null; name: string }[]>("teams", db.from("teams").select("abbreviation, short_name, name"));
     const known = new Map(teams.map((t) => [t.abbreviation, t]));
@@ -48,17 +48,17 @@ export async function addTrade(trade: NewTrade): Promise<ActionResult> {
     const espnByName = new Map(players.map((p) => [p.name.toLowerCase(), p.espn_id]));
 
     const assets: TradeAssetRow[] = trade.assets.map((a, i) => {
-      if (!known.has(a.from) || !known.has(a.to)) throw new Error(`Asset ${i + 1}: pick both teams.`);
-      if (a.from === a.to) throw new Error(`Asset ${i + 1}: "from" and "to" are the same team.`);
+      if (!known.has(a.from) || !known.has(a.to)) throw new Error(`Élément ${i + 1} : choisis les deux équipes.`);
+      if (a.from === a.to) throw new Error(`Élément ${i + 1} : « De » et « Vers » sont la même équipe.`);
       if (a.kind === "player") {
         const name = a.name.trim();
-        if (!name) throw new Error(`Asset ${i + 1}: type the player's name.`);
+        if (!name) throw new Error(`Élément ${i + 1} : tape le nom du joueur.`);
         return { name, espn_id: espnByName.get(name.toLowerCase()) ?? null, from: a.from, to: a.to };
       }
       return { pick: a.kind, ...(a.year ? { year: a.year } : {}), from: a.from, to: a.to };
     });
     const abbrs = [...new Set(assets.flatMap((a) => [a.from, a.to]))];
-    if (abbrs.length < 2) throw new Error("A trade needs at least 2 teams.");
+    if (abbrs.length < 2) throw new Error("Un trade a besoin d'au moins 2 équipes.");
     for (const abbr of abbrs) {
       if (!assets.some((a) => a.to === abbr)) throw new Error(`${abbr} receives nothing.`);
     }
@@ -70,7 +70,7 @@ export async function addTrade(trade: NewTrade): Promise<ActionResult> {
 
     await must("trade", db.from("trades").insert({ slug, trade_date: trade.date, source_text: trade.source.trim() || null, teams_json: abbrs, assets_json: assets }));
     const unknown = assets.filter((a) => "name" in a && !a.espn_id).map((a) => ("name" in a ? a.name : ""));
-    return done(unknown.length ? `Trade added. Not found on a roster (not counted): ${unknown.join(", ")}. Check the spelling.` : "Trade added and graded.");
+    return done(unknown.length ? `Trade ajouté. Pas trouvé dans un effectif (non compté) : ${unknown.join(", ")}. Vérifie l'orthographe.` : "Trade ajouté et noté.");
   } catch (e) {
     return fail(e);
   }
@@ -80,7 +80,7 @@ export async function deleteTrade(slug: string): Promise<ActionResult> {
   await requireAdmin();
   try {
     await must("delete", adminDb().from("trades").delete().eq("slug", slug));
-    return done("Trade deleted.");
+    return done("Trade supprimé.");
   } catch (e) {
     return fail(e);
   }
@@ -105,7 +105,7 @@ export async function saveContract(playerId: string, salaries: Record<string, st
         db.from("contracts").insert(rows.map((r) => ({ player_id: playerId, season: r.season, salary: Math.round(r.millions * 1_000_000), source: "manual" }))),
       );
     }
-    return done(rows.length ? "Contract saved." : "Contract removed.");
+    return done(rows.length ? "Contrat enregistré." : "Contrat supprimé.");
   } catch (e) {
     return fail(e);
   }
@@ -116,11 +116,11 @@ export async function saveSettings(form: { capMillions: string; tradeOfTheWeek: 
   await requireAdmin();
   try {
     const cap = Number(form.capMillions.replace(",", "."));
-    if (!Number.isFinite(cap) || cap < 50 || cap > 400) throw new Error("Salary cap: type a number in millions, e.g. 165.");
+    if (!Number.isFinite(cap) || cap < 50 || cap > 400) throw new Error("Salary cap : tape un nombre en millions, ex. 165.");
     const db = adminDb();
     await must("cap", db.from("leagues").update({ salary_cap: Math.round(cap * 1_000_000) }).eq("id", "nba"));
     await saveSite({ tradeOfTheWeek: form.tradeOfTheWeek || null });
-    return done("Settings saved.");
+    return done("Réglages enregistrés.");
   } catch (e) {
     return fail(e);
   }

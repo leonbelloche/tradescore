@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
     <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center space-y-6 px-4">
       <header className="space-y-3 text-center">
         <p className="display pen-underline text-2xl font-extrabold lowercase tracking-[-0.04em]">trade score</p>
-        <p className="num text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Admin panel</p>
+        <p className="num text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Admin</p>
       </header>
       <Card className="p-5">
         <LoginForm />

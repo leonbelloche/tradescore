@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/admin/session";
 import { getLeagueWithRosters } from "@/lib/db/teams";
 import { getScoredTrades } from "@/lib/trades/scored";
 
-export const metadata: Metadata = { title: "Settings — Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "Réglages — Admin", robots: { index: false } };
 
 export default function AdminSettingsPage() {
   return (
@@ -26,7 +26,7 @@ async function Settings() {
 
   return (
     <div className="space-y-8">
-      <AdminHeader title="Settings" sub={`Season ${league.current_season}`} />
+      <AdminHeader title="Réglages" sub={`Saison ${league.current_season}`} />
       <Card className="p-4 sm:p-5">
         <SettingsForm
           capMillions={league.salary_cap / 1_000_000}
@@ -35,15 +35,15 @@ async function Settings() {
         />
       </Card>
       <section>
-        <SectionTitle title="Server keys" sub="set in .env.local and in Vercel → Settings → Environment Variables" />
+        <SectionTitle title="Clés du serveur" sub="dans le fichier .env.local (et chez l'hébergeur quand le site sera en ligne)" />
         <Card className="divide-y divide-border text-sm">
           {[
-            ["ADMIN_PASSWORD", !!process.env.ADMIN_PASSWORD, "your admin password (12+ characters)"],
-            ["SUPABASE_SECRET_KEY", !!process.env.SUPABASE_SECRET_KEY, "lets the admin and the daily refresh write to the database"],
-            ["CRON_SECRET", !!process.env.CRON_SECRET, "protects the daily refresh (any long random text)"],
-            ["ANTHROPIC_API_KEY", !!process.env.ANTHROPIC_API_KEY, "lets Claude Opus 5.5 write posts, replies and video scripts (console.anthropic.com)"],
-            ["X_API_KEY + 3 others", !!(process.env.X_API_KEY && process.env.X_API_SECRET && process.env.X_ACCESS_TOKEN && process.env.X_ACCESS_TOKEN_SECRET), "publish on X in one click (developer.x.com)"],
-            ["INSTAGRAM_USER_ID + INSTAGRAM_ACCESS_TOKEN", !!(process.env.INSTAGRAM_USER_ID && process.env.INSTAGRAM_ACCESS_TOKEN), "publish on Instagram in one click (developers.facebook.com)"],
+            ["ADMIN_PASSWORD", !!process.env.ADMIN_PASSWORD, "ton mot de passe admin (12 caractères ou plus). Pas demandé sur ton ordinateur."],
+            ["SUPABASE_SECRET_KEY", !!process.env.SUPABASE_SECRET_KEY, "permet à l'admin et à la mise à jour quotidienne d'écrire dans la base"],
+            ["CRON_SECRET", !!process.env.CRON_SECRET, "protège l'adresse de mise à jour automatique en ligne (un long texte au hasard)"],
+            ["ANTHROPIC_API_KEY", !!process.env.ANTHROPIC_API_KEY, "permet à Claude Opus 5.5 d'écrire des posts, des réponses et des scripts vidéo (console.anthropic.com). Facultatif."],
+            ["X_API_KEY + 3 autres", !!(process.env.X_API_KEY && process.env.X_API_SECRET && process.env.X_ACCESS_TOKEN && process.env.X_ACCESS_TOKEN_SECRET), "publier sur X en un clic (developer.x.com)"],
+            ["INSTAGRAM_USER_ID + INSTAGRAM_ACCESS_TOKEN", !!(process.env.INSTAGRAM_USER_ID && process.env.INSTAGRAM_ACCESS_TOKEN), "publier sur Instagram en un clic (developers.facebook.com)"],
           ].map(([name, ok, what]) => (
             <div key={String(name)} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <span className={ok ? "text-score-5" : "text-score-1"}>{ok ? "✓" : "✕"}</span>
@@ -52,7 +52,7 @@ async function Settings() {
             </div>
           ))}
         </Card>
-        <p className="mt-2 text-xs text-muted">Values are never shown here, only whether they are set.</p>
+        <p className="mt-2 text-xs text-muted">Les valeurs ne sont jamais affichées ici, seulement si elles sont réglées ou non.</p>
       </section>
     </div>
   );

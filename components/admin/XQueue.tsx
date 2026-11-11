@@ -4,6 +4,7 @@
 import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { markSent, publishPost } from "@/app/admin/social";
 import type { SocialPost } from "@/lib/social/channels";
+import { replyWithLink } from "@/lib/admin/xPosts";
 
 const KEY = "tradescore:x-sent";
 const EVENT = "tradescore:x-sent-changed";
@@ -87,9 +88,9 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
-        <Counter label="Left today" value={left.length} tone={left.length === 0 ? "done" : undefined} />
-        <Counter label="Late" value={late.length} tone="late" />
-        <Counter label="Left this week" value={left.length + perDay * daysLeftAfterToday} />
+        <Counter label="Restants aujourd'hui" value={left.length} tone={left.length === 0 ? "done" : undefined} />
+        <Counter label="En retard" value={late.length} tone="late" />
+        <Counter label="Restants cette semaine" value={left.length + perDay * daysLeftAfterToday} />
       </div>
       {current ? (
         <PostCard
@@ -103,8 +104,8 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
         />
       ) : (
         <div className="rounded-2xl border border-score-5/40 bg-score-5/10 p-8 text-center">
-          <p className="display text-2xl font-extrabold">All done for today ✓</p>
-          <p className="mt-1 text-sm text-muted">New posts tomorrow morning.</p>
+          <p className="display text-2xl font-extrabold">Tout est fait pour aujourd’hui ✓</p>
+          <p className="mt-1 text-sm text-muted">Nouveaux posts demain matin.</p>
         </div>
       )}
     </div>
@@ -116,7 +117,10 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const length = [...text].length + (post.url ? 24 : 0);
+  const length = [...text].length; // no link in the post
+  const reply = post.url ? replyWithLink(post.url) : null;
+  const [replyCopied, setReplyCopied] = useState(false);
+  const [linkInReply, setLinkInReply] = useState(false);
   const tooLong = length > post.limit;
 
   async function copy() {
@@ -124,7 +128,7 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
       await copyImage(post.image);
       setCopied(true);
     } catch {
-      setError("Your browser blocked the copy: right-click the image → Copy image.");
+      setError("Ton navigateur a bloqué la copie : clic droit sur l'image → Copier l'image.");
     }
   }
 
@@ -133,14 +137,14 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
     if (wait > 0) return;
     if (connected) {
       start(async () => {
-        const r = await publishPost({ id: post.id, channel: "x", text, url: post.url, image: post.image });
+        const r = await publishPost({ id: post.id, channel: "x", text, url: post.url, image: post.image, linkInReply });
         if (r.ok) onDone();
         else setError(r.message);
       });
       return;
     }
     // Not connected: open X with the text (paste the copied image there), then count it as sent.
-    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}${post.url ? `&url=${encodeURIComponent(post.url)}` : ""}`, "_blank", "noopener");
+    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, "_blank", "noopener");
     start(async () => {
       await markSent({ id: post.id, channel: "x", text, image: post.image });
       onDone();
@@ -150,7 +154,7 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
   return (
     <article className="overflow-hidden rounded-3xl border border-border-strong bg-surface">
       <div className="flex items-center gap-2 border-b border-border px-5 py-3">
-        <span className={`num rounded px-2 py-0.5 text-xs font-bold ${late ? "bg-score-1/15 text-score-1" : "bg-surface-2"}`}>{late ? `Late · ${post.time}` : post.time}</span>
+        <span className={`num rounded px-2 py-0.5 text-xs font-bold ${late ? "bg-score-1/15 text-score-1" : "bg-surface-2"}`}>{late ? `En retard · ${post.time}` : post.time}</span>
         <span className="display text-xs font-bold text-accent">{post.kind}</span>
         <span className={`num ml-auto text-xs ${tooLong ? "text-score-1" : "text-muted"}`}>
           {length}/{post.limit}
@@ -158,27 +162,48 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
       </div>
       <div className="grid gap-5 p-5 lg:grid-cols-[1.4fr_1fr]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={post.image} alt={`Image for: ${post.kind}`} className="aspect-[16/9] w-full rounded-2xl border border-border bg-surface-2 object-cover" />
+        <img src={post.image} alt={`Image pour : ${post.kind}`} className="aspect-[16/9] w-full rounded-2xl border border-border bg-surface-2 object-cover" />
         <div className="flex flex-col gap-3">
-          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={8} className="w-full flex-1 resize-y rounded-xl border border-border bg-background p-3 text-sm leading-relaxed focus:border-accent" aria-label="Post text" />
-          {post.url && <p className="truncate text-xs text-muted">🔗 {post.url}</p>}
+          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={8} className="w-full flex-1 resize-y rounded-xl border border-border bg-background p-3 text-sm leading-relaxed focus:border-accent" aria-label="Texte du post" />
           <div className="grid grid-cols-2 gap-2">
             <button type="button" onClick={copy} className={`display min-h-12 rounded-xl border-2 px-4 text-sm font-bold ${copied ? "border-score-5 text-score-5" : "border-border-strong hover:border-accent"}`}>
-              {copied ? "Image copied ✓" : "1. Copy image"}
+              {copied ? "Image copiée ✓" : "1. Copier l'image"}
             </button>
             <button type="button" onClick={send} disabled={pending || tooLong || wait > 0} className="display min-h-12 rounded-xl bg-foreground px-4 text-sm font-bold text-background hover:brightness-90 disabled:opacity-50">
-              {pending ? "Sending…" : wait > 0 ? `Wait ${wait} min` : connected ? "2. Send to 𝕏" : "2. Send to 𝕏 ▸"}
+              {pending ? "Envoi…" : wait > 0 ? `Attends ${wait} min` : connected ? "2. Envoyer sur 𝕏" : "2. Envoyer sur 𝕏 ▸"}
             </button>
           </div>
-          <p className="text-xs text-muted">{connected ? "Send to 𝕏 publishes the text and the image directly on your account." : "X opens with the text: paste the image with Ctrl+V, press Post. The next post shows up here."}</p>
+          <p className="text-xs text-muted">{connected ? "« Envoyer sur 𝕏 » publie le texte et l'image directement sur ton compte." : "X s'ouvre avec le texte : colle l'image avec Ctrl+V, appuie sur Post. Le post suivant apparaît ici."}</p>
+          {reply && (
+            <div className="rounded-xl border border-border bg-background/60 p-3 text-xs">
+              <p className="display font-bold text-foreground">3. (facultatif) Le lien du site, en réponse sous ton post</p>
+              <p className="mt-1 text-muted">Le lien n&apos;est jamais dans le post : le post doit se suffire à lui-même. Une fois qu&apos;il a des réponses, réponds-lui avec ce texte :</p>
+              <p className="mt-2 rounded-lg bg-surface-2 px-2.5 py-2 text-foreground">{reply}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard.writeText(reply).then(() => setReplyCopied(true))}
+                  className={`display min-h-9 rounded-lg border px-3 font-bold ${replyCopied ? "border-score-5 text-score-5" : "border-border-strong hover:border-accent"}`}
+                >
+                  {replyCopied ? "Réponse copiée ✓" : "Copier la réponse"}
+                </button>
+                {connected && (
+                  <label className="flex items-center gap-2 text-muted">
+                    <input type="checkbox" checked={linkInReply} onChange={(e) => setLinkInReply(e.target.checked)} />
+                    La publier automatiquement sous le post (X facture environ 0,20 $ un post avec lien)
+                  </label>
+                )}
+              </div>
+            </div>
+          )}
           {wait > 0 && (
             <p className="rounded-lg bg-score-3/10 px-3 py-2 text-xs text-score-3">
-              Anti-spam pause: X bans accounts that post in bursts, so posts are spaced at least 45 minutes apart. Next one in {wait} min. You can already copy the image.
+              Pause anti-spam : X bannit les comptes qui postent en rafale, donc les posts sont espacés d’au moins 45 minutes. Prochain dans {wait} min. Tu peux déjà copier l’image.
             </p>
           )}
           {error && <p className="text-sm text-score-1">✕ {error}</p>}
           <button type="button" onClick={onSkip} className="self-start text-xs text-muted underline-offset-2 hover:text-foreground hover:underline">
-            Skip this one for now
+            Passer celui-ci pour l’instant
           </button>
         </div>
       </div>

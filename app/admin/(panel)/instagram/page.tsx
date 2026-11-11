@@ -37,8 +37,8 @@ async function Instagram() {
     <div className="space-y-6">
       <AdminHeader
         title="Instagram"
-        sub="One Reel a week. Generate the video, send it to Instagram, done until next week."
-        action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connected" : "○ Not connected"}</span>}
+        sub="Un Reel par semaine. Génère la vidéo, envoie-la sur Instagram, c'est fini jusqu'à la semaine prochaine."
+        action={<span className={`num rounded-full px-3 py-1 text-xs font-bold ${connected ? "bg-score-5/15 text-score-5" : "bg-surface-2 text-muted"}`}>{connected ? "● Connecté" : "○ Pas connecté"}</span>}
       />
       <ReelStudio
         weekKey={week.key}

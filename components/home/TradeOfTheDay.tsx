@@ -103,8 +103,8 @@ export default function TradeOfTheDay({ trade, today, players }: { trade: Scored
         {/* Why */}
         <div className="border-l-2 border-accent pl-3 text-sm">
           <p className="display text-xs font-bold text-accent">Why {winner.team.short_name ?? winner.team.name} win it</p>
-          {why.map((r) => (
-            <p key={r} className="text-muted">{r}</p>
+          {why.map((r, i) => (
+            <p key={`${i}-${r}`} className="text-muted">{r}</p>
           ))}
         </div>
 

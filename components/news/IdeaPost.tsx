@@ -172,8 +172,8 @@ export default async function IdeaPost({
           <div key={team.id} className="border-l-2 border-accent pl-3">
             <p className="display text-xs font-bold text-accent">{title}</p>
             <ul className="mt-1 space-y-1 text-sm text-muted">
-              {reasonsFor(result).slice(0, 2).map((r) => (
-                <li key={r}>{r}</li>
+              {reasonsFor(result).slice(0, 2).map((r, i) => (
+                <li key={`${i}-${r}`}>{r}</li>
               ))}
             </ul>
           </div>

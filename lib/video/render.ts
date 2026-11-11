@@ -9,7 +9,27 @@ const tier = (s: number) =>
 const ease = (x: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
 
 export type ReelScene = { kind: "title" | "text" | "score" | "outro"; heading: string; body: string; team: string; score: number };
-export type ReelScript = { title: string; scenes: ReelScene[]; caption: string; logos: Record<string, string> };
+export type ReelScript = { title: string; scenes: ReelScene[]; caption: string; logos: Record<string, string>; durations?: number[] };
+
+// Seconds per scene: SCENE each, or longer when a voice-over line needs more time.
+export const sceneDurations = (script: ReelScript) => script.scenes.map((_, i) => script.durations?.[i] ?? SCENE);
+export const totalDuration = (script: ReelScript) => sceneDurations(script).reduce((a, b) => a + b, 0);
+
+// What the voice says on each scene (plain words, read aloud).
+export function narrationFor(scene: ReelScene): string {
+  const clean = (s: string) =>
+    s
+      .replace(/(\d+)\/99/g, "$1 out of 99")
+      .replace(/#(\d)/g, "number $1")
+      .replace(/vs/g, "versus")
+      .replace(/·/g, ",")
+      .replace(/\s+/g, " ")
+      .trim();
+  const end = (s: string) => (/[.!?]$/.test(s) ? s : `${s}.`);
+  if (scene.kind === "score") return clean(`${scene.team}: ${scene.score} out of 99. ${end(tier(scene.score).label)} ${end(scene.body)}`);
+  if (scene.kind === "outro") return "Who got robbed? We do the math. Follow Trade Score: every NBA trade, graded.";
+  return clean(`${end(scene.heading)} ${scene.body ? end(scene.body) : ""}`);
+}
 type Script = ReelScript;
 
 // Splits text into lines that fit `max` pixels.
@@ -30,8 +50,10 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, max: number): string[
 export function drawFrame(ctx: CanvasRenderingContext2D, script: Script, t: number, fonts: { display: string; mono: string }, logos: Map<string, HTMLImageElement>, site: string) {
   const n = script.scenes.length;
   t = Math.max(0, t); // the first animation frame can be stamped slightly before the start time
-  const i = Math.max(0, Math.min(n - 1, Math.floor(t / SCENE)));
-  const p = (t - i * SCENE) / SCENE; // 0..1 inside the scene
+  const lengths = sceneDurations(script);
+  let i = 0, start = 0;
+  while (i < n - 1 && t >= start + lengths[i]) start += lengths[i++];
+  const p = Math.min(1, (t - start) / lengths[i]); // 0..1 inside the scene
   const scene = script.scenes[i];
   const fadeIn = ease(p * 4);
 

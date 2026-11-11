@@ -51,3 +51,13 @@ export async function alreadyPublished(id: string): Promise<boolean> {
     return false;
   }
 }
+
+// Does the history table exist? (false until supabase/migrations/004_social.sql has been run)
+export async function historyReady(): Promise<boolean> {
+  try {
+    const { error } = await adminDb().from("social_posts").select("id").limit(1);
+    return !error;
+  } catch {
+    return false;
+  }
+}

@@ -25,21 +25,21 @@ function Icon({ name }: { name: string }) {
 }
 
 const GROUPS = [
-  { title: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: "dashboard" }] },
+  { title: "Vue d'ensemble", items: [{ href: "/admin", label: "Tableau de bord", icon: "dashboard" }] },
   {
-    title: "Social",
+    title: "Réseaux",
     items: [
       { href: "/admin/x", label: "X", icon: "x" },
       { href: "/admin/instagram", label: "Instagram", icon: "instagram" },
       { href: "/admin/trades", label: "Trades", icon: "trades" },
-      { href: "/admin/contracts", label: "Contracts", icon: "contracts" },
+      { href: "/admin/contracts", label: "Contrats", icon: "contracts" },
     ],
   },
   {
-    title: "Model",
+    title: "Modèle",
     items: [
-      { href: "/admin/calibration", label: "Calibration", icon: "calibration" },
-      { href: "/admin/settings", label: "Settings", icon: "settings" },
+      { href: "/admin/calibration", label: "Calibrage", icon: "calibration" },
+      { href: "/admin/settings", label: "Réglages", icon: "settings" },
     ],
   },
 ];
@@ -55,11 +55,11 @@ export default function AdminSidebar() {
       <div className="flex items-center justify-between gap-3 px-4 py-4 lg:block lg:px-5 lg:py-6">
         <Link href="/admin" className="block leading-none">
           <span className="display pen-underline text-lg font-extrabold lowercase tracking-[-0.04em]">trade score</span>
-          <span className="num mt-2 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">Admin panel</span>
+          <span className="num mt-2 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">Admin</span>
         </Link>
         <form action={logout} className="lg:hidden">
           <button type="submit" className="num rounded-lg border border-border px-3 py-1.5 text-xs text-muted hover:text-foreground">
-            Log out
+            Déconnexion
           </button>
         </form>
       </div>
@@ -87,12 +87,12 @@ export default function AdminSidebar() {
       <div className="hidden space-y-1 border-t border-border p-3 lg:absolute lg:inset-x-0 lg:bottom-0 lg:block">
         <Link href="/" target="_blank" className={`${item} text-muted hover:bg-surface-2/60 hover:text-foreground`}>
           <Icon name="site" />
-          View the site
+          Voir le site
         </Link>
         <form action={logout}>
           <button type="submit" className={`${item} w-full text-muted hover:bg-surface-2/60 hover:text-score-1`}>
             <Icon name="logout" />
-            Log out
+            Déconnexion
           </button>
         </form>
       </div>

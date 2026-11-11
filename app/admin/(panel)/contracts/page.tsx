@@ -10,7 +10,7 @@ import { requireAdmin } from "@/lib/admin/session";
 import type { RosterPlayer } from "@/lib/db/teams";
 import { getValuedPlayers } from "@/lib/players/values";
 
-export const metadata: Metadata = { title: "Contracts — Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "Contrats — Admin", robots: { index: false } };
 
 export default function AdminContractsPage(props: PageProps<"/admin/contracts">) {
   return (
@@ -46,9 +46,9 @@ async function Contracts({ searchParams }: { searchParams: Promise<Record<string
           <PlayerAvatar name={p.name} url={p.headshotUrl} />
           <span className="display font-bold">{p.name}</span>
           <span className="num text-xs text-muted">
-            {p.team.abbreviation} · {p.position} · {p.age} yrs · GmSc {p.gameScore.toFixed(1)}
+            {p.team.abbreviation} · {p.position} · {p.age} ans · GmSc {p.gameScore.toFixed(1)}
           </span>
-          {manual && <span className="display rounded bg-surface-2 px-1.5 text-[10px] font-bold text-accent">typed by you</span>}
+          {manual && <span className="display rounded bg-surface-2 px-1.5 text-[10px] font-bold text-accent">tapé par toi</span>}
         </Link>
         <ContractEditor playerId={p.id} seasons={seasons} initial={initial} />
       </div>
@@ -57,31 +57,31 @@ async function Contracts({ searchParams }: { searchParams: Promise<Record<string
 
   return (
     <div className="space-y-10">
-      <AdminHeader title="Contracts" sub="Salaries in millions of dollars (21.5 = $21,500,000). What you type is never overwritten by ESPN." />
+      <AdminHeader title="Contrats" sub="Salaires en millions de dollars (21.5 = 21 500 000 $). Ce que tu tapes n'est jamais écrasé par ESPN." />
 
       <section>
-        <SectionTitle title="Edit any player" />
+        <SectionTitle title="Modifier un joueur" />
         <form className="flex max-w-md gap-2">
-          <input name="q" defaultValue={q} placeholder="Search a player…" aria-label="Search a player" className={field} />
+          <input name="q" defaultValue={q} placeholder="Chercher un joueur…" aria-label="Chercher un joueur" className={field} />
           <button type="submit" className="display min-h-11 rounded-lg border border-border-strong px-4 text-sm font-bold hover:border-accent">
-            Search
+            Chercher
           </button>
         </form>
         {q && (
           <Card className="mt-3 divide-y divide-border">
-            {found.length ? found.map(row) : <p className="p-4 text-sm text-muted">No player matches “{q}”.</p>}
+            {found.length ? found.map(row) : <p className="p-4 text-sm text-muted">Aucun joueur ne correspond à « {q} ».</p>}
           </Card>
         )}
       </section>
 
       <section>
-        <SectionTitle title="Missing a contract" sub={`${missing.length} players · best players first (by Game Score)`} />
+        <SectionTitle title="Sans contrat" sub={`${missing.length} joueurs · les meilleurs en premier (par Game Score)`} />
         {missing.length ? (
           <Card className="divide-y divide-border">{missing.slice(0, 40).map(row)}</Card>
         ) : (
-          <Card className="p-4 text-sm text-muted">Every player has a contract. 🎉</Card>
+          <Card className="p-4 text-sm text-muted">Tous les joueurs ont un contrat. 🎉</Card>
         )}
-        {missing.length > 40 && <p className="mt-2 text-xs text-muted">Showing the 40 most important. Fill these and the next ones appear.</p>}
+        {missing.length > 40 && <p className="mt-2 text-xs text-muted">Les 40 plus importants sont affichés. Remplis-les et les suivants apparaissent.</p>}
       </section>
     </div>
   );

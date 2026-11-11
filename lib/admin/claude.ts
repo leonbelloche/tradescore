@@ -20,7 +20,7 @@ No hashtag spam: at most #NBA plus one team hashtag. No emojis unless they add s
 
 // One structured call: returns data matching `schema`, or throws a readable error.
 export async function writeJson<S extends z.ZodType>(schema: S, system: string, prompt: string): Promise<z.infer<S>> {
-  if (!claudeConfigured()) throw new Error("ANTHROPIC_API_KEY is missing: add it to .env.local and to Vercel to use Claude.");
+  if (!claudeConfigured()) throw new Error("La clé ANTHROPIC_API_KEY manque : ajoute-la dans .env.local pour utiliser Claude.");
   try {
     const response = await anthropic().beta.messages.parse({
       model: MODEL,
@@ -32,13 +32,13 @@ export async function writeJson<S extends z.ZodType>(schema: S, system: string, 
       system,
       messages: [{ role: "user", content: prompt }],
     });
-    if (response.stop_reason === "refusal") throw new Error("Claude declined this request. Try rewording it.");
-    if (!response.parsed_output) throw new Error("Claude's answer could not be read. Try again.");
+    if (response.stop_reason === "refusal") throw new Error("Claude a refusé cette demande. Essaie de la reformuler.");
+    if (!response.parsed_output) throw new Error("La réponse de Claude n'a pas pu être lue. Réessaie.");
     return response.parsed_output as z.infer<S>;
   } catch (e) {
-    if (e instanceof Anthropic.AuthenticationError) throw new Error("ANTHROPIC_API_KEY is not valid.");
-    if (e instanceof Anthropic.RateLimitError) throw new Error("Too many requests to Claude right now. Wait a minute and try again.");
-    if (e instanceof Anthropic.APIError) throw new Error(`Claude API error ${e.status}: ${e.message}`);
+    if (e instanceof Anthropic.AuthenticationError) throw new Error("La clé ANTHROPIC_API_KEY n'est pas valide.");
+    if (e instanceof Anthropic.RateLimitError) throw new Error("Trop de demandes à Claude en ce moment. Attends une minute et réessaie.");
+    if (e instanceof Anthropic.APIError) throw new Error(`Erreur de l'API Claude ${e.status} : ${e.message}`);
     throw e;
   }
 }

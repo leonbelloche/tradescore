@@ -41,15 +41,22 @@ async function call<T>(url: string, body: unknown): Promise<T> {
   const json = (await res.json().catch(() => ({}))) as { data?: T; detail?: string; title?: string; errors?: { message?: string }[] };
   if (!res.ok || !json.data) {
     const why = json.detail ?? json.errors?.[0]?.message ?? json.title ?? `HTTP ${res.status}`;
-    throw new Error(`X refused the request: ${why}`);
+    throw new Error(`X a refusé la demande : ${why}`);
   }
   return json.data;
 }
 
 // Uploads the image, then creates the post. Returns the post's link.
 export async function publishOnX(text: string, image: Buffer): Promise<{ id: string; url: string }> {
-  if (!xConnected()) throw new Error("X is not connected: add X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN and X_ACCESS_TOKEN_SECRET.");
+  if (!xConnected()) throw new Error("X n'est pas connecté : ajoute X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN et X_ACCESS_TOKEN_SECRET.");
   const media = await call<{ id: string }>("https://api.x.com/2/media/upload", { media: image.toString("base64"), media_category: "tweet_image" });
   const post = await call<{ id: string }>("https://api.x.com/2/tweets", { text, media: { media_ids: [media.id] } });
+  return { id: post.id, url: `https://x.com/i/status/${post.id}` };
+}
+
+// Replies under one of our posts (used to add the site link under a post). Returns the reply's link.
+export async function replyOnX(text: string, inReplyTo: string): Promise<{ id: string; url: string }> {
+  if (!xConnected()) throw new Error("X n'est pas connecté.");
+  const post = await call<{ id: string }>("https://api.x.com/2/tweets", { text, reply: { in_reply_to_tweet_id: inReplyTo } });
   return { id: post.id, url: `https://x.com/i/status/${post.id}` };
 }

@@ -52,8 +52,8 @@ export default function ResultCard({ team, result, showSent = false }: { team: R
       <div className="rounded-lg bg-surface-2 p-3">
         <p className="display mb-1 text-xs font-bold text-accent">Why {result.score}?</p>
         <ul className="space-y-1 text-sm leading-snug">
-          {reasons.map((r) => (
-            <li key={r} className="flex gap-2">
+          {reasons.map((r, i) => (
+            <li key={`${i}-${r}`} className="flex gap-2">
               <span className="text-muted" aria-hidden>
                 ▸
               </span>
