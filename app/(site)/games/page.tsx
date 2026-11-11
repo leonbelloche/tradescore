@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ScoreBadge from "@/components/ScoreBadge";
-import { Card, TeamMark } from "@/components/ui";
+import { Card, SectionTitle, TeamMark } from "@/components/ui";
+import { todayEastern, yyyymmdd } from "@/lib/daily";
 import { getScoreboard, shiftDay, type Game, type GameTeam } from "@/lib/nba/scoreboard";
 import { getValuedPlayers, rosterScores } from "@/lib/players/values";
 import { getScoredTrades, teamStats, type TeamTradeStats } from "@/lib/trades/scored";
@@ -17,10 +18,10 @@ export default function GamesPage(props: PageProps<"/games">) {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="display text-sm font-bold text-accent">Every night</p>
+        <p className="display text-sm font-bold text-accent">Updated every night</p>
         <h1 className="display text-4xl font-extrabold leading-[1.02] sm:text-5xl">Games</h1>
         <p className="max-w-xl text-muted">
-          The day&apos;s results first, then each team&apos;s Trade Score (the average grade of its trades this season). Did the better trader win?
+          Tonight&apos;s games and last night&apos;s results, with each team&apos;s Trade Score and Roster Score. Does the better trader win?
         </p>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>
@@ -38,25 +39,34 @@ const shortDay = (yyyymmdd: string) =>
 async function Games({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { date } = await searchParams;
   const asked = typeof date === "string" && /^\d{8}$/.test(date) ? date : undefined;
-  const [{ day, games }, trades, { teams, players }] = await Promise.all([getScoreboard(asked), getScoredTrades(), getValuedPlayers()]);
+  // No date asked: tonight's games (New York day), with last night's results below.
+  const today = asked ? null : await todayEastern();
+  const [{ day, games }, lastNight, trades, { teams, players }] = await Promise.all([
+    getScoreboard(asked ?? yyyymmdd(today!)),
+    today ? getScoreboard(yyyymmdd(today, -1)).catch(() => null) : Promise.resolve(null),
+    getScoredTrades(),
+    getValuedPlayers(),
+  ]);
   const stats = new Map(teamStats(trades).map((s) => [s.team.abbreviation, s]));
   const rs = rosterScores(players);
   const info: TeamInfo = new Map(teams.map((t) => [t.abbreviation, { slug: t.slug, logo: t.logo_url, roster: rs.get(t.id) ?? 50 }]));
-
-  // Finished games with a favorite (better Trade Score, or better Roster Score): did it win?
-  const judged = games.filter((g) => g.state === "post" && edge(g, stats, info));
-  const right = judged.filter((g) => edge(g, stats, info)!.team.winner).length;
   const prev = shiftDay(day, -1), next = shiftDay(day, 1);
 
+  // Game of the night: the two best rosters facing each other (sum of Roster Scores), among games not finished yet when possible.
+  const strength = (g: Game) => (info.get(g.away.abbreviation)?.roster ?? 50) + (info.get(g.home.abbreviation)?.roster ?? 50);
+  const pool = games.some((g) => g.state !== "post") ? games.filter((g) => g.state !== "post") : games;
+  const featured = [...pool].sort((a, b) => strength(b) - strength(a))[0];
+  const others = games.filter((g) => g !== featured);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Day picker */}
       <nav aria-label="Pick a day" className="flex items-center justify-between gap-2 rounded-xl border border-border bg-surface p-1.5">
         <Link href={`/games?date=${prev}`} className="display flex min-h-11 items-center rounded-lg px-3 text-sm font-bold text-muted hover:bg-surface-2 hover:text-foreground">
           ◂ <span className="ml-1 hidden sm:inline">{shortDay(prev)}</span>
         </Link>
         <span className="text-center">
-          <span className="display block text-lg font-extrabold leading-tight sm:text-xl">{longDay(day)}</span>
+          <span className="display block text-lg font-extrabold leading-tight sm:text-xl">{today ? `Tonight · ${longDay(day)}` : longDay(day)}</span>
           <span className="num text-[11px] text-muted">{games.length} game{games.length === 1 ? "" : "s"}</span>
         </span>
         <Link href={`/games?date=${next}`} className="display flex min-h-11 items-center rounded-lg px-3 text-sm font-bold text-muted hover:bg-surface-2 hover:text-foreground">
@@ -64,30 +74,95 @@ async function Games({ searchParams }: { searchParams: Promise<Record<string, st
         </Link>
       </nav>
 
-      {judged.length > 0 && (
-        <Card className="led flex flex-wrap items-center gap-x-4 gap-y-1 p-4">
-          <span className="display text-4xl font-extrabold tabular-nums text-accent">
-            {right}/{judged.length}
-          </span>
-          <span className="text-sm text-muted">
-            times the team with the <b className="text-foreground">better score</b> won (Trade Score when both teams have traded, Roster Score otherwise).
-          </span>
-        </Card>
-      )}
-
       {games.length === 0 ? (
         <Card className="p-8 text-center text-muted">No NBA game this day.</Card>
       ) : (
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {games.map((g) => (
-            <li key={g.id} className="min-w-0">
-              <GameCard game={g} stats={stats} info={info} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <HitRate games={games} stats={stats} info={info} />
+          {featured && (
+            <section>
+              <SectionTitle title="Game of the night" sub="the two best rosters on the floor" />
+              <div className="rounded-2xl border border-accent/50 p-1 md:max-w-xl">
+                <GameCard game={featured} stats={stats} info={info} />
+              </div>
+            </section>
+          )}
+          {others.length > 0 && (
+            <section>
+              <SectionTitle title={today ? "All of tonight's games" : "All games"} sub={`${others.length}`} />
+              <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {others.map((g) => (
+                  <li key={g.id} className="min-w-0">
+                    <GameCard game={g} stats={stats} info={info} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>
+      )}
+
+      {lastNight && lastNight.games.length > 0 && (
+        <section>
+          <SectionTitle
+            title="Last night"
+            sub={longDay(lastNight.day)}
+            action={
+              <Link href={`/games?date=${shiftDay(lastNight.day, 0)}`} className="display text-sm font-bold text-accent hover:underline">
+                Details ▸
+              </Link>
+            }
+          />
+          <HitRate games={lastNight.games} stats={stats} info={info} />
+          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {lastNight.games.map((g) => (
+              <li key={g.id}>
+                <ResultLine game={g} info={info} fav={edge(g, stats, info)} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
       <p className="text-xs text-muted">Scores: ESPN, refreshed every few minutes. TS = Trade Score, average grade of the team&apos;s 2026-27 trades. RS = Roster Score, how good its contracts are. Both 1-99.</p>
     </div>
+  );
+}
+
+// "3/5 times the better score won", for finished games with a favorite on paper.
+function HitRate({ games, stats, info }: { games: Game[]; stats: Map<string, TeamTradeStats>; info: TeamInfo }) {
+  const judged = games.filter((g) => g.state === "post" && edge(g, stats, info));
+  if (judged.length === 0) return null;
+  const right = judged.filter((g) => edge(g, stats, info)!.team.winner).length;
+  return (
+    <Card className="led flex flex-wrap items-center gap-x-4 gap-y-1 p-4">
+      <span className="display text-4xl font-extrabold tabular-nums text-accent">
+        {right}/{judged.length}
+      </span>
+      <span className="text-sm text-muted">
+        times the team with the <b className="text-foreground">better score</b> won (Trade Score when both teams have traded, Roster Score otherwise).
+      </span>
+    </Card>
+  );
+}
+
+// One finished game on one line: both scores, winner in bold, ✓ when the favorite on paper won.
+function ResultLine({ game, info, fav }: { game: Game; info: TeamInfo; fav: ReturnType<typeof edge> }) {
+  const side = (t: GameTeam) => (
+    <span className={`flex items-center gap-1.5 ${t.winner ? "" : "text-muted"}`}>
+      <TeamMark abbreviation={t.abbreviation} logoUrl={info.get(t.abbreviation)?.logo ?? null} />
+      <span className="display text-sm font-bold">{t.abbreviation}</span>
+      <span className="display ml-auto text-lg font-extrabold tabular-nums">{t.score ?? "–"}</span>
+    </span>
+  );
+  const mark = game.state !== "post" || !fav ? null : fav.team.winner ? <span className="text-score-5" title="The favorite on paper won">✓</span> : <span className="text-score-2" title="Upset">✗</span>;
+  return (
+    <Card className="flex items-center gap-3 px-3 py-2">
+      <span className="grid min-w-0 flex-1 gap-0.5">
+        {side(game.away)}
+        {side(game.home)}
+      </span>
+      <span className="w-4 text-center text-sm font-bold">{mark}</span>
+    </Card>
   );
 }
 

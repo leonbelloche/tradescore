@@ -1,4 +1,4 @@
-import { connection } from "next/server";
+import { todayEastern } from "@/lib/daily";
 import { getNews } from "@/lib/nba/news";
 import { getScoreboard, shiftDay } from "@/lib/nba/scoreboard";
 import { getValuedPlayers, rosterScores } from "@/lib/players/values";
@@ -7,11 +7,7 @@ import { getScoredTrades, teamStats } from "@/lib/trades/scored";
 import { SITE_URL } from "@/lib/site";
 import { xPostsOfTheDay } from "./xPosts";
 
-// Today's date in New York (the NBA's day), read at request time.
-export async function todayEastern(): Promise<string> {
-  await connection();
-  return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-}
+export { todayEastern };
 
 // Today's X posts, from everything the site knows. ESPN being down only removes the posts that need it.
 export async function postsForToday() {

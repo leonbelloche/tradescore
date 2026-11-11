@@ -203,9 +203,9 @@ export function SettingsForm({ capMillions, tradeOfTheWeek, trades }: { capMilli
         <span className="block text-xs text-muted">Every Trade Score and Trade Value is computed as a share of the cap.</span>
       </label>
       <label className="block space-y-1">
-        <span className="display text-sm font-bold">Trade of the week (home page)</span>
+        <span className="display text-sm font-bold">Trade of the day (home page)</span>
         <select value={totw} onChange={(e) => setTotw(e.target.value)} className={field}>
-          <option value="">Automatic (the trade that moved the best player this week)</option>
+          <option value="">Automatic (a different trade every day)</option>
           {trades.map((t) => (
             <option key={t.slug} value={t.slug}>
               {t.label}

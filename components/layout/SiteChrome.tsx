@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import Logo from "@/components/layout/Logo";
-import NavLinks, { NavLinksView } from "@/components/layout/NavLinks";
+import NavLinks, { NavLinksView, type NavTeam } from "@/components/layout/NavLinks";
 import Ticker from "@/components/layout/Ticker";
 import UserBadge from "@/components/layout/UserBadge";
+import { getTeams } from "@/lib/db/teams";
+import { conferenceOf } from "@/lib/nba/conferences";
 
 // The public site's frame: results ticker, logo, main nav, footer. The admin has its own frame (app/admin/layout.tsx).
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
@@ -19,7 +21,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           </div>
           <nav className="mx-auto max-w-[1280px] px-1 sm:px-4" aria-label="Main">
             <Suspense fallback={<NavLinksView path={null} />}>
-              <NavLinks />
+              <MainNav />
             </Suspense>
           </nav>
         </header>
@@ -35,4 +37,13 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       </footer>
     </>
   );
+}
+
+// The nav with the 30 teams for the "Teams" menu (the menu just stays empty if the database is down).
+async function MainNav() {
+  const teams = await getTeams().catch(() => []);
+  const list: NavTeam[] = teams
+    .map((t) => ({ slug: t.slug, name: t.name, abbreviation: t.abbreviation, logo_url: t.logo_url, conference: conferenceOf(t.abbreviation) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  return <NavLinks teams={list} />;
 }

@@ -171,6 +171,7 @@ export type SiteSettings = {
   lastRefresh?: string;
   lastRefreshSummary?: RefreshSummary;
   lastRefreshError?: { at: string; message: string };
+  refreshStartedAt?: string; // automatic refresh in progress (see autoRefresh.ts)
   tradeOfTheWeek?: string | null; // trade slug chosen by the admin, null = automatic
 };
 

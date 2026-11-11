@@ -141,7 +141,7 @@ async function Dashboard() {
             ["● Weekly Reel", "/admin/instagram"],
             ["Add a trade", "/admin/trades#add"],
             ["Fill contracts", "/admin/contracts"],
-            ["Trade of the week", "/admin/settings"],
+            ["Trade of the day", "/admin/settings"],
           ].map(([label, href]) => (
             <Link key={label} href={href} className="display flex min-h-14 items-center justify-center rounded-xl border border-border bg-surface px-3 text-center text-sm font-bold hover:border-accent">
               {label}

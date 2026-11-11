@@ -6,8 +6,8 @@ import { Record, TeamMark } from "@/components/ui";
 import type { ValuedPlayer } from "@/lib/players/values";
 import { reasonsFor } from "@/lib/score";
 import type { ScoredTrade } from "@/lib/trades/scored";
+import { ofTheDay } from "@/lib/daily";
 
-const DAY = 86_400_000;
 
 // Best player (highest Trade Value, contract known) that changed teams in a trade.
 function starOf(trade: ScoredTrade, players: ValuedPlayer[]): ValuedPlayer | undefined {
@@ -15,22 +15,21 @@ function starOf(trade: ScoredTrade, players: ValuedPlayer[]): ValuedPlayer | und
   return players.filter((p) => ids.has(p.id) && p.hasContract).sort((a, b) => b.score - a.score)[0];
 }
 
-// The week's standout deal (unless the admin chose one): among trades from the 7 days before the latest one, the one that moved
-// the best player (by Trade Value); ties go to the biggest winning score.
-// `chosen` = trade slug picked by the admin (Settings), used when it still exists.
-export function pickTradeOfTheWeek(trades: ScoredTrade[], players: ValuedPlayer[], chosen?: string | null): { trade: ScoredTrade; weekOf: string } | null {
+// The trade of the day: a different deal every day, so the home page moves even when no new trade happens.
+// All trades are ranked (best player moved first, then the biggest winning score) and the day picks one in turn,
+// so the best deals come back most often in the rotation order.
+// `chosen` = trade slug picked by the admin (Settings), used instead when it still exists. `today` = YYYY-MM-DD (New York).
+export function pickTradeOfTheDay(trades: ScoredTrade[], players: ValuedPlayer[], today: string, chosen?: string | null): ScoredTrade | null {
   if (trades.length === 0) return null;
   const picked = chosen ? trades.find((t) => t.id === chosen) : undefined;
-  if (picked) return { trade: picked, weekOf: formatDay(new Date(Date.parse(picked.date) - 6 * DAY).toISOString().slice(0, 10)) };
-  const latest = Math.max(...trades.map((t) => Date.parse(t.date)));
-  const week = trades.filter((t) => latest - Date.parse(t.date) < 7 * DAY);
-  const rank = (t: ScoredTrade) => (starOf(t, players)?.score ?? 0) * 100 + t.teams[0].score;
-  const trade = [...(week.length ? week : trades)].sort((a, b) => rank(b) - rank(a))[0];
-  return { trade, weekOf: formatDay(new Date(latest - 6 * DAY).toISOString().slice(0, 10)) };
+  if (picked) return picked;
+  const rank = (t: ScoredTrade) => (starOf(t, players)?.score ?? 0) * 100 + Math.max(...t.teams.map((x) => x.score));
+  const ranked = [...trades].sort((a, b) => rank(b) - rank(a) || a.id.localeCompare(b.id));
+  return ofTheDay(ranked, today) ?? null;
 }
 
 // Big card: the star the winning team landed (headshot), the scoreboard of the trade, and why.
-export default function TradeOfTheWeek({ trade, weekOf, players }: { trade: ScoredTrade; weekOf: string; players: ValuedPlayer[] }) {
+export default function TradeOfTheDay({ trade, today, players }: { trade: ScoredTrade; today: string; players: ValuedPlayer[] }) {
   const winner = trade.winner ?? trade.teams[0];
   const star = starOf(trade, players);
   const from = star ? trade.teams.find((t) => t.result.sent.some((d) => d.asset.id === star.id)) : undefined;
@@ -47,8 +46,8 @@ export default function TradeOfTheWeek({ trade, weekOf, players }: { trade: Scor
       <div className={`pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-20 blur-3xl ${tone.bg}`} aria-hidden />
 
       <div className="led relative flex items-center justify-between border-b border-border bg-black/40 px-5 py-3">
-        <span className="display rounded bg-accent px-2 py-0.5 text-xs font-extrabold text-black">Trade of the week</span>
-        <span className="num text-xs text-muted">week of {weekOf}</span>
+        <span className="display rounded bg-accent px-2 py-0.5 text-xs font-extrabold text-black">Trade of the day</span>
+        <span className="num text-xs text-muted">{formatDay(today)} · traded {formatDay(trade.date.slice(0, 10))}</span>
       </div>
 
       <div className="relative flex flex-1 flex-col gap-5 p-5">
@@ -60,7 +59,7 @@ export default function TradeOfTheWeek({ trade, weekOf, players }: { trade: Scor
             <TeamMark abbreviation={winner.team.abbreviation} logoUrl={winner.team.logo_url} size="lg" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="display text-xs font-bold text-muted">{star ? (star.score >= 60 ? "Player of the week" : "Key player") : "The winner"}</p>
+            <p className="display text-xs font-bold text-muted">{star ? (star.score >= 60 ? "Star of the deal" : "Key player") : "The winner"}</p>
             <h3 className="display truncate text-3xl font-extrabold leading-[1.05] sm:text-4xl">{star?.name ?? winner.team.name}</h3>
             <p className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-muted">
               {star && from && to ? (
