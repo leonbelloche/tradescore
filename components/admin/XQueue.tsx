@@ -99,6 +99,7 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
           late={current.hour < nowHour}
           connected={connected}
           wait={wait}
+          gapMinutes={gapMinutes}
           onDone={() => rememberSent(current.id)}
           onSkip={() => setSkipped((s) => [...s, current.id])}
         />
@@ -108,11 +109,74 @@ export default function XQueue({ posts, publishedIds, connected, nowHour, perDay
           <p className="mt-1 text-sm text-muted">Nouveaux posts demain matin.</p>
         </div>
       )}
+      <AllPosts posts={posts} sent={sent} />
     </div>
   );
 }
 
-function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: SocialPost; late: boolean; connected: boolean; wait: number; onDone: () => void; onSkip: () => void }) {
+// Every post of the day at once, to copy them by hand (text + image) into X.
+function AllPosts({ posts, sent }: { posts: SocialPost[]; sent: Set<string> }) {
+  const [copied, setCopied] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const mark = (key: string) => {
+    setCopied(key);
+    setError(null);
+  };
+  return (
+    <section className="space-y-3 pt-4">
+      <div>
+        <h2 className="display text-xl font-extrabold">Les {posts.length} posts du jour</h2>
+        <p className="mt-1 text-sm text-muted">
+          Pour les copier-coller toi-même dans X : copie le texte, copie l&apos;image, colle les deux dans un nouveau post. Heures de New York (Paris = +6 h). Espace-les
+          d&apos;au moins 2 minutes (l&apos;idéal : sur toute la journée américaine, avec l&apos;icône calendrier de X).
+        </p>
+      </div>
+      {error && <p className="text-sm text-score-1">✕ {error}</p>}
+      <ol className="grid gap-3 lg:grid-cols-2">
+        {posts.map((p, i) => (
+          <li key={p.id} className={`flex flex-col gap-3 rounded-2xl border bg-surface p-4 ${sent.has(p.id) ? "border-score-5/40 opacity-60" : "border-border"}`}>
+            <div className="flex items-center gap-2">
+              <span className="num rounded bg-surface-2 px-2 py-0.5 text-xs font-bold">
+                {i + 1}. {p.time}
+              </span>
+              <span className="display text-xs font-bold text-accent">{p.kind}</span>
+              {sent.has(p.id) && <span className="ml-auto text-xs font-bold text-score-5">Envoyé ✓</span>}
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.image} alt={`Image du post ${i + 1}`} loading="lazy" className="aspect-[16/9] w-full rounded-xl border border-border bg-surface-2 object-cover" />
+            <p className="whitespace-pre-line rounded-lg bg-background/60 p-3 text-sm leading-relaxed">{p.text}</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(p.text).then(() => mark(`t-${p.id}`), () => setError("Ton navigateur a bloqué la copie du texte."))}
+                className={`display min-h-10 rounded-lg border text-xs font-bold ${copied === `t-${p.id}` ? "border-score-5 text-score-5" : "border-border-strong hover:border-accent"}`}
+              >
+                {copied === `t-${p.id}` ? "Texte copié ✓" : "Copier le texte"}
+              </button>
+              <button
+                type="button"
+                onClick={() => copyImage(p.image).then(() => mark(`i-${p.id}`), () => setError("Ton navigateur a bloqué la copie de l'image : clic droit sur l'image → Copier l'image."))}
+                className={`display min-h-10 rounded-lg border text-xs font-bold ${copied === `i-${p.id}` ? "border-score-5 text-score-5" : "border-border-strong hover:border-accent"}`}
+              >
+                {copied === `i-${p.id}` ? "Image copiée ✓" : "Copier l'image"}
+              </button>
+              <a href={p.image} download={`post-${String(i + 1).padStart(2, "0")}.png`} className="display flex min-h-10 items-center justify-center rounded-lg border border-border-strong text-xs font-bold hover:border-accent">
+                Télécharger
+              </a>
+            </div>
+            {!sent.has(p.id) && (
+              <button type="button" onClick={() => rememberSent(p.id)} className="self-start text-xs text-muted underline-offset-2 hover:text-foreground hover:underline">
+                Je l&apos;ai posté à la main → marquer comme envoyé
+              </button>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function PostCard({ post, late, connected, wait, gapMinutes, onDone, onSkip }: { post: SocialPost; late: boolean; connected: boolean; wait: number; gapMinutes: number; onDone: () => void; onSkip: () => void }) {
   const [text, setText] = useState(post.text);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +262,7 @@ function PostCard({ post, late, connected, wait, onDone, onSkip }: { post: Socia
           )}
           {wait > 0 && (
             <p className="rounded-lg bg-score-3/10 px-3 py-2 text-xs text-score-3">
-              Pause anti-spam : X bannit les comptes qui postent en rafale, donc les posts sont espacés d’au moins 45 minutes. Prochain dans {wait} min. Tu peux déjà copier l’image.
+              Petite pause anti-spam : au moins {gapMinutes} minutes entre deux posts, pour ne pas ressembler à un robot. Prochain dans {wait} min. Tu peux déjà copier l’image.
             </p>
           )}
           {error && <p className="text-sm text-score-1">✕ {error}</p>}

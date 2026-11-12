@@ -59,7 +59,8 @@ export const X_LIMIT = 280;
 export const POSTS_PER_DAY = X_POSTS_PER_DAY; // see lib/social/limits.ts (anti-spam)
 // Posting slots, Eastern (US fans): with 3 posts, morning, afternoon and evening before tip-off.
 // More slots are used only if the daily limit grows (lib/social/limits.ts).
-const HOURS = [10, 14, 18, 12, 16, 20, 9, 13, 15, 21].slice(0, Math.min(10, POSTS_PER_DAY)).sort((a, b) => a - b);
+// Every slot ends by 6 PM, so "Tonight" posts always go out before tip-off (7 PM).
+const HOURS = [10, 14, 18, 12, 16, 11, 15, 17, 9, 13].slice(0, Math.min(10, POSTS_PER_DAY)).sort((a, b) => a - b);
 const label = (h: number) => `${h % 12 || 12}:00 ${h < 12 ? "AM" : "PM"}`;
 
 const short = (t: { short_name: string | null; name: string }) => t.short_name ?? t.name;
@@ -70,8 +71,24 @@ const surname = (name: string) => {
 const last = surname;
 // Name for a title on an image: the last name when the full name is long.
 const cardName = (name: string) => (name.length > 16 ? surname(name) : name);
-// What a team got, without filler like "Draft considerations" (reads badly in a post).
-const gotList = (receives: string[]) => receives.filter((r) => !/^Draft considerations/i.test(r));
+type TeamNames = Map<string, { short_name: string | null; name: string }>;
+// A pick label in plain English: "Future 1st · POR" -> "a future Trail Blazers 1st", "2029 1st · CHA" -> "a 2029 Hornets 1st".
+const readablePick = (label: string, teams: TeamNames) => {
+  const m = label.match(/^(Future|\d{4}) (1st|2nd) · ([A-Z]+)$/);
+  if (!m) return label;
+  const t = teams.get(m[3]);
+  return `${m[1] === "Future" ? "a future" : `a ${m[1]}`} ${t ? short(t) : m[3]} ${m[2]}`;
+};
+// What a team got, in plain English, without filler like "Draft considerations".
+// Repeated items are merged: two "a future Hawks 2nd" -> "two future Hawks 2nds".
+const gotList = (receives: string[], teams: TeamNames) => {
+  const kept = receives.filter((r) => !/^Draft considerations/i.test(r)).map((r) => readablePick(r, teams));
+  const counts = new Map<string, number>();
+  for (const r of kept) counts.set(r, (counts.get(r) ?? 0) + 1);
+  return [...counts].map(([r, n]) => (n === 1 ? r : `${n === 2 ? "two" : n === 3 ? "three" : n} ${r.replace(/^an? /, "")}s`));
+};
+// "A, B and C".
+const andList = (items: string[]) => (items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`);
 // Team hashtag from its nickname: "Trail Blazers" -> #TrailBlazers.
 const tag = (t: { short_name: string | null; name: string } | undefined) => (t ? `#${short(t).replace(/[^A-Za-z0-9]/g, "")}` : "#NBA");
 // Plain-English verdict on a player's contract from his Trade Value.
@@ -131,10 +148,12 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   }
 
   // 2. Trade ideas of the day (one post each): a question people want to answer.
-  for (const idea of ideas.slice(0, 3)) {
+  // Only ideas with believable grades: a 99 vs 3 "idea" reads as a joke and gets the account mocked.
+  const credible = ideas.filter((i) => i.buyerResult.score <= 90 && i.sellerResult.score >= 20 && i.sellerResult.score <= 90);
+  for (const idea of credible.slice(0, 3)) {
     const b = short(idea.buyer), s = short(idea.seller);
     const p = idea.target;
-    const gives = idea.buyerResult.sent.map((d) => d.label).slice(0, 3).join(", ");
+    const gives = andList(gotList(idea.buyerResult.sent.map((d) => d.label), teamByAbbr).slice(0, 3));
     add(
       `idea-${p.id}`,
       "Trade idea",
@@ -168,7 +187,7 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
       "Latest trade",
       say(
         `Who won the ${latest.teams.map((t) => short(t.team)).join("-")} trade?\n\n${lines}\n\n${w ? `We say the ${w}. Change our mind.` : "Dead even. Prove us wrong."}`,
-        `We graded the latest NBA trade 🧾\n\n${lines}\n\n${w ? `Advantage ${w}.` : "Nobody wins this one."} Agree?`,
+        `Latest NBA trade, graded 🧾\n\n${lines}\n\n${latest.teams.map((t) => `${short(t.team)} got ${andList(gotList(t.receives, teamByAbbr).slice(0, 3)) || "cash"}.`).join("\n")}\n\n${w ? `Advantage ${w}.` : "Nobody wins this one."} Agree?`,
       ),
       link(`/trade/${latest.id}`),
       { type: "trade", id: latest.id, line: w ? `Advantage ${w}.` : "Dead even." },
@@ -178,19 +197,21 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   const heist = pickOne(sides.filter((x) => x.t.score >= 70).sort((a, b) => b.t.score - a.t.score).slice(0, 5));
   if (heist && heist.trade.id !== latest?.id) {
     const other = heist.trade.teams.find((x) => x.team.id !== heist.t.team.id);
-    const got = gotList(heist.t.receives).slice(0, 2).join(" and ");
+    const got = andList(gotList(heist.t.receives, teamByAbbr).slice(0, 3));
+    const paid = other ? andList(gotList(other.receives, teamByAbbr).slice(0, 3)) : "";
     add(
       `heist-${heist.trade.id}`,
       "Best trade",
       say(
-        `${heist.t.score}/99.\n\nThe ${short(heist.t.team)} got ${got}${other ? ` and the ${short(other.team)} let it happen` : ""}.\n\nBest trade of the season so far? ${tag(heist.t.team)}`,
+        `${heist.t.score}/99.\n\nThe ${short(heist.t.team)} got ${got}${paid ? ` for ${paid}` : ""}.\n\nBest trade of the season so far? ${tag(heist.t.team)}`,
         `Robbery of the season? 🚨\n\n${short(heist.t.team)} land ${got}. Our grade: ${heist.t.score}/99.${other ? `\n${short(other.team)}: ${other.score}/99.` : ""}\n\nName a better one.`,
       ),
       link(`/trade/${heist.trade.id}`),
       { type: "trade", id: heist.trade.id, line: `${short(heist.t.team)} ${heist.t.score}/99. Robbery.` },
     );
   }
-  const fleeced = pickOne(sides.filter((x) => x.t.score <= 35).sort((a, b) => a.t.score - b.t.score).slice(0, 5));
+  // A different trade from the heist one (the same deal twice in a day looks lazy).
+  const fleeced = pickOne(sides.filter((x) => x.t.score <= 35 && x.trade.id !== heist?.trade.id).sort((a, b) => a.t.score - b.t.score).slice(0, 5));
   if (fleeced) {
     add(
       `fleeced-${fleeced.trade.id}`,
@@ -302,7 +323,9 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   const rsOf = (abbr: string) => rosters.get(teamByAbbr.get(abbr)?.id ?? "") ?? 50;
   const close = [...pre].map((g) => ({ g, gap: Math.abs(rsOf(g.away.abbreviation) - rsOf(g.home.abbreviation)) })).sort((a, b) => a.gap - b.gap).slice(0, 2);
   for (const { g } of close) {
-    const fav = favorite(g, byAbbr, teamByAbbr, rosters);
+    // These posts quote Roster Scores, so the edge is the better Roster Score too (never a different metric).
+    const ra = rsOf(g.away.abbreviation), rh = rsOf(g.home.abbreviation);
+    const fav = ra === rh ? null : { team: ra > rh ? g.away : g.home };
     const a = last(g.away.name), h = last(g.home.name);
     const favTeam = fav ? teamByAbbr.get(fav.team.abbreviation) : undefined;
     add(
@@ -330,8 +353,8 @@ export function xPostsOfTheDay(input: XPostInput): XPost[] {
   const debate = pickOne(trades.filter((t) => t.id !== latest?.id && t.id !== heist?.trade.id && t.id !== fleeced?.trade.id));
   if (debate) {
     const [a, b] = debate.teams;
-    const gotA = gotList(a.receives).slice(0, 2).join(", ") || "cash";
-    const gotB = b ? gotList(b.receives).slice(0, 2).join(", ") || "cash" : "";
+    const gotA = andList(gotList(a.receives, teamByAbbr).slice(0, 3)) || "cash";
+    const gotB = b ? andList(gotList(b.receives, teamByAbbr).slice(0, 3)) || "cash" : "";
     add(
       `debate-${debate.id}`,
       "Debate",
