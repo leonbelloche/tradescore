@@ -25,7 +25,7 @@ Avant chaque tâche, lis CLAUDE.md, sections « Règles de validation NBA » et 
 - Fonctions pures, typées, sans accès à la base de données.
 
 ## Tests obligatoires
-- Les 4 trades de référence de CLAUDE.md (formule corrigée, validée par Léon le 2026-11-04) : 87/66, 100/0, 49/51, 50/56 (Dispo = 1, sans croissance du cap).
+- Les 4 trades de référence de CLAUDE.md (formule calibrée, validée par Léon le 2026-11-12) : 96/39, 99/1, 49/51, 25/85 (Dispo = 1, sans croissance du cap).
 - Les 3 tests « de bon sens » : star donnée gratuitement < 20 / > 60, remplaçant au minimum ≈ 50/50, joueur payé au prix du marché ≈ 0.
 - Repères talent : GmSc 12 ≈ 0.08, 15 ≈ 0.15, 20 ≈ 0.30, 25 ≈ 0.48 (±0.01).
 - Cas limites : joueur sans contrat restant, GmSc < 6, pick protégé, trade invalide (pas de score), trade à 3 équipes.

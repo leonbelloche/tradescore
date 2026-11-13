@@ -6,7 +6,7 @@ import type { TeamMode } from "./types";
 export const SCORE_CONFIG = {
   // 1. Talent per season = talentScale x max(0, GmSc - gmscFloor)^talentExponent x availability
   talentScale: 0.00488,
-  gmscFloor: 6,
+  gmscFloor: 4, // was 6 until the 2026-11-12 calibration (6/15 -> 9/15)
   talentExponent: 1.56,
 
   // Game Score blend: 60% current season + 40% previous season,
@@ -42,6 +42,9 @@ export const SCORE_CONFIG = {
   // Calibrated so that a fairly-paid role player is ~0 and giving away a star for nothing is a clear loss.
   salaryWeight: 0.7,
   replacementSalary: 0.013,
+  // A player's net value below 0 (overpaid) is multiplied by this: a bad contract hurts 3x less than talent helps.
+  // Added on 2026-11-12: before, 63% of players were worth less than nothing, so dumping anyone "won" a trade.
+  negativeValueWeight: 0.3,
 
   // 4. Context of the team valuing the asset, season by season (index 0 = this season).
   context: {
@@ -59,8 +62,8 @@ export const SCORE_CONFIG = {
     pick4to10: 0.3,
     pick11to20: 0.15,
     pick21to30: 0.08,
-    futureFirst: 0.18, // 1st round pick that is NOT in this year's draft
-    second: 0.05, // raised from 0.02 on 2026-11-07 after calibration (5/15 -> 7/15), reference trades unchanged
+    futureFirst: 0.12, // 1st round pick that is NOT in this year's draft (0.18 until 2026-11-12)
+    second: 0.02, // 0.02 -> 0.05 on 2026-11-07, back to 0.02 on 2026-11-12 (two 2nds were beating real rotation players)
   },
   protectedPickMultiplier: 0.7,
 

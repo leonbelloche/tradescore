@@ -25,8 +25,8 @@ export default function MethodPage() {
           </p>
           <p>
             Game Score becomes <b>Talent</b>, expressed as the share of the salary cap a player is worth. The curve grows
-            faster at the top: a Game Score of 12 is worth about 8% of the cap, 20 about 30%, 25 about 48%. Missed games
-            lower it.
+            faster at the top: a Game Score of 12 is worth about 12% of the cap, 20 about 37%, 25 about 56%. Missed games
+            lower it this season; an injured player is expected to get back part of the way after.
           </p>
         </Card>
       </section>
@@ -42,6 +42,10 @@ export default function MethodPage() {
             Over each remaining season of his contract (5 max), a player is worth his talent minus what he costs. Only the
             salary <b>above a minimum contract</b> counts as a cost, and saved money weighs a bit less than talent. Future
             seasons count a little less (×0.9 per year).
+          </p>
+          <p>
+            An <b>overpaid</b> player still hurts, but <b>3 times less</b> than real talent helps: dumping a bad contract is
+            not, on its own, a trade win.
           </p>
         </Card>
       </section>

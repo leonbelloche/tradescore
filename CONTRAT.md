@@ -79,7 +79,7 @@ export type TradeResult =
 - `skipValidation` : les vrais trades passés utilisent des exceptions (TPE, etc.) que nos règles simplifiées ne connaissent pas.
 - `ValidationResult.checks` : le détail par équipe pour la barre salariale en direct.
 - `TeamResult.tier` et `mode` en plus du verdict.
-- Tests de référence = formule corrigée (87/66, 100/0, 49/51, 50/56), pas 54/92… (voir CLAUDE.md).
+- Tests de référence = formule calibrée le 2026-11-12 (96/39, 99/1, 49/51, 25/85), voir CLAUDE.md.
 - Design : style WageScore (Oswald + Roboto, échelle 5 couleurs), pas le thème Space Grotesk/Inter du plan design semaine 1.
 
 ## Règles de changement

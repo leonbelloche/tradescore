@@ -42,6 +42,8 @@ export function playerValue(p: PlayerAsset, mode: TeamMode): { value: number; br
     fullTalent *= 1 + ageGrowth(age);
     age += 1;
   }
+  // A bad contract hurts less than talent helps (1 = counted in full).
+  if (value < 0) value *= C.negativeValueWeight;
   breakdown.seasons = seasons;
   breakdown.value = value;
   return { value, breakdown };

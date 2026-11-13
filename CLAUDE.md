@@ -48,12 +48,14 @@ Toutes les valeurs sont en **fraction du salary cap** (0.30 = 30 % du cap). Tous
 
 ### 1. Talent par saison
 ```
-Talent = 0.00488 × max(0, GmSc − 6)^1.56 × Dispo
+Talent = 0.00488 × max(0, GmSc − 4)^1.56 × Dispo
 ```
 - GmSc = Game Score moyen (Hollinger) : PTS + 0.4·FG − 0.7·FGA − 0.4·(FTA−FT) + 0.7·ORB + 0.3·DRB + STL + 0.7·AST + 0.7·BLK − 0.4·PF − TOV
 - Mélange 60 % saison en cours + 40 % saison précédente ; < 10 matchs cette saison → 100 % saison précédente.
-- Dispo = matchs joués / matchs possibles (max 1).
-- Repères attendus : GmSc 12 → 0.08 · 15 → 0.15 · 20 → 0.30 · 25 → 0.48
+- Dispo = matchs joués / matchs possibles (max 1). Elle compte en entier pour la saison en cours ; les saisons suivantes,
+  un joueur blessé récupère 60 % de l'écart jusqu'à 0.85 (ajouté le 2026-11-11 : Tatum blessé était noté 1/99 sur tout son contrat).
+- Repères attendus : GmSc 12 → 0.125 · 15 → 0.21 · 20 → 0.37 · 25 → 0.56
+  (plancher GmSc 6 → 4 au calibrage du 2026-11-12 ; avant : 12 → 0.08 · 15 → 0.15 · 20 → 0.30 · 25 → 0.48)
 
 ### 2. Âge : variation du talent chaque saison suivante
 ≤22 : +8 % · 23-25 : +4 % · 26-28 : 0 % · 29-30 : −5 % · 31-32 : −10 % · 33+ : −15 %
@@ -68,6 +70,9 @@ Coût_t = 0.7 × max(0, Salaire_t / Cap_t − 0.013)
   avaient une valeur négative → donner un bon joueur gratuitement était noté comme une victoire.
   - 0.013 (`replacementSalary`) ≈ un contrat minimum : seul le salaire au-dessus du minimum est un vrai coût.
   - 0.7 (`salaryWeight`) : un dollar économisé vaut moins qu'un dollar de talent.
+- **Calibrage du 2026-11-12** (validé par Léon) : une valeur négative (mauvais contrat) est multipliée par **0.3**
+  (`negativeValueWeight`). Avant, 63 % des vrais joueurs valaient moins que rien → se débarrasser de n'importe qui
+  « gagnait » un trade, et deux 2e tours battaient un vrai joueur de rotation. Résultat : 6/15 → 9/15 bons gagnants.
 
 ### 4. Contexte de l'équipe qui REÇOIT
 Mode auto : win% ≥ .600 → contender, ≤ .400 → rebuild, sinon milieu. Modifiable dans le simulateur.
@@ -78,7 +83,8 @@ rebuild:   [0.6, 0.8, 1.0, 1.1, 1.1]
 ```
 
 ### 5. Choix de draft
-Valeur de base : top3 0.50 · 4-10 0.30 · 11-20 0.15 · 21-30 0.08 · 1er tour futur (≥ 2 ans) 0.18 · 2e tour 0.05 (0.02 avant le calibrage du 2026-11-07 : 5/15 → 7/15 bons gagnants, trades de référence inchangés)
+Valeur de base : top3 0.50 · 4-10 0.30 · 11-20 0.15 · 21-30 0.08 · 1er tour futur (≥ 2 ans) 0.12 · 2e tour 0.02
+(historique : 2e tour 0.02 → 0.05 le 2026-11-07, puis retour à 0.02 et 1er tour futur 0.18 → 0.12 au calibrage du 2026-11-12)
 - Rang estimé d'après le classement actuel de l'équipe qui cède le pick.
 - Protégé → ×0.7. Pas de swaps en V1.
 ```
@@ -95,19 +101,19 @@ Score = round(50 + 50 × tanh((Σ reçues − Σ cédées) / 0.25))
 - **Affichage : seulement le score /100 par équipe.** Le détail (valeur de chaque actif) est quand même retourné par la fonction pour la page Méthode et le debug.
 
 ### Tests unitaires obligatoires (résultats attendus de la formule)
-| Trade | A | B | (avant correctif) |
-|---|---|---|---|
-| A contender reçoit All-Star 27 ans GmSc 21, 0.30×3 ans ; B rebuild reçoit jeune 22 ans GmSc 13, 0.06×2 ans + 1er tour futur (dans 1 an) | 87 | 66 | 54 / 92 |
-| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 99 | 1 | 100 / 0 |
-| Deux joueurs (GmSc 15, 26 ans, 0.15×3) vs (GmSc 14.5, 25 ans, 0.14×3), milieu | 49 | 51 (Even) | 50 / 50 |
-| A contender cède 32 ans GmSc 9, 0.25×2 + pick 4-10 (cette année) à B rebuild contre 28 ans GmSc 11, 0.08×1 | 50 | 56 | 73 / 31 |
+| Trade | A | B | (avant le calibrage du 2026-11-12) | (spec d'origine) |
+|---|---|---|---|---|
+| A contender reçoit All-Star 27 ans GmSc 21, 0.30×3 ans ; B rebuild reçoit jeune 22 ans GmSc 13, 0.06×2 ans + 1er tour futur (dans 1 an) | 96 | 39 | 87 / 66 | 54 / 92 |
+| A milieu reçoit MVP 26 ans GmSc 28, 0.32×4 contre joueur 29 ans GmSc 11, 0.15×2 | 99 | 1 | 99 / 1 | 100 / 0 |
+| Deux joueurs (GmSc 15, 26 ans, 0.15×3) vs (GmSc 14.5, 25 ans, 0.14×3), milieu | 49 | 51 (Even) | 49 / 51 | 50 / 50 |
+| A contender cède 32 ans GmSc 9, 0.25×2 + pick 4-10 (cette année) à B rebuild contre 28 ans GmSc 11, 0.08×1 | 25 | 85 | 50 / 56 | 73 / 31 |
 
 (Ces tests utilisent Dispo = 1 et ignorent la croissance du cap.)
 
 Tests "de bon sens" (lib/score/engine.test.ts) :
 - Donner une star gratuitement → donneur < 20, receveur > 60.
-- Donner un remplaçant au salaire minimum → ~50/50.
-- Un joueur de rôle payé au prix du marché vaut ≈ 0.
+- Donner un remplaçant au salaire minimum (GmSc ≤ 4) → ~50/50.
+- Un joueur de rôle payé au prix du marché vaut ≈ 0 (GmSc 12 ≈ 19 % du cap depuis le calibrage du 2026-11-12).
 
 ### Précisions (vérifiées : avec elles, les 4 tests donnent exactement les résultats attendus)
 - Chaque équipe évalue **tout** (actifs reçus ET cédés) avec **son propre** contexte.

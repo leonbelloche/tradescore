@@ -42,10 +42,11 @@ function valid(result: TradeResult) {
 }
 const scoresOf = (result: TradeResult) => Object.fromEntries(valid(result).teams.map((t) => [t.teamId, t.score]));
 
-// Expected scores updated on 2026-11-04 after the salary fix (salaryWeight 0.7,
-// replacementSalary 0.013), validated by Léon. The original spec values were 54/92, 100/0, 50/50, 73/31.
+// Expected scores updated on 2026-11-12 after the calibration validated by Léon (gmscFloor 4, bad contracts x0.3,
+// future 1st 0.12, 2nd 0.02: 6/15 -> 9/15 same winner as the analysts).
+// Before: 87/66, 99/1, 49/51, 50/56 (salary fix of 2026-11-04); original spec: 54/92, 100/0, 50/50, 73/31.
 describe("Trade Score — reference trades from CLAUDE.md", () => {
-  it("1. contender gets an All-Star, rebuild gets a young player + future 1st -> 87 / 66 (both win)", () => {
+  it("1. contender gets an All-Star, rebuild gets a young player + future 1st -> 96 / 39", () => {
     const result = scoreTrade(
       trade([["A", "contender"], ["B", "rebuild"]], [
         leg(player("All-Star", 27, 21, 0.3, 3), "B", "A"),
@@ -53,8 +54,8 @@ describe("Trade Score — reference trades from CLAUDE.md", () => {
         leg(pick("Future 1st", { yearsUntilDraft: 1 }), "A", "B"),
       ]),
     );
-    expect(scoresOf(result)).toEqual({ A: 87, B: 66 });
-    expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Win"]);
+    expect(scoresOf(result)).toEqual({ A: 96, B: 39 });
+    expect(valid(result).teams.map((t) => t.verdict)).toEqual(["Win", "Loss"]);
   });
 
   it("2. middle team gets an MVP for a declining player -> 99 / 1 (capped)", () => {
@@ -83,7 +84,7 @@ describe("Trade Score — reference trades from CLAUDE.md", () => {
     expect(result.teams.every((t) => t.verdict === "Even")).toBe(true);
   });
 
-  it("4. contender pays a lottery pick to dump a bad contract -> 50 / 56 (rebuild team gets paid)", () => {
+  it("4. contender pays a lottery pick to dump a bad contract -> 25 / 85 (a bad contract is not worth a lottery pick)", () => {
     const result = valid(
       scoreTrade(
         trade([["A", "contender"], ["B", "rebuild"]], [
@@ -93,7 +94,7 @@ describe("Trade Score — reference trades from CLAUDE.md", () => {
         ]),
       ),
     );
-    expect(scoresOf(result)).toEqual({ A: 50, B: 56 });
+    expect(scoresOf(result)).toEqual({ A: 25, B: 85 });
     expect(result.winnerTeamId).toBe("B");
   });
 });
@@ -109,21 +110,22 @@ describe("Trade Score — common sense", () => {
   });
 
   it("giving away a minimum-salary bench player is about even", () => {
-    const s = gift(player("Bench", 30, 6, 0.013, 1));
+    const s = gift(player("Bench", 30, 4, 0.013, 1)); // Game Score 4 = no talent counted
     expect(Math.abs(s.giver - 50)).toBeLessThanOrEqual(2);
     expect(Math.abs(s.taker - 50)).toBeLessThanOrEqual(2);
   });
 
   it("a fairly paid role player is worth about nothing (not a big minus)", () => {
-    expect(Math.abs(playerValue(player("Role", 27, 12, 0.11, 2), "middle").value)).toBeLessThan(0.03);
+    // Game Score 12 is worth ~19% of the cap a year since the 2026-11-12 calibration.
+    expect(Math.abs(playerValue(player("Role", 27, 12, 0.19, 2), "middle").value)).toBeLessThan(0.03);
   });
 });
 
 describe("Trade Score — edge cases", () => {
-  it("a player below Game Score 6 has no talent: his value is only his cost", () => {
-    const { value, breakdown } = playerValue(player("Deep bench", 28, 4, 0.05, 1), "middle");
+  it("a player below Game Score 4 has no talent: his value is only his cost (bad contracts count x0.3)", () => {
+    const { value, breakdown } = playerValue(player("Deep bench", 28, 3, 0.05, 1), "middle");
     expect(breakdown.talentNow).toBe(0);
-    expect(value).toBeCloseTo(-0.7 * (0.05 - 0.013), 6);
+    expect(value).toBeCloseTo(0.3 * -0.7 * (0.05 - 0.013), 6);
   });
 
   it("a player with no contract left is worth 0", () => {
@@ -189,7 +191,6 @@ describe("Trade Score — reasons (Why X?)", () => {
     expect(reasons.length).toBeGreaterThan(0);
     expect(reasons.length).toBeLessThanOrEqual(3);
     expect(reasons[0]).toContain("Gives up MVP");
-    expect(reasons.join(" ")).toContain("only 50% of games played");
   });
 
   it("says when nothing much happens", () => {
@@ -200,11 +201,11 @@ describe("Trade Score — reasons (Why X?)", () => {
 
 describe("Trade Score — building blocks", () => {
   it("talent matches the reference points (GmSc 12/15/20/25)", () => {
-    expect(talent(12)).toBeCloseTo(0.08, 2);
-    expect(talent(15)).toBeCloseTo(0.15, 2);
-    expect(talent(20)).toBeCloseTo(0.3, 2);
-    expect(talent(25)).toBeCloseTo(0.48, 2);
-    expect(talent(5)).toBe(0);
+    expect(talent(12)).toBeCloseTo(0.125, 2);
+    expect(talent(15)).toBeCloseTo(0.206, 2);
+    expect(talent(20)).toBeCloseTo(0.369, 2);
+    expect(talent(25)).toBeCloseTo(0.564, 2);
+    expect(talent(3)).toBe(0);
   });
 
   it("age growth follows the table", () => {
@@ -238,7 +239,7 @@ describe("Trade Value (player /100)", () => {
   });
   it("a star on a fair deal is well above 50, a bad contract below, a min bench player ~50", () => {
     expect(playerTradeValue(p(25, 0.3, 4)).score).toBeGreaterThan(75);
-    expect(playerTradeValue(p(9, 0.25, 3)).score).toBeLessThan(25);
-    expect(Math.abs(playerTradeValue(p(7, 0.013, 1)).score - 50)).toBeLessThanOrEqual(2);
+    expect(playerTradeValue(p(9, 0.25, 3)).score).toBeLessThan(40); // bad contracts count x0.3, so they rarely go very low
+    expect(Math.abs(playerTradeValue(p(5, 0.013, 1)).score - 50)).toBeLessThanOrEqual(2);
   });
 });
