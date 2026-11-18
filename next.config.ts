@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // The card images read their fonts from disk: ship the font files with every server function (Netlify, Vercel...).
+  outputFileTracingIncludes: { "/**": ["./assets/fonts/**/*"] },
   // Team logos, player headshots and news photos served by ESPN's CDNs.
   images: {
     remotePatterns: [

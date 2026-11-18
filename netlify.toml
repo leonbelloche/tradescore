@@ -1,0 +1,10 @@
+# Netlify settings (the Next.js support is automatic: Netlify detects Next.js and uses its adapter).
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
